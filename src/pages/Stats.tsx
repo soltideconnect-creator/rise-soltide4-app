@@ -39,8 +39,10 @@ export function Stats() {
   }, []);
 
   const handleRemoveAds = () => {
-    // Simulate in-app purchase
-    toast.success('Ads removed! Thank you for your support! 🎉');
+    // Simulate in-app purchase for $4.99
+    toast.success('Premium unlocked! Sleep Tracker is now available! 🎉', {
+      duration: 5000,
+    });
     localStorage.setItem('streak_ads_removed', 'true');
     setAdsRemoved(true);
   };
@@ -143,9 +145,9 @@ export function Stats() {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Support Streak</h3>
+                  <h3 className="text-lg font-semibold">Upgrade to Premium</h3>
                   <p className="text-sm text-muted-foreground">
-                    Enjoying the app? Remove ads and support development!
+                    Remove ads and unlock Sleep Tracker for just $4.99!
                   </p>
                 </div>
                 
@@ -157,18 +159,18 @@ export function Stats() {
                   </div>
                 </div>
 
-                {/* Remove Ads Button */}
+                {/* Premium Purchase Button */}
                 <Button
                   onClick={handleRemoveAds}
                   className="w-full max-w-xs mx-auto"
                   size="lg"
                 >
                   <X className="w-4 h-4 mr-2" />
-                  Remove Ads - One-Time Purchase
+                  Get Premium - $4.99 One-Time
                 </Button>
                 
                 <p className="text-xs text-muted-foreground">
-                  Support the app and enjoy an ad-free experience
+                  Unlock Sleep Tracker + Ad-Free Experience
                 </p>
               </div>
             </CardContent>
@@ -182,9 +184,9 @@ export function Stats() {
                 <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-6 h-6 text-success" />
                 </div>
-                <h3 className="text-lg font-semibold">Thank You! 🎉</h3>
+                <h3 className="text-lg font-semibold">Premium Active! 🎉</h3>
                 <p className="text-sm text-muted-foreground">
-                  You're enjoying an ad-free experience. Thank you for supporting Streak!
+                  Enjoying ad-free experience + Sleep Tracker. Thank you for supporting Streak!
                 </p>
               </div>
             </CardContent>

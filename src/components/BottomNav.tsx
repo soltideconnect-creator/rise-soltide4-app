@@ -1,8 +1,8 @@
-import { Home, Calendar, BarChart3, Settings } from 'lucide-react';
+import { Home, Calendar, BarChart3, Moon, Settings } from 'lucide-react';
 
 interface BottomNavProps {
-  activeTab: 'home' | 'calendar' | 'stats' | 'settings';
-  onTabChange: (tab: 'home' | 'calendar' | 'stats' | 'settings') => void;
+  activeTab: 'home' | 'calendar' | 'stats' | 'sleep' | 'settings';
+  onTabChange: (tab: 'home' | 'calendar' | 'stats' | 'sleep' | 'settings') => void;
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
@@ -10,6 +10,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     { id: 'home' as const, icon: Home, label: 'Home' },
     { id: 'calendar' as const, icon: Calendar, label: 'Calendar' },
     { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
+    { id: 'sleep' as const, icon: Moon, label: 'Sleep' },
     { id: 'settings' as const, icon: Settings, label: 'Settings' },
   ];
 

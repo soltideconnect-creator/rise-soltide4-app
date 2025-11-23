@@ -3,6 +3,7 @@ import { Onboarding } from '@/components/Onboarding';
 import { Home } from '@/pages/Home';
 import { Calendar } from '@/pages/Calendar';
 import { Stats } from '@/pages/Stats';
+import Sleep from '@/pages/Sleep';
 import { Settings } from '@/pages/Settings';
 import { About } from '@/pages/About';
 import { HabitForm } from '@/pages/HabitForm';
@@ -13,7 +14,7 @@ import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
 
-type View = 'home' | 'calendar' | 'stats' | 'settings' | 'about' | 'add' | 'edit';
+type View = 'home' | 'calendar' | 'stats' | 'sleep' | 'settings' | 'about' | 'add' | 'edit';
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -59,7 +60,7 @@ function App() {
     setEditingHabit(undefined);
   };
 
-  const handleTabChange = (tab: 'home' | 'calendar' | 'stats' | 'settings') => {
+  const handleTabChange = (tab: 'home' | 'calendar' | 'stats' | 'sleep' | 'settings') => {
     setCurrentView(tab);
   };
 
@@ -82,6 +83,7 @@ function App() {
           )}
           {currentView === 'calendar' && <Calendar />}
           {currentView === 'stats' && <Stats />}
+          {currentView === 'sleep' && <Sleep />}
           {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
           {(currentView === 'add' || currentView === 'edit') && (
@@ -94,7 +96,7 @@ function App() {
 
           {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && (
             <BottomNav
-              activeTab={currentView as 'home' | 'calendar' | 'stats' | 'settings'}
+              activeTab={currentView as 'home' | 'calendar' | 'stats' | 'sleep' | 'settings'}
               onTabChange={handleTabChange}
             />
           )}
