@@ -1,5 +1,6 @@
 import type { SleepSession, SleepData, SleepPhase } from '@/types/sleep';
 import { sleepStorage } from './sleepStorage';
+import { audioService } from './audioService';
 
 class SleepTracker {
   private isRecording = false;
@@ -377,17 +378,8 @@ class SleepTracker {
 
   // Play alarm sound
   private playAlarmSound(): void {
-    const audio = new Audio();
-    // Use a simple beep sound (data URI)
-    audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXzzn0vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Ik2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5sIQUrgs/y2Yk2CBhkuezooVARDEyl4fG5ZRwFNo3V885+LwUofszw2o87ChRftevqp1UUCkaf4PK+bCEFK4LP8tmJNggYZLns6KFQEQxMpeHxuWUcBTaN1fPOfi8FKH7M8NqPOwoUX7Xr6qdVFApGn+DyvmwhBSuCz/LZiTYIGGS57OihUBEMTKXh8bllHAU2jdXzzn4vBSh+zPDajzsKFF+16+qnVRQKRp/g8r5s';
-    audio.loop = true;
-    audio.play().catch(err => console.error('Failed to play alarm:', err));
-
-    // Stop after 1 minute
-    setTimeout(() => {
-      audio.pause();
-      audio.currentTime = 0;
-    }, 60000);
+    const settings = sleepStorage.getAlarmSettings();
+    audioService.playAlarm(settings.sound);
   }
 
   // Check if currently recording

@@ -59,7 +59,7 @@ class SleepStorage {
       enabled: false,
       targetTime: '07:00',
       windowMinutes: 30,
-      sound: 'default',
+      sound: 'gentle',
       vibrate: true,
     };
   }

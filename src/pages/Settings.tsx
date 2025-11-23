@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { useTheme } from 'next-themes';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
+import { audioService, ALARM_SOUNDS, type AlarmSoundType } from '@/services/audioService';
+import { sleepStorage } from '@/services/sleepStorage';
 import { toast } from 'sonner';
 import {
   Moon,
@@ -16,6 +18,8 @@ import {
   Trash2,
   Info,
   ChevronRight,
+  Volume2,
+  Play,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -38,9 +42,55 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     notifications.getPermission() === 'granted'
   );
+  const [isPremium, setIsPremium] = useState(false);
+  const [selectedAlarmSound, setSelectedAlarmSound] = useState<AlarmSoundType>('gentle');
+  const [playingSound, setPlayingSound] = useState<AlarmSoundType | null>(null);
+
+  useEffect(() => {
+    // Check premium status
+    const premium = localStorage.getItem('streak_ads_removed') === 'true';
+    setIsPremium(premium);
+
+    if (premium) {
+      // Load saved alarm sound
+      const alarmSettings = sleepStorage.getAlarmSettings();
+      setSelectedAlarmSound(alarmSettings.sound);
+    }
+  }, []);
 
   const handleThemeToggle = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const handleAlarmSoundChange = (soundType: AlarmSoundType) => {
+    setSelectedAlarmSound(soundType);
+    
+    // Save to alarm settings
+    const currentSettings = sleepStorage.getAlarmSettings();
+    sleepStorage.saveAlarmSettings({
+      ...currentSettings,
+      sound: soundType,
+    });
+
+    toast.success(`Alarm sound changed to ${ALARM_SOUNDS.find(s => s.id === soundType)?.name}`);
+  };
+
+  const handlePlayPreview = (soundType: AlarmSoundType) => {
+    if (playingSound === soundType) {
+      // Stop current sound
+      audioService.stopSound();
+      setPlayingSound(null);
+    } else {
+      // Stop any playing sound and play new one
+      audioService.stopSound();
+      audioService.playPreview(soundType);
+      setPlayingSound(soundType);
+
+      // Auto-stop after 3 seconds
+      setTimeout(() => {
+        setPlayingSound(null);
+      }, 3000);
+    }
   };
 
   const handleNotificationToggle = async () => {
@@ -184,6 +234,60 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Alarm Sound (Premium Only) */}
+      {isPremium && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Volume2 className="w-5 h-5" />
+              Smart Alarm Sound
+            </CardTitle>
+            <CardDescription>Choose your wake-up sound (offline)</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {ALARM_SOUNDS.map((sound) => (
+              <div
+                key={sound.id}
+                className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                  selectedAlarmSound === sound.id
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50'
+                }`}
+                onClick={() => handleAlarmSoundChange(sound.id)}
+              >
+                <div className="flex-1">
+                  <p className="font-medium">{sound.name}</p>
+                  <p className="text-sm text-muted-foreground">{sound.description}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {selectedAlarmSound === sound.id && (
+                    <div className="w-2 h-2 bg-primary rounded-full" />
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePlayPreview(sound.id);
+                    }}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Play
+                      className={`w-4 h-4 ${
+                        playingSound === sound.id ? 'text-primary' : ''
+                      }`}
+                    />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <p className="text-xs text-muted-foreground mt-2">
+              💡 Tap any sound to select it, or tap the play button to preview (3 seconds)
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Data Management */}
       <Card className="mb-4">

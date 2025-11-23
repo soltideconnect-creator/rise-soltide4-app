@@ -43,6 +43,6 @@ export interface AlarmSettings {
   enabled: boolean;
   targetTime: string; // HH:mm format
   windowMinutes: number; // default 30
-  sound: string;
+  sound: 'gentle' | 'classic' | 'chimes' | 'birds' | 'ocean' | 'piano';
   vibrate: boolean;
 }
