@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Flame, Calendar, TrendingUp, ChevronRight, ChevronLeft } from 'lucide-react';
+import { notifications } from '@/services/notifications';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -46,9 +47,9 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     }
   };
 
-  const requestNotificationPermission = () => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+  const requestNotificationPermission = async () => {
+    if (notifications.isSupported() && notifications.getPermission() === 'default') {
+      await notifications.requestPermission();
     }
   };
 

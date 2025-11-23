@@ -6,6 +6,7 @@ import { Stats } from '@/pages/Stats';
 import { HabitForm } from '@/pages/HabitForm';
 import { BottomNav } from '@/components/BottomNav';
 import { habitStorage } from '@/services/habitStorage';
+import { notifications } from '@/services/notifications';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
@@ -20,12 +21,17 @@ function App() {
   useEffect(() => {
     if (!habitStorage.isOnboardingCompleted()) {
       setShowOnboarding(true);
+    } else {
+      const habits = habitStorage.getHabits();
+      notifications.scheduleAllHabits(habits);
     }
   }, []);
 
   const handleOnboardingComplete = () => {
     habitStorage.setOnboardingCompleted();
     setShowOnboarding(false);
+    const habits = habitStorage.getHabits();
+    notifications.scheduleAllHabits(habits);
   };
 
   const handleAddHabit = () => {
@@ -41,6 +47,9 @@ function App() {
   const handleSaveHabit = () => {
     setCurrentView('home');
     setEditingHabit(undefined);
+    const habits = habitStorage.getHabits();
+    notifications.cancelAllReminders();
+    notifications.scheduleAllHabits(habits);
   };
 
   const handleCancelForm = () => {

@@ -1,0 +1,40 @@
+{
+  "name": "Streak – Daily Habit Tracker",
+  "short_name": "Streak",
+  "description": "Build lasting habits with beautiful streaks, charts, and daily motivation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5E5CE6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle", "health"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Add Habit",
+      "short_name": "Add",
+      "description": "Create a new habit",
+      "url": "/?action=add",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

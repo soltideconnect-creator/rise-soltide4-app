@@ -1,7 +1,7 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
 import type { Habit } from '@/types/habit';
-import { Flame, Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HabitItemProps {
@@ -24,7 +24,7 @@ export function HabitItem({ habit, streak, isCompleted, onToggle, onEdit, onDele
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{habit.name}</h3>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Flame className="w-4 h-4 text-streak" />
+            <span className="text-base">🔥</span>
             <span className="font-medium text-streak">{streak} day streak</span>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { HabitItem } from '@/components/HabitItem';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { habitStorage } from '@/services/habitStorage';
+import { haptics } from '@/services/haptics';
 import type { Habit } from '@/types/habit';
 import { Confetti } from '@/components/Confetti';
 import { toast } from 'sonner';
@@ -51,17 +52,23 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
     if (isNowCompleted && !wasCompleted) {
       const streak = habitStorage.getHabitStreak(habitId);
       const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+      
+      haptics.success();
+      
       toast.success(randomQuote, {
         duration: 4000,
       });
 
       if (streak === 7 || streak === 30 || streak === 100) {
         setShowConfetti(true);
+        haptics.milestone();
         toast.success(`🎉 Amazing! You've reached a ${streak}-day streak!`, {
           duration: 5000,
         });
         setTimeout(() => setShowConfetti(false), 3000);
       }
+    } else if (!isNowCompleted && wasCompleted) {
+      haptics.light();
     }
   };
 
