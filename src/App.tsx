@@ -1,61 +1,88 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Onboarding } from '@/components/Onboarding';
+import { Home } from '@/pages/Home';
+import { Calendar } from '@/pages/Calendar';
+import { Stats } from '@/pages/Stats';
+import { HabitForm } from '@/pages/HabitForm';
+import { BottomNav } from '@/components/BottomNav';
+import { habitStorage } from '@/services/habitStorage';
+import type { Habit } from '@/types/habit';
+import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 
-import routes from './routes';
+type View = 'home' | 'calendar' | 'stats' | 'add' | 'edit';
 
-// Uncomment these imports when using miaoda-auth-react for authentication
-// import { AuthProvider, RequireAuth } from 'miaoda-auth-react';
-// import { supabase } from 'supabase-js';
-// import Header from '@/components/common/Header';
+function App() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentView, setCurrentView] = useState<View>('home');
+  const [editingHabit, setEditingHabit] = useState<Habit | undefined>();
 
-const App: React.FC = () => {
-{/*
-    // USING MIAODA-AUTH-REACT (Uncomment when auth is required):
-    // =========================================================
-    // Replace the current App structure with this when using miaoda-auth-react:
+  useEffect(() => {
+    if (!habitStorage.isOnboardingCompleted()) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
-    // 1. Wrap everything with AuthProvider (must be inside Router)
-    // 2. Use RequireAuth to protect routes that need authentication
-    // 3. Set whiteList prop for public routes that don't require auth
+  const handleOnboardingComplete = () => {
+    habitStorage.setOnboardingCompleted();
+    setShowOnboarding(false);
+  };
 
-    // Example structure:
-    // <Router>
-    //   <AuthProvider client={supabase}>
-    //     <ScrollToTop />
-    //     <Toaster />
-    //     <RequireAuth whiteList={["/login", "/403", "/404", "/public/*"]}>
-    //       <Header />
-    //       <Routes>
-    //         ... your routes here ...
-    //       </Routes>
-    //     </RequireAuth>
-    //   </AuthProvider>
-    // </Router>
+  const handleAddHabit = () => {
+    setEditingHabit(undefined);
+    setCurrentView('add');
+  };
 
-    // IMPORTANT:
-    // - AuthProvider must be INSIDE Router (it uses useNavigate)
-    // - RequireAuth should wrap Routes, not be inside it
-    // - Add all public paths to the whiteList array
-    // - Remove the custom PrivateRoute component when using RequireAuth
-*/}
+  const handleEditHabit = (habit: Habit) => {
+    setEditingHabit(habit);
+    setCurrentView('edit');
+  };
+
+  const handleSaveHabit = () => {
+    setCurrentView('home');
+    setEditingHabit(undefined);
+  };
+
+  const handleCancelForm = () => {
+    setCurrentView('home');
+    setEditingHabit(undefined);
+  };
+
+  const handleTabChange = (tab: 'home' | 'calendar' | 'stats') => {
+    setCurrentView(tab);
+  };
+
+  if (showOnboarding) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
+  }
+
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <main className="flex-grow">
-          <Routes>
-          {routes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              element={route.element}
-            />
-          ))}
-          <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <div className="min-h-screen bg-background">
+        {currentView === 'home' && (
+          <Home onAddHabit={handleAddHabit} onEditHabit={handleEditHabit} />
+        )}
+        {currentView === 'calendar' && <Calendar />}
+        {currentView === 'stats' && <Stats />}
+        {(currentView === 'add' || currentView === 'edit') && (
+          <HabitForm
+            habit={editingHabit}
+            onSave={handleSaveHabit}
+            onCancel={handleCancelForm}
+          />
+        )}
+
+        {currentView !== 'add' && currentView !== 'edit' && (
+          <BottomNav
+            activeTab={currentView as 'home' | 'calendar' | 'stats'}
+            onTabChange={handleTabChange}
+          />
+        )}
+
+        <Toaster />
       </div>
-    </Router>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;
