@@ -71,37 +71,37 @@ function App() {
     setCurrentView('settings');
   };
 
-  if (showOnboarding) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
-  }
-
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <div className="min-h-screen bg-background">
-        {currentView === 'home' && (
-          <Home onAddHabit={handleAddHabit} onEditHabit={handleEditHabit} />
-        )}
-        {currentView === 'calendar' && <Calendar />}
-        {currentView === 'stats' && <Stats />}
-        {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
-        {currentView === 'about' && <About onBack={handleBackFromAbout} />}
-        {(currentView === 'add' || currentView === 'edit') && (
-          <HabitForm
-            habit={editingHabit}
-            onSave={handleSaveHabit}
-            onCancel={handleCancelForm}
-          />
-        )}
+      {showOnboarding ? (
+        <Onboarding onComplete={handleOnboardingComplete} />
+      ) : (
+        <div className="min-h-screen bg-background">
+          {currentView === 'home' && (
+            <Home onAddHabit={handleAddHabit} onEditHabit={handleEditHabit} />
+          )}
+          {currentView === 'calendar' && <Calendar />}
+          {currentView === 'stats' && <Stats />}
+          {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
+          {currentView === 'about' && <About onBack={handleBackFromAbout} />}
+          {(currentView === 'add' || currentView === 'edit') && (
+            <HabitForm
+              habit={editingHabit}
+              onSave={handleSaveHabit}
+              onCancel={handleCancelForm}
+            />
+          )}
 
-        {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && (
-          <BottomNav
-            activeTab={currentView as 'home' | 'calendar' | 'stats' | 'settings'}
-            onTabChange={handleTabChange}
-          />
-        )}
+          {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && (
+            <BottomNav
+              activeTab={currentView as 'home' | 'calendar' | 'stats' | 'settings'}
+              onTabChange={handleTabChange}
+            />
+          )}
 
-        <Toaster />
-      </div>
+          <Toaster />
+        </div>
+      )}
     </ThemeProvider>
   );
 }
