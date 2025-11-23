@@ -139,7 +139,7 @@ export function Stats() {
           </CardContent>
         </Card>
 
-        {/* Monetization Section */}
+        {/* Premium Upgrade Section */}
         {!adsRemoved && (
           <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
             <CardContent className="pt-6">
@@ -147,16 +147,8 @@ export function Stats() {
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Upgrade to Premium</h3>
                   <p className="text-sm text-muted-foreground">
-                    Remove ads and unlock Sleep Tracker for just $4.99!
+                    Unlock Sleep Tracker for just $4.99!
                   </p>
-                </div>
-                
-                {/* Ad Banner Placeholder */}
-                <div className="bg-muted/50 h-24 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
-                  <div className="text-center">
-                    <p className="text-xs text-muted-foreground font-medium">Advertisement</p>
-                    <p className="text-xs text-muted-foreground mt-1">Banner Ad Space</p>
-                  </div>
                 </div>
 
                 {/* Premium Purchase Button */}
@@ -170,7 +162,7 @@ export function Stats() {
                 </Button>
                 
                 <p className="text-xs text-muted-foreground">
-                  Unlock Sleep Tracker + Ad-Free Experience
+                  Unlock Sleep Tracker Feature
                 </p>
               </div>
             </CardContent>
@@ -186,7 +178,7 @@ export function Stats() {
                 </div>
                 <h3 className="text-lg font-semibold">Premium Active! 🎉</h3>
                 <p className="text-sm text-muted-foreground">
-                  Enjoying ad-free experience + Sleep Tracker. Thank you for supporting Streak!
+                  Sleep Tracker unlocked. Thank you for supporting Streak!
                 </p>
               </div>
             </CardContent>
