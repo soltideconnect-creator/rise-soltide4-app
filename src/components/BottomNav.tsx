@@ -1,8 +1,8 @@
-import { Home, Calendar, BarChart3 } from 'lucide-react';
+import { Home, Calendar, BarChart3, Settings } from 'lucide-react';
 
 interface BottomNavProps {
-  activeTab: 'home' | 'calendar' | 'stats';
-  onTabChange: (tab: 'home' | 'calendar' | 'stats') => void;
+  activeTab: 'home' | 'calendar' | 'stats' | 'settings';
+  onTabChange: (tab: 'home' | 'calendar' | 'stats' | 'settings') => void;
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
@@ -10,6 +10,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     { id: 'home' as const, icon: Home, label: 'Home' },
     { id: 'calendar' as const, icon: Calendar, label: 'Calendar' },
     { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
+    { id: 'settings' as const, icon: Settings, label: 'Settings' },
   ];
 
   return (
@@ -24,9 +25,10 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-150 active:scale-95 ${
                   isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
+                type="button"
               >
                 <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
                 <span className="text-xs mt-1 font-medium">{tab.label}</span>

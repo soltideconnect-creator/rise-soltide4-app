@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
+import { toast } from 'sonner';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -15,6 +17,7 @@ export function Stats() {
     perfectWeeks: 0,
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
+  const [adsRemoved, setAdsRemoved] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -29,7 +32,18 @@ export function Stats() {
     }));
 
     setChartData(data);
+
+    // Check if ads were removed
+    const removed = localStorage.getItem('streak_ads_removed') === 'true';
+    setAdsRemoved(removed);
   }, []);
+
+  const handleRemoveAds = () => {
+    // Simulate in-app purchase
+    toast.success('Ads removed! Thank you for your support! 🎉');
+    localStorage.setItem('streak_ads_removed', 'true');
+    setAdsRemoved(true);
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -123,17 +137,59 @@ export function Stats() {
           </CardContent>
         </Card>
 
-        <Card className="bg-muted/50">
-          <CardContent className="pt-6">
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">Ad Space</p>
-              <div className="h-20 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
-                <span className="text-xs text-muted-foreground">Banner Ad Placeholder</span>
+        {/* Monetization Section */}
+        {!adsRemoved && (
+          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">Support Streak</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Enjoying the app? Remove ads and support development!
+                  </p>
+                </div>
+                
+                {/* Ad Banner Placeholder */}
+                <div className="bg-muted/50 h-24 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground font-medium">Advertisement</p>
+                    <p className="text-xs text-muted-foreground mt-1">Banner Ad Space</p>
+                  </div>
+                </div>
+
+                {/* Remove Ads Button */}
+                <Button
+                  onClick={handleRemoveAds}
+                  className="w-full max-w-xs mx-auto"
+                  size="lg"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Remove Ads - One-Time Purchase
+                </Button>
+                
+                <p className="text-xs text-muted-foreground">
+                  Support the app and enjoy an ad-free experience
+                </p>
               </div>
-              <button className="text-xs text-primary hover:underline">Remove Ads</button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {adsRemoved && (
+          <Card className="bg-gradient-to-br from-success/5 to-primary/5 border-success/20">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6 text-success" />
+                </div>
+                <h3 className="text-lg font-semibold">Thank You! 🎉</h3>
+                <p className="text-sm text-muted-foreground">
+                  You're enjoying an ad-free experience. Thank you for supporting Streak!
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
