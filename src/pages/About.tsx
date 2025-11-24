@@ -15,24 +15,26 @@ export function About({ onBack }: AboutProps) {
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-3xl font-bold">About Streak</h1>
+        <h1 className="text-3xl font-bold">About Rise</h1>
       </div>
 
       {/* App Info */}
       <Card className="mb-4">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
               <Flame className="w-12 h-12 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Streak – Daily Habit Tracker</CardTitle>
-          <CardDescription>Version 1.1.0</CardDescription>
+          <CardTitle className="text-2xl">Rise – Habit Tracker & Smart Sleep</CardTitle>
+          <CardDescription>Version 1.0 – The Premium Powerhouse</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          <p className="text-center font-medium text-foreground">
+            Unbreakable streaks meet perfect mornings.
+          </p>
           <p className="text-center text-muted-foreground">
-            Build lasting habits with beautiful streaks, charts, and daily motivation. Track your
-            progress, stay consistent, and achieve your goals. Now with premium Sleep Tracker and Smart Alarm features.
+            Rise is the habit tracker that finally understands you're human. Most apps break your streak the moment you're tired. Rise protects it instead with sleep intelligence and smart goal adjustments.
           </p>
         </CardContent>
       </Card>
@@ -40,30 +42,66 @@ export function About({ onBack }: AboutProps) {
       {/* Features */}
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Core Features</CardTitle>
-          <CardDescription>Everything you need to build lasting habits</CardDescription>
+          <CardTitle>Key Features</CardTitle>
+          <CardDescription>Everything you need for unbreakable habits</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Flame className="w-5 h-5 text-primary" />
+              <Moon className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">Streak Tracking</h3>
+              <h3 className="font-semibold">Sleep-Aware Streaks</h3>
               <p className="text-sm text-muted-foreground">
-                Build momentum with visual streak counters and celebrate milestones
+                Poor sleep = auto-adjusted goals. Your streak stays protected when you need rest.
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Calendar className="w-5 h-5 text-success" />
+              <Bell className="w-5 h-5 text-success" />
             </div>
             <div>
-              <h3 className="font-semibold">Interactive Calendar</h3>
+              <h3 className="font-semibold">Smart Alarm</h3>
               <p className="text-sm text-muted-foreground">
-                Visualize your consistency with a beautiful heatmap. Click any day to see habit details and monthly statistics.
+                Wakes you refreshed during light sleep, never groggy. 6 offline alarm sounds included.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h3 className="font-semibold">24 Pro Habit Templates</h3>
+              <p className="text-sm text-muted-foreground">
+                Health, Productivity, Mindfulness + more. Start building habits instantly.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold">8 Stunning Themes</h3>
+              <p className="text-sm text-muted-foreground">
+                Gorgeous color themes + personal notes on every habit for deeper tracking.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-5 h-5 text-success" />
+            </div>
+            <div>
+              <h3 className="font-semibold">Professional PDF Reports</h3>
+              <p className="text-sm text-muted-foreground">
+                Export beautiful reports with charts & notes. Perfect for tracking long-term progress.
               </p>
             </div>
           </div>
@@ -73,45 +111,21 @@ export function About({ onBack }: AboutProps) {
               <TrendingUp className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <h3 className="font-semibold">Detailed Statistics</h3>
+              <h3 className="font-semibold">Advanced Analytics</h3>
               <p className="text-sm text-muted-foreground">
-                Track your progress with comprehensive stats and 30-day activity charts
+                Best days, trends, success rates – the deepest analytics you've ever seen.
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Bell className="w-5 h-5 text-primary" />
+              <Shield className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">Daily Reminders</h3>
+              <h3 className="font-semibold">100% Private & Offline</h3>
               <p className="text-sm text-muted-foreground">
-                Never miss a day with customizable notification reminders
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Heart className="w-5 h-5 text-success" />
-            </div>
-            <div>
-              <h3 className="font-semibold">Motivational Quotes</h3>
-              <p className="text-sm text-muted-foreground">
-                Get inspired with 50 built-in motivational quotes after each completion
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h3 className="font-semibold">Offline First</h3>
-              <p className="text-sm text-muted-foreground">
-                All your data is stored locally. No internet connection required.
+                No account required. All data stored locally on your device.
               </p>
             </div>
           </div>
@@ -240,7 +254,7 @@ export function About({ onBack }: AboutProps) {
 
       {/* Copyright */}
       <div className="text-center text-sm text-muted-foreground mt-8">
-        <p>2025 Streak – Daily Habit Tracker</p>
+        <p>2025 Rise – Habit Tracker & Smart Sleep</p>
         <p className="mt-1">Made with ❤️ for habit builders</p>
       </div>
     </div>

@@ -50,8 +50,8 @@ export const notifications = {
       return;
     }
 
-    const notification = new Notification('Streak – Daily Habit Tracker', {
-      body: `Don't break the chain! Complete your habits 🔥\n${habit.emoji} ${habit.name}`,
+    const notification = new Notification('Rise – Habit Tracker', {
+      body: `Time to rise! Complete your habits 🔥\n${habit.emoji} ${habit.name}`,
       icon: '/favicon.png',
       badge: '/favicon.png',
       tag: `habit_${habit.id}`,
@@ -72,8 +72,8 @@ export const notifications = {
       return;
     }
 
-    new Notification('Streak – Daily Habit Tracker', {
-      body: "Don't break the chain! Complete your habits 🔥",
+    new Notification('Rise – Habit Tracker', {
+      body: "Time to rise! Complete your habits 🔥",
       icon: '/favicon.png',
       badge: '/favicon.png',
       tag: 'daily_reminder',

@@ -178,7 +178,7 @@ export function Stats() {
                 </div>
                 <h3 className="text-lg font-semibold">Premium Active! 🎉</h3>
                 <p className="text-sm text-muted-foreground">
-                  Sleep Tracker unlocked. Thank you for supporting Streak!
+                  Sleep Tracker unlocked. Thank you for supporting Rise!
                 </p>
               </div>
             </CardContent>

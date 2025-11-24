@@ -395,7 +395,7 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
             <Info className="w-5 h-5" />
             About
           </CardTitle>
-          <CardDescription>Learn more about Streak</CardDescription>
+          <CardDescription>Learn more about Rise</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
@@ -403,7 +403,7 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
             className="w-full justify-between"
             onClick={onNavigateToAbout}
           >
-            <span>About Streak</span>
+            <span>About Rise</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
         </CardContent>
