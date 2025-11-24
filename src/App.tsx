@@ -22,19 +22,37 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentView, setCurrentView] = useState<View>('home');
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // Enable premium features by default for testing
-    localStorage.setItem('streak_ads_removed', 'true');
-    
-    // Initialize theme
-    themeService.initializeTheme();
-    
-    if (!habitStorage.isOnboardingCompleted()) {
-      setShowOnboarding(true);
-    } else {
-      const habits = habitStorage.getHabits();
-      notifications.scheduleAllHabits(habits);
+    try {
+      console.log('App initializing...');
+      
+      // Enable premium features by default for testing
+      localStorage.setItem('streak_ads_removed', 'true');
+      console.log('Premium features enabled');
+      
+      // Initialize theme
+      themeService.initializeTheme();
+      console.log('Theme initialized');
+      
+      // Check onboarding status
+      const onboardingCompleted = habitStorage.isOnboardingCompleted();
+      console.log('Onboarding completed:', onboardingCompleted);
+      
+      if (!onboardingCompleted) {
+        setShowOnboarding(true);
+      } else {
+        const habits = habitStorage.getHabits();
+        console.log('Loaded habits:', habits.length);
+        notifications.scheduleAllHabits(habits);
+      }
+      
+      setIsInitialized(true);
+      console.log('App initialized successfully');
+    } catch (error) {
+      console.error('Error during app initialization:', error);
+      setIsInitialized(true); // Still set to true to show error state
     }
   }, []);
 
@@ -79,6 +97,18 @@ function App() {
   const handleBackFromAbout = () => {
     setCurrentView('settings');
   };
+
+  // Show loading state while initializing
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">🔥</div>
+          <div className="text-lg font-medium">Loading Streak...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
