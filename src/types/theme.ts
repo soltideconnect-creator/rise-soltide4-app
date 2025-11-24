@@ -90,4 +90,19 @@ export const themes: Theme[] = [
       successForeground: '0 0% 100%',
     },
   },
+  {
+    id: 'cherry',
+    name: 'Cherry',
+    description: 'Bold reds and pinks',
+    colors: {
+      primary: '0 84% 60%', // #EF4444
+      primaryForeground: '0 0% 100%',
+      secondary: '0 20% 96%',
+      secondaryForeground: '0 10% 10%',
+      accent: '340 82% 52%', // #EC4899
+      accentForeground: '0 0% 100%',
+      success: '142 71% 45%',
+      successForeground: '0 0% 100%',
+    },
+  },
 ];

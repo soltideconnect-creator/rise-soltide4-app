@@ -73,7 +73,8 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
   const handleThemeChange = (themeId: string) => {
     const selectedTheme = themeService.getThemeById(themeId);
     if (selectedTheme) {
-      themeService.applyTheme(selectedTheme);
+      // Save and apply theme
+      themeService.setTheme(themeId);
       setSelectedThemeId(themeId);
       toast.success(`Theme changed to ${selectedTheme.name}`);
     }
@@ -236,9 +237,9 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
                     key={themeOption.id}
                     type="button"
                     onClick={() => handleThemeChange(themeOption.id)}
-                    className={`relative p-4 rounded-lg border-2 transition-all hover:scale-105 ${
+                    className={`relative p-3 rounded-lg border-2 transition-all hover:scale-[1.02] ${
                       selectedThemeId === themeOption.id
-                        ? 'border-primary bg-primary/5'
+                        ? 'border-primary bg-primary/10 shadow-md'
                         : 'border-border hover:border-primary/50'
                     }`}
                   >
@@ -248,23 +249,26 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
                         <Check className="w-4 h-4 text-primary" />
                       )}
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1.5">
                       <div
-                        className="w-6 h-6 rounded-full border"
-                        style={{ backgroundColor: themeOption.colors.primary }}
+                        className="w-7 h-7 rounded-full border-2 border-background shadow-sm"
+                        style={{ backgroundColor: `hsl(${themeOption.colors.primary})` }}
                       />
                       <div
-                        className="w-6 h-6 rounded-full border"
-                        style={{ backgroundColor: themeOption.colors.secondary }}
+                        className="w-7 h-7 rounded-full border-2 border-background shadow-sm"
+                        style={{ backgroundColor: `hsl(${themeOption.colors.accent})` }}
                       />
                       <div
-                        className="w-6 h-6 rounded-full border"
-                        style={{ backgroundColor: themeOption.colors.accent }}
+                        className="w-7 h-7 rounded-full border-2 border-background shadow-sm"
+                        style={{ backgroundColor: `hsl(${themeOption.colors.success})` }}
                       />
                     </div>
                   </button>
                 ))}
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tap any theme to apply it instantly
+              </p>
             </div>
           )}
         </CardContent>
