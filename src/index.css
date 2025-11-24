@@ -90,6 +90,14 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  .text-streak {
+    color: hsl(var(--streak));
+  }
+
+  .text-success {
+    color: hsl(var(--success));
+  }
+
   .confetti-particle {
     position: absolute;
     width: 10px;
