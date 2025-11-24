@@ -132,6 +132,41 @@ export function About({ onBack }: AboutProps) {
         </CardContent>
       </Card>
 
+      {/* What's New */}
+      <Card className="mb-4 border-accent/50 bg-accent/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-accent" />
+            What's New in Rise 1.0
+          </CardTitle>
+          <CardDescription>The Premium Powerhouse</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">•</span>
+              <span><strong>Advanced Analytics Dashboard</strong> – Best days, trends, and success rates with deep insights</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">•</span>
+              <span><strong>24 Smart Templates</strong> – Health, Productivity, Mindfulness + more professionally designed habits</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">•</span>
+              <span><strong>8 Premium Themes</strong> – Gorgeous color themes to personalize your experience</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">•</span>
+              <span><strong>Personal Notes & PDF Exports</strong> – Add notes to habits and export professional reports</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-accent mt-0.5">•</span>
+              <span><strong>Sleep + Habit Intelligence</strong> – Auto-adjusts goals based on sleep quality</span>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+
       {/* Premium Features */}
       <Card className="mb-4 border-primary/50">
         <CardHeader>
