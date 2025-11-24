@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
 import { audioService, ALARM_SOUNDS, type AlarmSoundType } from '@/services/audioService';
+import { themeService } from '@/services/themeService';
 import { sleepStorage } from '@/services/sleepStorage';
 import { toast } from 'sonner';
 import {
@@ -20,6 +21,8 @@ import {
   ChevronRight,
   Volume2,
   Play,
+  Palette,
+  Check,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -45,6 +48,7 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
   const [isPremium, setIsPremium] = useState(false);
   const [selectedAlarmSound, setSelectedAlarmSound] = useState<AlarmSoundType>('gentle');
   const [playingSound, setPlayingSound] = useState<AlarmSoundType | null>(null);
+  const [selectedThemeId, setSelectedThemeId] = useState('default');
 
   useEffect(() => {
     // Check premium status
@@ -55,11 +59,24 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
       // Load saved alarm sound
       const alarmSettings = sleepStorage.getAlarmSettings();
       setSelectedAlarmSound(alarmSettings.sound);
+
+      // Load saved theme
+      const savedTheme = themeService.getCurrentTheme();
+      setSelectedThemeId(savedTheme.id);
     }
   }, []);
 
   const handleThemeToggle = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const handleThemeChange = (themeId: string) => {
+    const selectedTheme = themeService.getThemeById(themeId);
+    if (selectedTheme) {
+      themeService.applyTheme(selectedTheme);
+      setSelectedThemeId(themeId);
+      toast.success(`Theme changed to ${selectedTheme.name}`);
+    }
   };
 
   const handleAlarmSoundChange = (soundType: AlarmSoundType) => {
@@ -193,7 +210,7 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
           <CardDescription>Customize how the app looks</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <div className="space-y-0.5">
               <Label htmlFor="theme-toggle">Dark Mode</Label>
               <p className="text-sm text-muted-foreground">
@@ -206,6 +223,50 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
               onCheckedChange={handleThemeToggle}
             />
           </div>
+
+          {isPremium && (
+            <div className="space-y-3 pt-6 border-t">
+              <div className="flex items-center gap-2 mb-3">
+                <Palette className="w-4 h-4 text-primary" />
+                <Label>Color Theme</Label>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {themeService.getAllThemes().map((themeOption) => (
+                  <button
+                    key={themeOption.id}
+                    type="button"
+                    onClick={() => handleThemeChange(themeOption.id)}
+                    className={`relative p-4 rounded-lg border-2 transition-all hover:scale-105 ${
+                      selectedThemeId === themeOption.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-sm">{themeOption.name}</span>
+                      {selectedThemeId === themeOption.id && (
+                        <Check className="w-4 h-4 text-primary" />
+                      )}
+                    </div>
+                    <div className="flex gap-1">
+                      <div
+                        className="w-6 h-6 rounded-full border"
+                        style={{ backgroundColor: themeOption.colors.primary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-full border"
+                        style={{ backgroundColor: themeOption.colors.secondary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-full border"
+                        style={{ backgroundColor: themeOption.colors.accent }}
+                      />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

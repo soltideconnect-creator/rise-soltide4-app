@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CircularProgress } from '@/components/CircularProgress';
 import { HabitItem } from '@/components/HabitItem';
+import { HabitNotesDialog } from '@/components/HabitNotesDialog';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { habitStorage } from '@/services/habitStorage';
@@ -30,6 +31,8 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
   const [progress, setProgress] = useState({ completed: 0, total: 0, percentage: 0 });
   const [showConfetti, setShowConfetti] = useState(false);
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
+  const [habitForNotes, setHabitForNotes] = useState<Habit | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
 
   const loadData = () => {
     const allHabits = habitStorage.getHabits();
@@ -42,6 +45,8 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
 
   useEffect(() => {
     loadData();
+    const premium = localStorage.getItem('streak_ads_removed') === 'true';
+    setIsPremium(premium);
   }, []);
 
   const handleToggle = (habitId: string) => {
@@ -82,6 +87,14 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
       loadData();
       toast.success('Habit deleted successfully');
       setHabitToDelete(null);
+    }
+  };
+
+  const handleSaveNotes = (notes: string) => {
+    if (habitForNotes) {
+      habitStorage.updateHabit(habitForNotes.id, { notes });
+      loadData();
+      toast.success('Notes saved successfully');
     }
   };
 
@@ -126,6 +139,8 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
                   onToggle={() => handleToggle(habit.id)}
                   onEdit={() => onEditHabit(habit)}
                   onDelete={() => handleDelete(habit.id)}
+                  onNotes={() => setHabitForNotes(habit)}
+                  isPremium={isPremium}
                 />
               ))}
             </div>
@@ -159,6 +174,15 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {habitForNotes && (
+        <HabitNotesDialog
+          habit={habitForNotes}
+          open={habitForNotes !== null}
+          onOpenChange={(open) => !open && setHabitForNotes(null)}
+          onSave={handleSaveNotes}
+        />
+      )}
     </div>
   );
 }

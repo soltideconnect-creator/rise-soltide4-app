@@ -6,6 +6,7 @@ export interface Habit {
   reminderTime: string;
   weekdays: number[];
   createdAt: string;
+  notes?: string;
 }
 
 export interface HabitCompletion {

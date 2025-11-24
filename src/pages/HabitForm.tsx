@@ -6,11 +6,13 @@ import { Card } from '@/components/ui/card';
 import { EmojiPicker } from '@/components/EmojiPicker';
 import { ColorPicker } from '@/components/ColorPicker';
 import { WeekdaySelector } from '@/components/WeekdaySelector';
+import { TemplateSelector } from '@/components/TemplateSelector';
 import { habitStorage } from '@/services/habitStorage';
 import type { Habit } from '@/types/habit';
+import type { HabitTemplate } from '@/types/template';
 import { PRESET_COLORS } from '@/types/habit';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 
 interface HabitFormProps {
   habit?: Habit;
@@ -24,6 +26,18 @@ export function HabitForm({ habit, onSave, onCancel }: HabitFormProps) {
   const [color, setColor] = useState(habit?.color || PRESET_COLORS[0]);
   const [reminderTime, setReminderTime] = useState(habit?.reminderTime || '09:00');
   const [weekdays, setWeekdays] = useState<number[]>(habit?.weekdays || [0, 1, 2, 3, 4, 5, 6]);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+
+  const handleTemplateSelect = (template: HabitTemplate) => {
+    setName(template.name);
+    setEmoji(template.emoji);
+    setColor(template.suggestedColor);
+    setWeekdays(template.suggestedDays);
+    if (template.suggestedTime) {
+      setReminderTime(template.suggestedTime);
+    }
+    toast.success('Template applied! You can customize it further.');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +83,20 @@ export function HabitForm({ habit, onSave, onCancel }: HabitFormProps) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-3xl font-bold">{habit ? 'Edit Habit' : 'New Habit'}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">{habit ? 'Edit Habit' : 'New Habit'}</h1>
+            {!habit && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowTemplateSelector(true)}
+                className="flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                Use Template
+              </Button>
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,6 +149,12 @@ export function HabitForm({ habit, onSave, onCancel }: HabitFormProps) {
           </div>
         </form>
       </div>
+
+      <TemplateSelector
+        open={showTemplateSelector}
+        onOpenChange={setShowTemplateSelector}
+        onSelectTemplate={handleTemplateSelect}
+      />
     </div>
   );
 }
