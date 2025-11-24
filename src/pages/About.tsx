@@ -119,6 +119,18 @@ export function About({ onBack }: AboutProps) {
           </div>
 
           <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Heart className="w-5 h-5 text-success" />
+            </div>
+            <div>
+              <h3 className="font-semibold">50 Motivational Quotes</h3>
+              <p className="text-sm text-muted-foreground">
+                Get inspired with 50 built-in motivational quotes displayed randomly after completing each habit.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-primary" />
             </div>
