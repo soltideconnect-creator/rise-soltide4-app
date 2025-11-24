@@ -10,6 +10,7 @@ import { HabitForm } from '@/pages/HabitForm';
 import { BottomNav } from '@/components/BottomNav';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
+import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
@@ -22,6 +23,12 @@ function App() {
   const [editingHabit, setEditingHabit] = useState<Habit | undefined>();
 
   useEffect(() => {
+    // Enable premium features by default for testing
+    localStorage.setItem('streak_ads_removed', 'true');
+    
+    // Initialize theme
+    themeService.initializeTheme();
+    
     if (!habitStorage.isOnboardingCompleted()) {
       setShowOnboarding(true);
     } else {
