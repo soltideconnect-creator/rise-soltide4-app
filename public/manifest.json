@@ -3,22 +3,35 @@
   "short_name": "Rise",
   "description": "Unbreakable streaks meet perfect mornings. The only habit tracker that protects your streaks with sleep intelligence.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#5E5CE6",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/favicon.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/favicon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": ["productivity", "lifestyle", "health"],
@@ -32,9 +45,27 @@
       "icons": [
         {
           "src": "/favicon.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View Stats",
+      "short_name": "Stats",
+      "description": "View your habit statistics",
+      "url": "/?tab=stats",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "lang": "en-US",
+  "dir": "ltr"
 }
