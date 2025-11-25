@@ -1,10 +1,15 @@
 {
+  "id": "com.soltide.rise",
   "name": "Rise – Habit Tracker & Smart Sleep",
   "short_name": "Rise",
   "description": "Unbreakable streaks meet perfect mornings. The only habit tracker that protects your streaks with sleep intelligence.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "background_color": "#ffffff",
   "theme_color": "#5E5CE6",
   "orientation": "portrait-primary",
@@ -35,7 +40,22 @@
     }
   ],
   "categories": ["productivity", "lifestyle", "health"],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Rise Habit Tracker - Home Screen"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Rise Habit Tracker - Desktop View"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Add Habit",
