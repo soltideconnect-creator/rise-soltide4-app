@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manifest Validator - Rise PWA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #5E5CE6;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #5E5CE6;
+    }
+    
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    
+    .field {
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .field:last-child {
+      border-bottom: none;
+    }
+    
+    .field-label {
+      font-weight: 600;
+      color: #555;
+    }
+    
+    .field-value {
+      color: #333;
+      font-family: 'Courier New', monospace;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      max-width: 60%;
+      word-break: break-word;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .json-display {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    button {
+      background: #5E5CE6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #4a4bc7;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(94, 92, 230, 0.3);
+    }
+    
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .alert.success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      color: #155724;
+    }
+    
+    .alert.error {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+      color: #721c24;
+    }
+    
+    .icon-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Manifest Validator</h1>
+    <p class="subtitle">Validate your PWA manifest.json file</p>
+    
+    <div id="alert-container"></div>
+    
+    <!-- Required Fields -->
+    <div class="section">
+      <h2>Required PWA Fields <span class="status" id="required-status">Checking...</span></h2>
+      <div class="field">
+        <span class="field-label">name:</span>
+        <span class="field-value" id="field-name">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">short_name:</span>
+        <span class="field-value" id="field-short-name">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">start_url:</span>
+        <span class="field-value" id="field-start-url">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">display:</span>
+        <span class="field-value" id="field-display">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">theme_color:</span>
+        <span class="field-value" id="field-theme-color">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">background_color:</span>
+        <span class="field-value" id="field-background-color">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Icons -->
+    <div class="section">
+      <h2>Icons <span class="status" id="icons-status">Checking...</span></h2>
+      <div id="icons-container">Loading...</div>
+    </div>
+    
+    <!-- Optional Fields -->
+    <div class="section">
+      <h2>Optional Fields</h2>
+      <div class="field">
+        <span class="field-label">description:</span>
+        <span class="field-value" id="field-description">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">scope:</span>
+        <span class="field-value" id="field-scope">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">orientation:</span>
+        <span class="field-value" id="field-orientation">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">categories:</span>
+        <span class="field-value" id="field-categories">Loading...</span>
+      </div>
+      <div class="field">
+        <span class="field-label">lang:</span>
+        <span class="field-value" id="field-lang">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Raw JSON -->
+    <div class="section">
+      <h2>Raw Manifest JSON</h2>
+      <div class="json-display" id="json-display">Loading...</div>
+    </div>
+    
+    <button onclick="validateManifest()">Re-validate Manifest</button>
+    <button onclick="downloadManifest()">Download Manifest</button>
+  </div>
+  
+  <script>
+    let manifestData = null;
+    
+    function showAlert(message, type = 'success') {
+      const container = document.getElementById('alert-container');
+      const alert = document.createElement('div');
+      alert.className = `alert ${type}`;
+      alert.innerHTML = `<strong>${type === 'success' ? '✅' : '❌'}</strong> ${message}`;
+      container.innerHTML = '';
+      container.appendChild(alert);
+    }
+    
+    function updateStatus(id, status) {
+      const element = document.getElementById(id);
+      element.className = `status ${status}`;
+      element.textContent = status === 'success' ? '✅ Valid' : status === 'error' ? '❌ Invalid' : '⚠️ Warning';
+    }
+    
+    async function validateManifest() {
+      try {
+        const response = await fetch('/manifest.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load manifest: ${response.status} ${response.statusText}`);
+        }
+        
+        manifestData = await response.json();
+        
+        // Validate required fields
+        const requiredFields = ['name', 'start_url', 'display', 'icons'];
+        let allRequiredPresent = true;
+        
+        for (const field of requiredFields) {
+          if (!manifestData[field]) {
+            allRequiredPresent = false;
+            console.error(`Missing required field: ${field}`);
+          }
+        }
+        
+        // Update UI with manifest data
+        document.getElementById('field-name').textContent = manifestData.name || '❌ Missing';
+        document.getElementById('field-short-name').textContent = manifestData.short_name || '⚠️ Not set';
+        document.getElementById('field-start-url').textContent = manifestData.start_url || '❌ Missing';
+        document.getElementById('field-display').textContent = manifestData.display || '❌ Missing';
+        document.getElementById('field-theme-color').textContent = manifestData.theme_color || '⚠️ Not set';
+        document.getElementById('field-background-color').textContent = manifestData.background_color || '⚠️ Not set';
+        document.getElementById('field-description').textContent = manifestData.description || '⚠️ Not set';
+        document.getElementById('field-scope').textContent = manifestData.scope || '⚠️ Not set';
+        document.getElementById('field-orientation').textContent = manifestData.orientation || '⚠️ Not set';
+        document.getElementById('field-categories').textContent = manifestData.categories ? manifestData.categories.join(', ') : '⚠️ Not set';
+        document.getElementById('field-lang').textContent = manifestData.lang || '⚠️ Not set';
+        
+        // Validate icons
+        const iconsContainer = document.getElementById('icons-container');
+        if (manifestData.icons && manifestData.icons.length > 0) {
+          iconsContainer.innerHTML = '';
+          manifestData.icons.forEach((icon, index) => {
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'field';
+            iconDiv.innerHTML = `
+              <span class="field-label">Icon ${index + 1}:</span>
+              <span class="field-value">
+                ${icon.sizes} - ${icon.purpose || 'any'}<br>
+                <img src="${icon.src}" class="icon-preview" onerror="this.style.display='none'" />
+              </span>
+            `;
+            iconsContainer.appendChild(iconDiv);
+          });
+          
+          // Check for required icon sizes
+          const has192 = manifestData.icons.some(icon => icon.sizes.includes('192'));
+          const has512 = manifestData.icons.some(icon => icon.sizes.includes('512'));
+          
+          if (has192 && has512) {
+            updateStatus('icons-status', 'success');
+          } else {
+            updateStatus('icons-status', 'warning');
+            console.warn('Missing recommended icon sizes (192x192 or 512x512)');
+          }
+        } else {
+          iconsContainer.innerHTML = '<div class="field-value">❌ No icons defined</div>';
+          updateStatus('icons-status', 'error');
+          allRequiredPresent = false;
+        }
+        
+        // Update required fields status
+        if (allRequiredPresent && manifestData.start_url) {
+          updateStatus('required-status', 'success');
+          showAlert('✅ Manifest is valid! All required fields are present, including start_url.', 'success');
+        } else {
+          updateStatus('required-status', 'error');
+          const missingFields = [];
+          if (!manifestData.name) missingFields.push('name');
+          if (!manifestData.start_url) missingFields.push('start_url');
+          if (!manifestData.display) missingFields.push('display');
+          if (!manifestData.icons || manifestData.icons.length === 0) missingFields.push('icons');
+          showAlert(`❌ Manifest is invalid! Missing required fields: ${missingFields.join(', ')}`, 'error');
+        }
+        
+        // Display raw JSON
+        document.getElementById('json-display').textContent = JSON.stringify(manifestData, null, 2);
+        
+        // Log validation results
+        console.log('Manifest validation complete:', {
+          valid: allRequiredPresent,
+          hasStartUrl: !!manifestData.start_url,
+          startUrlValue: manifestData.start_url,
+          allFields: manifestData
+        });
+        
+      } catch (error) {
+        console.error('Error validating manifest:', error);
+        showAlert(`❌ Error loading manifest: ${error.message}`, 'error');
+        updateStatus('required-status', 'error');
+        updateStatus('icons-status', 'error');
+      }
+    }
+    
+    function downloadManifest() {
+      if (!manifestData) {
+        alert('Please validate the manifest first');
+        return;
+      }
+      
+      const blob = new Blob([JSON.stringify(manifestData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'manifest.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    // Run validation on page load
+    window.addEventListener('load', validateManifest);
+  </script>
+</body>
+</html>
