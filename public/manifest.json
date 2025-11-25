@@ -15,25 +15,25 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/rise-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon.png",
+      "src": "/rise-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon.png",
+      "src": "/rise-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/favicon.png",
+      "src": "/rise-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -42,18 +42,32 @@
   "categories": ["productivity", "lifestyle", "health"],
   "screenshots": [
     {
-      "src": "/favicon.png",
-      "sizes": "512x512",
+      "src": "/screenshot-1.png",
+      "sizes": "1080x2400",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Rise Habit Tracker - Home Screen"
+      "label": "Rise Habit Tracker - Home Screen with Today's Progress"
     },
     {
-      "src": "/favicon.png",
-      "sizes": "512x512",
+      "src": "/screenshot-2.png",
+      "sizes": "1080x2400",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "Rise Habit Tracker - Desktop View"
+      "form_factor": "narrow",
+      "label": "Rise Habit Tracker - Calendar View with Perfect Days"
+    },
+    {
+      "src": "/screenshot-3.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Rise Habit Tracker - Statistics Dashboard"
+    },
+    {
+      "src": "/screenshot-4.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Rise Habit Tracker - Advanced Analytics"
     }
   ],
   "shortcuts": [
@@ -64,7 +78,7 @@
       "url": "/?action=add",
       "icons": [
         {
-          "src": "/favicon.png",
+          "src": "/rise-icon.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -77,7 +91,7 @@
       "url": "/?tab=stats",
       "icons": [
         {
-          "src": "/favicon.png",
+          "src": "/rise-icon.png",
           "sizes": "96x96",
           "type": "image/png"
         }
