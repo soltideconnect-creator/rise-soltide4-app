@@ -1,54 +1,56 @@
-# Streak – Daily Habit Tracker Requirements Document (Premium-Enhanced Edition)
+# Streak – Daily Habit Tracker Requirements Document (Premium-Enhanced Edition with PWA Support)
 
 ## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
-
-### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material 3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync.
+\n### 1.2 Application Description
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities for improved performance and user experience.
 
 ### 1.3 Technical Stack
 - Framework: Flutter
-- Design System: Material 3 (Material You)\n- Database: Hive (offline storage)
-- Cloud Sync: Firebase Firestore (premium)\n- Payment: Google Play Billing Library\n- Platform: Android + Wear OS (premium)
-- Fonts: Poppins (headings), Inter (body text)\n- Sensors: Microphone, Accelerometer, GPS (premium)
+- Design System: Material 3 (Material You)
+- Database: Hive (offline storage)
+- Cloud Sync: Firebase Firestore (premium)\n- Payment: Google Play Billing Library\n- Platform: Android + Wear OS (premium) + PWA
+- Fonts: Poppins (headings), Inter (body text)
+- Sensors: Microphone, Accelerometer, GPS (premium)
+- PWA: Service Worker, Web App Manifest, Cache API
 
 ## 2. Core Features
-\n### 2.1 Onboarding Flow
-- 3 full-screen slides explaining streak concept and app features
+
+### 2.1 Onboarding Flow
+-3 full-screen slides explaining streak concept and app features
 - Highlight premium features with gold accents
 - Request notification permission during onboarding
 - Optional: Request location and camera permissions for premium features
 - Beautiful, engaging visual presentation with smooth animations
+- PWA install prompt for web users
 
 ### 2.2 Main Home Screen
 \n#### 2.2.1 Free Version
 - Large circular progress ring displaying today's completion percentage
 - Scrollable list of up to 5 habits with:\n  - Emoji icon for each habit
   - Habit name
-  - Current streak count with 🔥 emoji
+  - Current streak count with🔥 emoji
   - Large green checkbox for completion
 - Floating action button (+) to add new habits (disabled when5 habits reached)
 - Premium upgrade banner with 'Unlock Unlimited Habits' CTA
 \n#### 2.2.2 Premium Version
 - Unlimited habits display with smooth scrolling
 - Habit grouping by custom categories with collapsible sections
-- Color-coded category headers
-- Habit chain visual connections (lines connecting dependent habits)
+- Color-coded category headers\n- Habit chain visual connections (lines connecting dependent habits)
 - Quick filter buttons: All / Today / Category view
 - Focus Mode toggle button in top bar
 - Premium badge indicator in top-right corner
+\n### 2.3 Add/Edit Habit Screen
 
-### 2.3 Add/Edit Habit Screen
-\n#### 2.3.1 Basic Fields (Free + Premium)
+#### 2.3.1 Basic Fields (Free + Premium)
 - Text input field for habit name
 - Emoji picker with 80+ common emojis
-- Color picker with 8 preset colors\n- Daily reminder time picker
-- Weekday selector with toggle buttons (Monday–Sunday)
+- Color picker with8 preset colors
+- Daily reminder time picker\n- Weekday selector with toggle buttons (Monday–Sunday)
 \n#### 2.3.2 Premium Fields
-- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming
-  - Health: Drink Water, Meditation, Vitamins, Sleep8Hours, Healthy Meal
+- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming\n  - Health: Drink Water, Meditation, Vitamins, Sleep8 Hours, Healthy Meal
   - Productivity: Reading, Journaling, Learning, Deep Work, Email Zero
   - Self-care: Skincare, Gratitude, Stretching, No Social Media, Digital Detox
   - Each template includes pre-filled name, emoji, color, and suggested reminder time
@@ -65,7 +67,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Notes Field**: Add description or motivation for the habit
 
 ### 2.4 Calendar Tab
-\n#### 2.4.1 Free Version
+
+#### 2.4.1 Free Version
 - Monthly heatmap visualization (GitHub/Duolingo style)
 - Darker green shades indicate higher completion rates
 - Tap on date to see completed habits for that day
@@ -77,15 +80,16 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Export as PDF with customizable date range
   - Share directly to social media
 - **Frozen Days Indicator**: Visual marker (snowflake icon) on days with streak freeze applied
-
-### 2.5 Stats Tab
+\n### 2.5 Stats Tab
 
 #### 2.5.1 Free Version\n- Current streak counter
-- Longest streak record\n- Total completions count
+- Longest streak record
+- Total completions count
 - Bar chart showing last 30 days activity
 - Perfect days counter
 - Perfect weeks counter
-- Small banner ad placeholder at bottom\n
+- Small banner ad placeholder at bottom
+
 #### 2.5.2 Premium Version (Ad-Free)
 - **Advanced Analytics Dashboard**:
   - Completion rate trends (daily/weekly/monthly)
@@ -176,13 +180,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
-  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
     - Export habits with notes and photos as ZIP archive
-  - **Import Options**: Import data from CSV/JSON\n\n#### 2.7.4 Other Settings
+  - **Import Options**: Import data from CSV/JSON\n
+#### 2.7.4 Other Settings
 - Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)
 - Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
@@ -217,12 +221,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Widget Layouts**: Choose from 3 layout styles per widget size
 
 ### 2.10 Celebration Features
-\n#### 2.10.1 Free Version
+
+#### 2.10.1 Free Version
 - Confetti explosion animation when streak reaches 7, 30, or 100 days
 - Haptic feedback for milestone achievements
 - 50built-in motivational quotes displayed randomly after completing a habit
-
-#### 2.10.2 Premium Version\n- **200+ Motivational Quotes**: Expanded library with category-specific quotes
+\n#### 2.10.2 Premium Version
+- **200+ Motivational Quotes**: Expanded library with category-specific quotes
 - **Custom Milestones**: Set personal streak goals (e.g., 14 days, 50 days, 365 days)
 - **Achievement Badges System**:
   - 30+ unlockable badges (Early Bird, Night Owl, Perfect Week, Century Club, etc.)
@@ -301,7 +306,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Maximum 5 active habits
 - Single daily reminder per habit
 - Basic stats and 30-day chart
-- 8 alarm sounds\n- Banner ad at bottom of Stats screen
+- 8 alarm sounds
+- Banner ad at bottom of Stats screen
 - No cloud backup
 
 #### 2.12.2 Premium Subscription Tiers
@@ -376,8 +382,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Achievement badges: Custom illustrated icons
 \n## 4. Technical Requirements
 
-### 4.1 Performance\n- All animations must run at 60 fps
-- App launch time under 2 seconds
+### 4.1 Performance\n- All animations must run at 60 fps\n- App launch time under 2 seconds
 - Smooth transitions and interactions
 - Optimized for production use\n- Efficient background processing for sleep tracking (minimal battery drain)
 - Fast data synchronization for premium cloud backup (delta sync)
@@ -393,33 +398,90 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - End-to-end encryption (AES-256)
 - Real-time sync across devices
 - Conflict resolution for simultaneous edits
-- Automatic daily backups
-- 30-day backup history
+- Automatic daily backups\n- 30-day backup history
+\n### 4.3 Progressive Web App (PWA) Implementation
+\n#### 4.3.1 Service Worker
+- **Core Functionality**:
+  - Implement Service Worker for offline functionality and caching
+  - Cache static assets (HTML, CSS, JavaScript, fonts, icons)
+  - Cache dynamic content (habit data, user preferences)
+  - Background sync for data updates when connection is restored
+  - Push notification support for habit reminders
+- **Caching Strategy**:
+  - Cache-first strategy for static assets
+  - Network-first strategy for dynamic data with fallback to cache
+  - Stale-while-revalidate for images and media files
+- **Update Mechanism**:
+  - Automatic Service Worker updates
+  - User notification when new version is available
+  - Seamless update without disrupting user experience
 
-### 4.3 Permissions
-\n#### 4.3.1 Required Permissions
+#### 4.3.2 Web App Manifest
+- **Manifest Configuration**:
+  - App name: 'Streak – Daily Habit Tracker'
+  - Short name: 'Streak'
+  - Description: 'Build lasting habits with streak tracking'
+  - Theme color: #5E5CE6 (indigo)
+  - Background color: #FFFFFF (white)
+  - Display mode: standalone
+  - Start URL: /
+  - Icons: 192x192px, 512x512px (adaptive)
+  - Orientation: portrait
+- **Install Prompt**:
+  - Custom install banner with app benefits
+  - Defer prompt until user engagement (after 3 habit completions)
+  - Track install acceptance rate
+\n#### 4.3.3 Offline Capabilities
+- **Offline-First Architecture**:
+  - All core features work without internet connection
+  - Queue actions when offline (habit completions, edits)\n  - Sync queued actions when connection restored
+  - Visual indicator for offline status
+- **Cached Resources**:
+  - App shell (UI framework)
+  - Habit data (last 90 days)
+  - User preferences and settings
+  - Alarm sounds (8 free + premium if subscribed)
+  - Sleep tracking data
+  - Achievement badges and stats
+
+#### 4.3.4 Performance Optimization
+- **Loading Performance**:
+  - First Contentful Paint (FCP) < 1.5 seconds
+  - Time to Interactive (TTI) < 3 seconds
+  - Largest Contentful Paint (LCP) < 2.5 seconds\n- **Runtime Performance**:
+  - Smooth60fps animations
+  - Lazy loading for images and heavy components
+  - Code splitting for faster initial load
+  - Minified and compressed assets
+\n### 4.4 Permissions
+
+#### 4.4.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.3.2 Optional Permissions (Premium)
+\n#### 4.4.2 Optional Permissions (Premium)
 - Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
 
-### 4.4 Compatibility
+### 4.5 Compatibility
 - Android platform (minimum Android 8.0 / API 26)
 - Target Android 14 (API 34)
-- Material3 design system compliance
+- Material 3 design system compliance
 - Wear OS 3.0+ for smartwatch companion app (premium)\n- Tablet optimization with responsive layouts
+- **PWA Compatibility**:
+  - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
+  - Mobile browsers: Chrome Mobile, Safari iOS14+\n  - Desktop platforms: Windows, macOS, Linux, Chrome OS
 
-### 4.5 Audio Assets
+### 4.6 Audio Assets
 - **Free Version**: 8 alarm sound files (MP3 format, 128kbps, 30-60 seconds each)
 - **Premium Version**: 20+ additional alarm sounds\n- **Sleep Sounds**: 20+ ambient sound files (OGG format, loopable, 3-5 minutes each)
 - Total audio assets size: ~50MB (optimized compression)
 - All sounds stored in app's assets folder for offline access
+- Service Worker caches alarm sounds for offline playback
 
-### 4.6 Security and Privacy
+### 4.7 Security and Privacy
 - All user data stored locally by default
 - Premium cloud backup uses AES-256 encryption
 - No personal data shared with third parties
@@ -427,19 +489,28 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Optional anonymous usage analytics (opt-in)
 - Two-factor authentication for premium account (optional)
 - Data deletion option (right to be forgotten)
+- Secure HTTPS connection for all network requests
+- Content Security Policy (CSP) headers
 
-### 4.7 Third-Party Integrations
+### 4.8 Third-Party Integrations
 - Google Play Billing Library for in-app purchases
 - Firebase Firestore for cloud sync (premium)
 - Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
-\n### 4.8 Testing Requirements
+\n### 4.9 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
 - Performance testing for 60 fps animations
 - Battery drain testing for sleep tracker
 - Cross-device sync testing for premium features
+- **PWA Testing**:
+  - Service Worker functionality testing
+  - Offline mode testing
+  - Cache invalidation testing
+  - Install prompt testing
+  - Push notification testing
+  - Lighthouse PWA audit (score 90+)
 
 ## 5. Deliverables
 
@@ -448,12 +519,15 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Ready-to-upload AAB (Android App Bundle) file
 - All27 premium features fully implemented with subscription logic
 - In-app purchase integration (Google Play Billing Library v5+)
-- Wear OS companion app APK (premium)\n- Comprehensive code documentation
+- Wear OS companion app APK (premium)\n- **PWA Build**:
+  - Service Worker implementation (sw.js)
+  - Web App Manifest (manifest.json)
+  - PWA-optimized build for web deployment
+  - Offline fallback page
+- Comprehensive code documentation
 - README with setup instructions
-
-### 5.2 Google Play Store Assets
-- **App Title**: Streak – Daily Habit Tracker
-- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
+\n### 5.2 Google Play Store Assets
+- **App Title**: Streak – Daily Habit Tracker\n- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
 - **Full Description** (4000 chars): Highlighting all27 premium features with compelling copy
 - **Feature Bullet Points**:
   1. Track unlimited habits with beautiful streak visualization
@@ -463,12 +537,14 @@ A production-ready Android habit tracking application built with Flutter and Mat
   5. Social challenges and accountability partners
   6. Wear OS support for on-the-go tracking
   7. Premium features with 7-day free trial
-- **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker
-- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits\n  2. Calendar heatmap\n  3. Stats dashboard
-  4. Sleep tracker\n  5. Premium features overview
-  6. Widgets\n  7. Achievement badges
+  8. PWA support for cross-platform access
+- **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
+  2. Calendar heatmap (Screenshot_20251125-170720.png)
+  3. Stats dashboard (Screenshot_20251125-170733.png)
+  4. Sleep tracker (Screenshot_20251125-170740.png)
+  5. Premium features overview\n  6. Widgets\n  7. Achievement badges
   8. Social features
-- **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon
+- **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon (Rise - Habit tracker and smart sleep Icon.png)
 - **Promotional Video**: 30-second video showcasing key features (optional)
 
 ### 5.3 Documentation
@@ -476,12 +552,17 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Privacy policy
 - Terms of service\n- Subscription terms and conditions
 - FAQdocument
+- **PWA Documentation**:
+  - Service Worker implementation guide
+  - Offline functionality documentation
+  - Installation instructions for web users
+  - Browser compatibility matrix
 \n## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
-- Smooth performance (consistent 60 fps)
-- Production-ready quality code
-- Competitive with top20Productivity apps on Google Play\n- Sleep tracking accuracy >90%
+- Smooth performance (consistent 60 fps)\n- Production-ready quality code
+- Competitive with top20Productivity apps on Google Play
+- Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
 - All alarm sounds accessible offline without internet connection
 - Subscription and in-app purchase flow working seamlessly
@@ -489,11 +570,15 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Premium features provide significant value to justify $4.99/month price point
 - User retention rate >40% after 30 days (industry benchmark)
 - Premium conversion rate target: 5-8% of active users
+- **PWA Success Metrics**:\n  - Lighthouse PWA score >90
+  - Service Worker successfully caches all critical assets
+  - Offline functionality works for all core features
+  - Install prompt acceptance rate >15%
+  - PWA load time <2 seconds on3G connection
 
 ## 7. Competitive Advantages
 
-This app is designed to outperform competitors through:
-\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
+This app is designed to outperform competitors through:\n\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
 3. **Smart Alarm Technology**: Light-phase wake-up for better mornings
 4. **AI-Powered Insights**: Predictive analytics and personalized recommendations
 5. **Social Accountability**: Built-in community and challenge features
@@ -507,8 +592,9 @@ This app is designed to outperform competitors through:
 13. **Beautiful Design**: Material 3 with premium glassmorphism effects
 14. **Performance**: Guaranteed 60 fps animations and fast load times
 15. **Offline-First**: Full functionality without internet connection
-
-## 8. Post-Launch Roadmap (Future Enhancements)
+16. **PWA Support**: Cross-platform access via web with native app experience
+17. **Service Worker**: Enhanced offline capabilities and faster load times
+\n## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
 - Apple Watch companion app
@@ -521,4 +607,13 @@ This app is designed to outperform competitors through:
 - API for third-party integrations
 \n---
 
-**This requirements document now includes all 27 premium features fully integrated and detailed across every relevant section, positioning the app to compete with and surpass top habit tracking apps on Google Play Store.**
+## Reference Images
+1. Screenshot_20251124-160252.png: Development environment showing React working status
+2. Rise - Habit tracker and smart sleep Icon.png: App icon reference for design inspiration
+3. Screenshot_20251125-170711.png: Home screen with today's progress and habit list
+4. Screenshot_20251125-170720.png: Calendar view with perfect days and completion statistics
+5. Screenshot_20251125-170733.png: Statistics page showing current streak and total completions
+6. Screenshot_20251125-170740.png: Advanced Analytics page with success rate and insights
+\n---
+
+**This requirements document now includes comprehensive PWA support with Service Worker implementation, enabling powerful offline capabilities, faster load times, and enhanced user experience across all platforms.**

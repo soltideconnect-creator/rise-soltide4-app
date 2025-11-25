@@ -1,7 +1,7 @@
 // Rise – Habit Tracker & Smart Sleep
 // Service Worker for PWA and Offline Support
 
-const CACHE_NAME = 'rise-v1.0.0';
+const CACHE_NAME = 'rise-v1.3.0';
 const RUNTIME_CACHE = 'rise-runtime';
 
 // Assets to cache on install
@@ -9,7 +9,13 @@ const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.png'
+  '/rise-icon.png',
+  '/shortcut-icon-96.png',
+  '/shortcut-icon-192.png',
+  '/screenshot-1.png',
+  '/screenshot-2.png',
+  '/screenshot-3.png',
+  '/screenshot-4.png'
 ];
 
 // Install event - cache essential assets
