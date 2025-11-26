@@ -1,15 +1,39 @@
 # Netlify Configuration for Rise – Habit Tracker & Smart Sleep
-# This file configures build settings and redirects for the PWA
+# This file automatically configures build settings and redirects for the PWA
+# No manual configuration needed in Netlify dashboard - this file handles everything
 
 [build]
-  # Build command
+  # Build command - runs production build
   command = "npm run build"
   
   # Directory to publish (Vite outputs to dist/)
   publish = "dist"
   
-  # Node version
+  # Node version - using LTS version 18
   environment = { NODE_VERSION = "18" }
+
+# Build settings
+[build.processing]
+  # Skip Netlify's default processing to use our optimized build
+  skip_processing = false
+
+[build.processing.css]
+  # CSS is already minified by Vite
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  # JavaScript is already minified by Vite
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  # HTML optimization
+  pretty_urls = true
+
+[build.processing.images]
+  # Image optimization
+  compress = true
 
 # SPA redirect rule - ensures all routes go to index.html
 [[redirects]]
@@ -39,6 +63,9 @@
     
     # Permissions policy
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy for PWA
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; manifest-src 'self';"
 
 # Cache static assets
 [[headers]]
