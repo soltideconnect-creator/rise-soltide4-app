@@ -9,6 +9,7 @@ import { sleepTracker } from '@/services/sleepTracker';
 import { sleepStorage } from '@/services/sleepStorage';
 import type { SleepSession, AlarmSettings } from '@/types/sleep';
 import { toast } from 'sonner';
+import { isPremiumUnlocked } from '@/utils/googlePlayBilling';
 import {
   LineChart,
   Line,
@@ -34,21 +35,24 @@ export default function Sleep() {
   });
 
   useEffect(() => {
-    // Check premium status
-    const premium = localStorage.getItem('streak_ads_removed') === 'true';
-    setIsPremium(premium);
+    // Check premium status using billing API
+    isPremiumUnlocked().then(premium => {
+      setIsPremium(premium);
 
-    if (premium) {
-      // Load sessions
-      loadSessions();
-      
-      // Load alarm settings
-      const settings = sleepStorage.getAlarmSettings();
-      setAlarmSettings(settings);
+      if (premium) {
+        // Load sessions
+        loadSessions();
+        
+        // Load alarm settings
+        const settings = sleepStorage.getAlarmSettings();
+        setAlarmSettings(settings);
 
-      // Check if currently recording
-      setIsRecording(sleepTracker.isCurrentlyRecording());
-    }
+        // Check if currently recording
+        setIsRecording(sleepTracker.isCurrentlyRecording());
+      }
+    }).catch(error => {
+      console.error('Error checking premium status:', error);
+    });
   }, []);
 
   const loadSessions = () => {

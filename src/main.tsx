@@ -5,6 +5,7 @@ import App from "./App.tsx";
 // import { TestApp } from "./TestApp.tsx"; // Uncomment to test basic React
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
+import { initializeBilling } from "./utils/googlePlayBilling";
 
 // To test if basic React works, uncomment the line below and comment out the App import
 // const App = TestApp;
@@ -82,4 +83,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (displayMode === 'standalone') {
     console.log('[PWA] Running as installed PWA');
   }
+  
+  // Initialize Google Play Billing (checks for existing purchases)
+  initializeBilling().catch(error => {
+    console.error('[Billing] Initialization failed:', error);
+  });
 });

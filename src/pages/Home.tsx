@@ -10,6 +10,7 @@ import type { Habit } from '@/types/habit';
 import { Confetti } from '@/components/Confetti';
 import { toast } from 'sonner';
 import { MOTIVATIONAL_QUOTES } from '@/types/habit';
+import { isPremiumUnlocked } from '@/utils/googlePlayBilling';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,8 +46,12 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
 
   useEffect(() => {
     loadData();
-    const premium = localStorage.getItem('streak_ads_removed') === 'true';
-    setIsPremium(premium);
+    // Check premium status using billing API
+    isPremiumUnlocked().then(hasPremium => {
+      setIsPremium(hasPremium);
+    }).catch(error => {
+      console.error('Error checking premium status:', error);
+    });
   }, []);
 
   const handleToggle = (habitId: string) => {

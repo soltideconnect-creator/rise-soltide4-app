@@ -7,6 +7,7 @@ import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
+import { isPremiumUnlocked, purchasePremium, isTWAWithBilling } from '@/utils/googlePlayBilling';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -33,18 +34,41 @@ export function Stats() {
 
     setChartData(data);
 
-    // Check if ads were removed
-    const removed = localStorage.getItem('streak_ads_removed') === 'true';
-    setAdsRemoved(removed);
+    // Check premium status (works for both TWA and web)
+    isPremiumUnlocked().then(hasPremium => {
+      setAdsRemoved(hasPremium);
+    }).catch(error => {
+      console.error('Error checking premium status:', error);
+    });
   }, []);
 
-  const handleRemoveAds = () => {
-    // Simulate in-app purchase for $4.99
-    toast.success('Premium unlocked! Sleep Tracker is now available! 🎉', {
-      duration: 5000,
-    });
-    localStorage.setItem('streak_ads_removed', 'true');
-    setAdsRemoved(true);
+  const handleRemoveAds = async () => {
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading(
+        isTWAWithBilling() 
+          ? 'Opening Google Play purchase...' 
+          : 'Processing purchase...'
+      );
+      
+      // Trigger purchase (Google Play in TWA, simulated on web)
+      const success = await purchasePremium();
+      
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+      
+      if (success) {
+        toast.success('Premium unlocked! Sleep Tracker is now available! 🎉', {
+          duration: 5000,
+        });
+        setAdsRemoved(true);
+      } else {
+        toast.error('Purchase cancelled or failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+    }
   };
 
   return (
