@@ -1,4 +1,4 @@
-# Streak – Daily Habit Tracker Requirements Document (Premium-Enhanced Edition with PWA Support)
+# Streak – Daily Habit Tracker Requirements Document (Premium-Enhanced Edition with PWA Support + Google Play Billing Integration)
 
 ## 1. Application Overview
 
@@ -11,10 +11,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Framework: Flutter
 - Design System: Material 3 (Material You)
 - Database: Hive (offline storage)
-- Cloud Sync: Firebase Firestore (premium)\n- Payment: Google Play Billing Library\n- Platform: Android + Wear OS (premium) + PWA
-- Fonts: Poppins (headings), Inter (body text)
-- Sensors: Microphone, Accelerometer, GPS (premium)
-- PWA: Service Worker, Web App Manifest, Cache API
+- Cloud Sync: Firebase Firestore (premium)\n- Payment: Google Play Billing Library v6+ (native integration)
+- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
+- Sensors: Microphone, Accelerometer, GPS (premium)\n- PWA: Service Worker, Web App Manifest, Cache API
 
 ## 2. Core Features
 
@@ -42,7 +41,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Quick filter buttons: All / Today / Category view
 - Focus Mode toggle button in top bar
 - Premium badge indicator in top-right corner
-\n### 2.3 Add/Edit Habit Screen
+
+### 2.3 Add/Edit Habit Screen
 
 #### 2.3.1 Basic Fields (Free + Premium)
 - Text input field for habit name
@@ -180,7 +180,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
+  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
@@ -311,10 +312,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - No cloud backup
 
 #### 2.12.2 Premium Subscription Tiers
-- **Monthly Plan**: $4.99/month
-- **Yearly Plan**: $29.99/year (save 50%, equivalent to $2.49/month)
-- **Lifetime Plan**: $49.99 one-time payment
-- **7-Day Free Trial**: Full access to all premium features
+- **One-Time Purchase**: $4.99 (lifetime premium unlock)
+- **Product ID**: premium_unlock
+- **Payment Method**: Google Play In-App Billing v6+
 \n#### 2.12.3 Premium Benefits Summary
 1. ✅ Unlimited habits
 2. ✅ Ad-free experience
@@ -346,9 +346,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.12.4 In-App Purchase Flow
 - Prominent'Upgrade to Premium' buttons throughout app
 - Feature-locked screens show preview with upgrade CTA
-- Subscription management via Google Play Billing
+- One-time purchase of $4.99 unlocks all premium features forever
 - Restore purchases option for users switching devices
-- Clear pricing display with savings calculation
+- Clear pricing display with value proposition
 - Testimonials from premium users
 
 ##3. Design Specifications
@@ -453,35 +453,104 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Lazy loading for images and heavy components
   - Code splitting for faster initial load
   - Minified and compressed assets
-\n### 4.4 Permissions
+\n### 4.4 Google Play In-App Billing Integration
 
-#### 4.4.1 Required Permissions
+#### 4.4.1 Implementation Requirements
+- **Billing Library**: Google Play Billing Library v6+ (native JavaScript integration via TWA)
+- **Product ID**: premium_unlock
+- **Product Type**: One-time in-app purchase (non-consumable)
+- **Price**: $4.99 USD
+\n#### 4.4.2 Core Billing Logic (10-15 lines of code)
+\n**On App Initialization (when running as installed Android app):**
+```javascript
+// Check if running in TWA with billing support
+if (window.AndroidBilling) {
+  // Query existing purchases on app start
+  window.AndroidBilling.getPurchases().then(purchases => {
+    const hasPremium = purchases.some(p => p.productId === 'premium_unlock' && p.purchaseState === 1);
+    if (hasPremium) {
+      unlockPremiumFeatures(); // Enable all premium features
+      localStorage.setItem('isPremium', 'true'); // Persist offline
+    }
+  }).catch(err => console.error('Billing check failed:', err));
+}
+\n// Fallback for web version (no billing)
+if (!window.AndroidBilling && localStorage.getItem('isPremium') === 'true') {
+  unlockPremiumFeatures(); // Restore from local storage
+}
+```
+
+**On 'Go Premium' Button Click:**
+```javascript
+function handlePremiumPurchase() {
+  if (window.AndroidBilling) {
+    window.AndroidBilling.buy('premium_unlock').then(result => {
+      if (result.purchaseState === 1) { // Purchase successful
+        unlockPremiumFeatures();
+        localStorage.setItem('isPremium', 'true');
+        showSuccessMessage('Premium unlocked forever!');
+      }
+    }).catch(err => {
+      console.error('Purchase failed:', err);
+      showErrorMessage('Purchase failed. Please try again.');
+    });
+  } else {
+    // Web version: show message to install Android app
+    showMessage('Please install the Android app to purchase premium.');
+  }
+}
+```
+
+#### 4.4.3 Premium Feature Gating
+- **Ad Removal**: Hide banner ads when isPremium === true
+- **Sleep Tracker**: Unlock Sleep tab and all sleep features
+- **Smart Alarm**: Enable20+ premium alarm sounds and custom upload
+- **Advanced Analytics**: Unlock Analytics tab with AI predictions
+- **All27 Premium Features**: Gate behind purchase check
+
+#### 4.4.4 Offline Persistence
+- Purchase status stored in localStorage for offline access
+- On app restart, check localStorage first, then verify with AndroidBilling.getPurchases()
+- Premium features remain unlocked even without internet connection
+
+#### 4.4.5 Restore Purchases
+- 'Restore Purchases' button in Settings
+- Calls AndroidBilling.getPurchases() to re-verify ownership
+- Updates localStorage and unlocks features if purchase found
+
+#### 4.4.6 Netlify Build Compatibility
+- Billing code only executes when window.AndroidBilling exists (TWA environment)
+- Web version (Netlify) gracefully degrades: shows'Install Android app' message
+- No impact on existing Netlify deployment or build settings
+- Service Worker and PWA functionality remain unchanged
+
+### 4.5 Permissions\n
+#### 4.5.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.4.2 Optional Permissions (Premium)
-- Location permission for location-based reminders (GPS)
+\n#### 4.5.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
 
-### 4.5 Compatibility
+### 4.6 Compatibility
 - Android platform (minimum Android 8.0 / API 26)
 - Target Android 14 (API 34)
-- Material 3 design system compliance
+- Material3 design system compliance
 - Wear OS 3.0+ for smartwatch companion app (premium)\n- Tablet optimization with responsive layouts
 - **PWA Compatibility**:
   - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
   - Mobile browsers: Chrome Mobile, Safari iOS14+\n  - Desktop platforms: Windows, macOS, Linux, Chrome OS
 
-### 4.6 Audio Assets
+### 4.7 Audio Assets
 - **Free Version**: 8 alarm sound files (MP3 format, 128kbps, 30-60 seconds each)
 - **Premium Version**: 20+ additional alarm sounds\n- **Sleep Sounds**: 20+ ambient sound files (OGG format, loopable, 3-5 minutes each)
 - Total audio assets size: ~50MB (optimized compression)
 - All sounds stored in app's assets folder for offline access
 - Service Worker caches alarm sounds for offline playback
 
-### 4.7 Security and Privacy
+### 4.8 Security and Privacy
 - All user data stored locally by default
 - Premium cloud backup uses AES-256 encryption
 - No personal data shared with third parties
@@ -491,19 +560,24 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Data deletion option (right to be forgotten)
 - Secure HTTPS connection for all network requests
 - Content Security Policy (CSP) headers
+- **Billing Security**: Purchase verification handled by Google Play Billing Library
 
-### 4.8 Third-Party Integrations
-- Google Play Billing Library for in-app purchases
-- Firebase Firestore for cloud sync (premium)
-- Firebase Analytics for usage tracking (anonymous)
+### 4.9 Third-Party Integrations
+- Google Play Billing Library v6+ for in-app purchases
+- Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
-\n### 4.9 Testing Requirements
+\n### 4.10 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
 - Performance testing for 60 fps animations
 - Battery drain testing for sleep tracker
 - Cross-device sync testing for premium features
+- **Billing Testing**:
+  - Test purchase flow with Google Play test accounts
+  - Verify purchase restoration across devices
+  - Test offline premium feature access
+  - Validate purchase state persistence
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -516,17 +590,19 @@ A production-ready Android habit tracking application built with Flutter and Mat
 
 ### 5.1 Code Deliverables
 - Complete Flutter project that compiles and runs successfully on first attempt
-- Ready-to-upload AAB (Android App Bundle) file
-- All27 premium features fully implemented with subscription logic
-- In-app purchase integration (Google Play Billing Library v5+)
+- Ready-to-upload AAB (Android App Bundle) file with billing integration
+- All27 premium features fully implemented with purchase gating
+- Google Play Billing v6+ integration (10-15 lines of native JavaScript code)
+- In-app purchase flow for product ID 'premium_unlock' ($4.99)
 - Wear OS companion app APK (premium)\n- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
   - Offline fallback page
 - Comprehensive code documentation
-- README with setup instructions
-\n### 5.2 Google Play Store Assets
+- README with setup instructions and billing configuration guide
+
+### 5.2 Google Play Store Assets
 - **App Title**: Streak – Daily Habit Tracker\n- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
 - **Full Description** (4000 chars): Highlighting all27 premium features with compelling copy
 - **Feature Bullet Points**:
@@ -536,7 +612,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   4. 50+ habit templates for instant setup
   5. Social challenges and accountability partners
   6. Wear OS support for on-the-go tracking
-  7. Premium features with 7-day free trial
+  7. One-time $4.99 purchase unlocks all premium features forever
   8. PWA support for cross-platform access
 - **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
   2. Calendar heatmap (Screenshot_20251125-170720.png)
@@ -546,39 +622,56 @@ A production-ready Android habit tracking application built with Flutter and Mat
   8. Social features
 - **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon (Rise - Habit tracker and smart sleep Icon.png)
 - **Promotional Video**: 30-second video showcasing key features (optional)
-
-### 5.3 Documentation
+- **In-App Products Configuration**:
+  - Product ID: premium_unlock
+  - Product Type: One-time purchase (non-consumable)
+  - Price: $4.99 USD
+  - Title: Premium Unlock
+  - Description: Unlock all premium features forever
+\n### 5.3 Documentation
 - User guide for premium features
 - Privacy policy
-- Terms of service\n- Subscription terms and conditions
+- Terms of service
+- Subscription terms and conditions (updated for one-time purchase)
 - FAQdocument
+- **Billing Documentation**:
+  - Google Play Console setup guide for product ID 'premium_unlock'
+  - Testing guide for billing integration
+  - Troubleshooting guide for purchase issues
 - **PWA Documentation**:
   - Service Worker implementation guide
   - Offline functionality documentation
   - Installation instructions for web users
   - Browser compatibility matrix
-\n## 6. Success Criteria
+
+## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
+- Google Play Billing integration working seamlessly:\n  - Purchase flow completes successfully
+  - Premium features unlock immediately after purchase
+  - Purchase persists offline via localStorage
+  - Restore purchases works across devices
 - Smooth performance (consistent 60 fps)\n- Production-ready quality code
 - Competitive with top20Productivity apps on Google Play
 - Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
 - All alarm sounds accessible offline without internet connection
-- Subscription and in-app purchase flow working seamlessly
 - Clear value differentiation between free and premium tiers
-- Premium features provide significant value to justify $4.99/month price point
+- Premium features provide significant value to justify $4.99 price point
 - User retention rate >40% after 30 days (industry benchmark)
 - Premium conversion rate target: 5-8% of active users
-- **PWA Success Metrics**:\n  - Lighthouse PWA score >90
+- **Netlify Deployment**: Existing build settings and online deployment remain unaffected
+- **PWA Success Metrics**:
+  - Lighthouse PWA score >90
   - Service Worker successfully caches all critical assets
   - Offline functionality works for all core features
   - Install prompt acceptance rate >15%
-  - PWA load time <2 seconds on3G connection
+  - PWA load time <2seconds on3G connection
 
 ## 7. Competitive Advantages
 
-This app is designed to outperform competitors through:\n\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
+This app is designed to outperform competitors through:
+\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
 3. **Smart Alarm Technology**: Light-phase wake-up for better mornings
 4. **AI-Powered Insights**: Predictive analytics and personalized recommendations
 5. **Social Accountability**: Built-in community and challenge features
@@ -587,7 +680,7 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 8. **Habit Dependencies**: Unique chain and prerequisite system
 9. **Location & Weather Triggers**: Context-aware reminders
 10. **Generous Free Tier**: 5 habits free (competitors offer 3) to drive adoption
-11. **Lifetime Purchase Option**: $49.99 one-time payment appeals to long-term users
+11. **Affordable One-Time Purchase**: $4.99 lifetime unlock (no recurring fees)
 12. **Privacy-First**: Local-first storage with optional cloud sync
 13. **Beautiful Design**: Material 3 with premium glassmorphism effects
 14. **Performance**: Guaranteed 60 fps animations and fast load times
@@ -616,4 +709,27 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 6. Screenshot_20251125-170740.png: Advanced Analytics page with success rate and insights
 \n---
 
-**This requirements document now includes comprehensive PWA support with Service Worker implementation, enabling powerful offline capabilities, faster load times, and enhanced user experience across all platforms.**
+## Google Play Billing Configuration Checklist
+
+**Before Publishing:**
+1. Create in-app product in Google Play Console:\n   - Product ID: premium_unlock
+   - Product type: One-time purchase
+   - Price: $4.99 USD
+   - Status: Active
+2. Add test accounts for billing testing
+3. Test purchase flow with test account
+4. Verify purchase restoration works
+5. Confirm premium features unlock correctly
+6. Test offline premium access
+7. Validate Netlify deployment remains functional
+
+**Code Implementation:**
+- window.AndroidBilling.getPurchases() called on app start
+- window.AndroidBilling.buy('premium_unlock') triggered by'Go Premium' button
+- Premium features gated behind purchase check
+- localStorage persistence for offline access
+- Graceful degradation for web version (Netlify)
+
+---
+
+**This requirements document now includes complete Google Play In-App Billing integration with minimal code implementation (10-15 lines), ensuring seamless premium unlock functionality while maintaining compatibility with the existing Netlify deployment.**
