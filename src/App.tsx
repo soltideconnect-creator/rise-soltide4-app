@@ -14,7 +14,6 @@ import { notifications } from '@/services/notifications';
 import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
-import { ThemeProvider } from 'next-themes';
 
 type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit';
 
@@ -111,7 +110,7 @@ function App() {
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <>
       {showOnboarding ? (
         <Onboarding onComplete={handleOnboardingComplete} />
       ) : (
@@ -143,7 +142,7 @@ function App() {
           <Toaster />
         </div>
       )}
-    </ThemeProvider>
+    </>
   );
 }
 
