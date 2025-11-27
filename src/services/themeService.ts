@@ -1,6 +1,7 @@
 import { Theme, themes } from '@/types/theme';
 
 const THEME_KEY = 'streak_selected_theme';
+const DARK_MODE_KEY = 'streak_dark_mode';
 
 export const themeService = {
   getAllThemes(): Theme[] {
@@ -38,8 +39,42 @@ export const themeService = {
     root.style.setProperty('--success-foreground', theme.colors.successForeground);
   },
 
+  // Dark mode management
+  isDarkMode(): boolean {
+    const saved = localStorage.getItem(DARK_MODE_KEY);
+    if (saved !== null) {
+      return saved === 'true';
+    }
+    // Default to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  },
+
+  setDarkMode(isDark: boolean): void {
+    localStorage.setItem(DARK_MODE_KEY, String(isDark));
+    this.applyDarkMode(isDark);
+  },
+
+  toggleDarkMode(): boolean {
+    const newMode = !this.isDarkMode();
+    this.setDarkMode(newMode);
+    return newMode;
+  },
+
+  applyDarkMode(isDark: boolean): void {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  },
+
   initializeTheme(): void {
     const theme = this.getCurrentTheme();
     this.applyTheme(theme);
+    
+    // Initialize dark mode
+    const isDark = this.isDarkMode();
+    this.applyDarkMode(isDark);
   },
 };

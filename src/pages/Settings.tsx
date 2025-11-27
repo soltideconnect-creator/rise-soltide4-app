@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useTheme } from 'next-themes';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
 import { audioService, ALARM_SOUNDS, type AlarmSoundType } from '@/services/audioService';
@@ -40,7 +39,7 @@ interface SettingsProps {
 }
 
 export function Settings({ onNavigateToAbout }: SettingsProps) {
-  const { theme, setTheme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(themeService.isDarkMode());
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     notifications.getPermission() === 'granted'
@@ -67,7 +66,8 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
   }, []);
 
   const handleThemeToggle = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    const newMode = themeService.toggleDarkMode();
+    setIsDarkMode(newMode);
   };
 
   const handleThemeChange = (themeId: string) => {
@@ -205,7 +205,7 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
       <Card className="mb-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             Appearance
           </CardTitle>
           <CardDescription>Customize how the app looks</CardDescription>
@@ -215,12 +215,12 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
             <div className="space-y-0.5">
               <Label htmlFor="theme-toggle">Dark Mode</Label>
               <p className="text-sm text-muted-foreground">
-                {theme === 'dark' ? 'Enabled' : 'Disabled'}
+                {isDarkMode ? 'Enabled' : 'Disabled'}
               </p>
             </div>
             <Switch
               id="theme-toggle"
-              checked={theme === 'dark'}
+              checked={isDarkMode}
               onCheckedChange={handleThemeToggle}
             />
           </div>
