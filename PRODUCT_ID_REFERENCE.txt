@@ -1,0 +1,97 @@
+
+                                                                      ║
+           GOOGLE PLAY PRODUCT ID - QUICK REFERENCE                   ║
+                                                                      ║
+
+
+
+
+Product ID:     premium_unlock
+Product Name:   Premium Unlock
+Price:          $4.99 USD
+Type:           Non-consumable (one-time purchase)
+
+
+
+
+1. Go to: Google Play Console → Your App → Monetization → In-app products
+
+2. Click: "Create product"
+
+3. Fill in EXACTLY:
+
+   Product ID:
+   ┌─────────────────────────────────────────────────────────────────┐
+   │ premium_unlock                                                  │
+   └─────────────────────────────────────────────────────────────────┘
+   
+   Name:
+   ┌─────────────────────────────────────────────────────────────────┐
+   │ Premium Unlock                                                  │
+   └─────────────────────────────────────────────────────────────────┘
+   
+   Description:
+   ┌─────────────────────────────────────────────────────────────────┐
+   │ Unlock all premium features including Sleep Tracker, Smart     │
+   │ Alarm, and ad-free experience. Enjoy unlimited access to all   │
+   │ features with a one-time purchase.                             │
+   └─────────────────────────────────────────────────────────────────┘
+   
+   Default price:
+   ┌─────────────────────────────────────────────────────────────────┐
+   │ $4.99 USD                                                       │
+   └─────────────────────────────────────────────────────────────────┘
+   
+   Status:
+   ┌─────────────────────────────────────────────────────────────────┐
+   │ ✅ Active                                                        │
+   └─────────────────────────────────────────────────────────────────┘
+
+4. Click: "Save" and "Activate"
+
+
+  CRITICAL: PRODUCT ID MUST MATCH EXACTLY
+
+
+The product ID in Google Play Console MUST be exactly:
+
+    premium_unlock
+
+ DO NOT use:
+   - premium-unlock (hyphen instead of underscore)
+   - premiumUnlock (camelCase)
+   - premium_unlock_v1 (with version suffix)
+   - Premium_Unlock (capital letters)
+
+ ONLY use:
+   - premium_unlock (lowercase with underscore)
+
+
+
+
+ Ad-free experience
+ Sleep Tracker with motion detection
+ Smart Alarm with optimal wake-up timing
+ Sleep quality analytics and insights
+ Unlimited habit tracking
+ All features work offline
+ Purchase persists forever (no subscription)
+
+
+
+
+After creating the product, verify:
+
+1. Product ID matches: premium_unlock
+2. Status is: Active
+3. Price is: $4.99 USD
+4. Type is: Non-consumable
+
+
+
+
+For complete setup instructions, see:
+- GOOGLE_PLAY_BILLING_INTEGRATION.md
+- BILLING_VERIFICATION.md
+
+
