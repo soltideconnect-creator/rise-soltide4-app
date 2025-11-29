@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Zap } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
@@ -41,6 +41,49 @@ export function Stats() {
       console.error('Error checking premium status:', error);
     });
   }, []);
+
+  // Paystack payment handler for web/PWA users
+  const handlePaystackPayment = () => {
+    if (!window.PaystackPop) {
+      toast.error('Payment system not loaded. Please refresh the page.');
+      return;
+    }
+
+    const handler = window.PaystackPop.setup({
+      key: 'pk_live_XXXXXXXXXXXXXXXXXXXXXXXX', // Replace with actual Paystack public key
+      email: 'user@soltide.app',
+      amount: 800000, // ₦8,000 in kobo
+      ref: 'rise_premium_' + new Date().getTime().toString(),
+      currency: 'NGN',
+      metadata: {
+        custom_fields: [
+          {
+            display_name: 'Product',
+            variable_name: 'product',
+            value: 'Rise Premium Unlock'
+          }
+        ]
+      },
+      onSuccess: (transaction: any) => {
+        // Unlock premium immediately
+        localStorage.setItem('rise_premium', 'true');
+        localStorage.setItem('streak_ads_removed', 'true');
+        setAdsRemoved(true);
+        toast.success('Premium unlocked forever! Thank you 🌅', {
+          duration: 5000,
+        });
+        console.log('Payment successful:', transaction);
+      },
+      onCancel: () => {
+        toast.error('Payment cancelled');
+      },
+      onClose: () => {
+        // Called when popup is closed
+      }
+    });
+
+    handler.newTransaction();
+  };
 
   const handleRemoveAds = async () => {
     try {
@@ -165,29 +208,75 @@ export function Stats() {
 
         {/* Premium Upgrade Section */}
         {!adsRemoved && (
-          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Upgrade to Premium</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Unlock Sleep Tracker for just $4.99!
+          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-primary/20">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+            
+            <CardContent className="relative pt-8 pb-8">
+              <div className="text-center space-y-6">
+                {/* Header */}
+                <div className="space-y-3">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-2">
+                    <Zap className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Upgrade to Premium</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    {isTWAWithBilling() 
+                      ? 'Unlock Sleep Tracker and premium features forever!'
+                      : 'Get premium features instantly - 100% of your payment supports development!'}
                   </p>
                 </div>
 
-                {/* Premium Purchase Button */}
-                <Button
-                  onClick={handleRemoveAds}
-                  className="w-full max-w-xs mx-auto"
-                  size="lg"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Get Premium - $4.99 One-Time
-                </Button>
-                
-                <p className="text-xs text-muted-foreground">
-                  Unlock Sleep Tracker Feature
-                </p>
+                {/* Buttons - Conditional based on platform */}
+                <div className="space-y-3 max-w-sm mx-auto">
+                  {/* Google Play Button - Only show on Android TWA */}
+                  {isTWAWithBilling() && (
+                    <Button
+                      onClick={handleRemoveAds}
+                      className="w-full"
+                      size="lg"
+                      variant="default"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Get Premium - $4.99 One-Time
+                    </Button>
+                  )}
+
+                  {/* Paystack Button - Only show on Web/PWA */}
+                  {!isTWAWithBilling() && (
+                    <Button
+                      onClick={handlePaystackPayment}
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                      size="lg"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Unlock Premium ₦8,000
+                    </Button>
+                  )}
+                  
+                  <p className="text-xs text-muted-foreground">
+                    {isTWAWithBilling() 
+                      ? 'One-time purchase • Unlock Sleep Tracker'
+                      : 'Instant • No Google Cut • Direct Payment'}
+                  </p>
+                </div>
+
+                {/* Features list */}
+                <div className="pt-4 space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Sleep Tracker with Smart Alarms</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Advanced Analytics</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Lifetime Access</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
