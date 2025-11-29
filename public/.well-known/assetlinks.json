@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.soltide.rise",
+        "sha256_cert_fingerprints": ["1D:03:BB:67:E2:90:53:73:12:7B:A4:51:4B:AC:33:25:4C:F0:4E:AE:C2:2C:9E:1D:11:D0:5A:CB:86:4F:B7:D5"]
+      }
+    }]
