@@ -175,53 +175,23 @@ export function Stats() {
                   </p>
                 </div>
 
-                {/* Premium Purchase Section */}
-<div className="flex flex-col items-center gap-4">
-  {/* Google Play Billing (Android only) */}
-  {window.AndroidBilling && !isPremium && (
-    <Button
-      onClick={handleRemoveAds} // ← your existing Google Billing function
-      className="w-full max-w-xs mx-auto"
-      size="lg"
-    >
-      <X className="w-4 h-4 mr-2" />
-      Get Premium – $4.99 One-Time
-    </Button>
-  )}
-
-  {/* Paystack Direct (Web / PWA sideloading) */}
-  {!window.AndroidBilling && !isPremium && (
-    <PaystackButton
-      amount={800000} // ₦8,000
-      email="user@soltide.app" // you can make this dynamic later
-      publicKey="pk_live_YOUR_PAYSTACK_KEY_HERE" // ← replace this
-      reference={new Date().getTime().toString()}
-      onSuccess={(ref: any) => {
-        localStorage.setItem("rise_premium", "true");
-        setIsPremium(true); // or call your unlock function
-        toast.success("Premium unlocked forever! Thank you 🌅");
-      }}
-      onClose={() => toast.info("Payment cancelled")}
-      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-xl text-lg shadow-lg"
-    >
-      Unlock Premium ₦8,000 (Instant • No Google Cut)
-    </PaystackButton>
-  )}
-
-  {/* Already Premium Message */}
-  {isPremium && (
-    <div className="text-center">
-      <p className="text-green-500 font-bold text-lg">✓ Premium Unlocked Forever</p>
-      <p className="text-sm text-muted-foreground">Sleep Tracker & Smart Alarm active</p>
-    </div>
-  )}
-
-  <p className="text-xs text-muted-foreground text-center max-w-xs">
-    {!window.AndroidBilling && !isPremium
-      ? "Pay direct → I receive 100% → you get full features instantly"
-      : "Unlock Sleep Tracker, Smart Alarm & remove ads forever"}
-  </p>
-</div>
+                {/* Premium Purchase Button */}
+                <Button
+                  onClick={handleRemoveAds}
+                  className="w-full max-w-xs mx-auto"
+                  size="lg"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Get Premium - $4.99 One-Time
+                </Button>
+                
+                <p className="text-xs text-muted-foreground">
+                  Unlock Sleep Tracker Feature
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {adsRemoved && (
           <Card className="bg-gradient-to-br from-success/5 to-primary/5 border-success/20">
