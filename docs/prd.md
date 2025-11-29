@@ -1,19 +1,20 @@
-# Streak – Daily Habit Tracker Requirements Document (Premium-Enhanced Edition with PWA Support + Google Play Billing Integration)
+# Streak – Daily Habit Tracker Requirements Document (Dual Payment System Edition)
 
 ## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
 \n### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities for improved performance and user experience.
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA).
 
 ### 1.3 Technical Stack
 - Framework: Flutter
 - Design System: Material 3 (Material You)
 - Database: Hive (offline storage)
-- Cloud Sync: Firebase Firestore (premium)\n- Payment: Google Play Billing Library v6+ (native integration)
-- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
-- Sensors: Microphone, Accelerometer, GPS (premium)\n- PWA: Service Worker, Web App Manifest, Cache API
+- Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - Google Play Billing Library v6+ (Android native)
+  - Paystack (Web/PWA via react-paystack)\n- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
+- Sensors: Microphone, Accelerometer, GPS (premium)
+- PWA: Service Worker, Web App Manifest, Cache API
 
 ## 2. Core Features
 
@@ -37,12 +38,12 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.2.2 Premium Version
 - Unlimited habits display with smooth scrolling
 - Habit grouping by custom categories with collapsible sections
-- Color-coded category headers\n- Habit chain visual connections (lines connecting dependent habits)
+- Color-coded category headers
+- Habit chain visual connections (lines connecting dependent habits)
 - Quick filter buttons: All / Today / Category view
 - Focus Mode toggle button in top bar
 - Premium badge indicator in top-right corner
-
-### 2.3 Add/Edit Habit Screen
+\n### 2.3 Add/Edit Habit Screen
 
 #### 2.3.1 Basic Fields (Free + Premium)
 - Text input field for habit name
@@ -180,8 +181,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
-  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
@@ -254,8 +254,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Track time spent on habits
   - Pomodoro session history
 - **Do Not Disturb Mode**: Automatically silence notifications during focus sessions
-
-#### 2.11.2 Notes and Journaling
+\n#### 2.11.2 Notes and Journaling
 - **Habit Notes**: Add text notes to each habit completion (e.g., 'Ran 5km in 30 minutes')
 - **Daily Journal**: Dedicated journal entry for each day\n- **Photo Attachments**:
   - Attach photos to habit completions (e.g., meal photos, workout selfies)
@@ -302,7 +301,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Professional formatting
 - **Photo Archive**: Export all attached photos as ZIP file
 
-### 2.12 Monetization\n
+### 2.12 Monetization (Dual Payment System)
+
 #### 2.12.1 Free Version Limitations
 - Maximum 5 active habits
 - Single daily reminder per habit
@@ -311,11 +311,29 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Banner ad at bottom of Stats screen
 - No cloud backup
 
-#### 2.12.2 Premium Subscription Tiers
-- **One-Time Purchase**: $4.99 (lifetime premium unlock)
-- **Product ID**: premium_unlock
-- **Payment Method**: Google Play In-App Billing v6+
-\n#### 2.12.3 Premium Benefits Summary
+#### 2.12.2 Premium Pricing
+- **Android (Google Play)**: $4.99 USD one-time purchase
+- **Web/PWA (Paystack)**: ₦8,000 NGN one-time payment
+\n#### 2.12.3 Payment Implementation
+\n**Android Users (Google Play Billing):**
+- Product ID: premium_unlock
+- Product Type: One-time in-app purchase (non-consumable)
+- Price: $4.99 USD\n- Payment Method: Google Play Billing Library v6+
+- Button Text: 'Unlock Premium $4.99'
+- Visibility: Only shown when window.AndroidBilling exists
+
+**Web/PWA Users (Paystack Direct Payment):**
+- Amount: 800000 kobo (₦8,000 NGN)
+- Payment Gateway: Paystack via react-paystack package
+- Public Key: pk_live_XXXXXXXXXXXXXXXXXXXXXXXX (to be replaced by developer)
+- Email: user@soltide.app (placeholder)
+- Reference: new Date().getTime().toString()
+- Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
+- Visibility: Only shown when window.AndroidBilling is NOT present
+- On Success:\n  - localStorage.setItem('rise_premium', 'true')
+  - Unlock all premium features immediately
+  - Show success toast: 'Premium unlocked forever! Thank you 🌅'\n
+#### 2.12.4 Premium Benefits Summary
 1. ✅ Unlimited habits
 2. ✅ Ad-free experience
 3. ✅ Advanced analytics and AI predictions
@@ -325,7 +343,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 7. ✅ Data export (CSV, JSON, PDF)
 8. ✅ Multiple reminders per habit
 9. ✅ Custom notification messages
-10. ✅ 20+ additional alarm sounds + custom upload
+10. ✅20+ additional alarm sounds + custom upload
 11. ✅ Custom theme colors and premium themes
 12. ✅ Automatic cloud backup and cross-device sync
 13. ✅ Sleep insights and recommendations
@@ -343,21 +361,34 @@ A production-ready Android habit tracking application built with Flutter and Mat
 25. ✅ Wear OS smartwatch support
 26. ✅ Streak freeze feature (2 per month)
 27. ✅ Priority customer support
-\n#### 2.12.4 In-App Purchase Flow
-- Prominent'Upgrade to Premium' buttons throughout app
-- Feature-locked screens show preview with upgrade CTA
-- One-time purchase of $4.99 unlocks all premium features forever
-- Restore purchases option for users switching devices
-- Clear pricing display with value proposition
-- Testimonials from premium users
+\n#### 2.12.5 Premium Unlock UI
+\n**Location**: Stats Tab and Premium/Settings Page
 
-##3. Design Specifications
+**Android Display**:
+- Show only Google Play button\n- Hide Paystack button completely
+- Button style: Material3 elevated button with indigo background
+- Icon: Google Play logo
+\n**Web/PWA Display**:
+- Show only Paystack button
+- Hide Google Play button completely
+- Button style: Material3 elevated button with gold/orange gradient background
+- Icon: Lightning bolt or instant payment icon
+- Subtext: 'Keep100% • No Google Cut • Instant Unlock'
+
+**Premium Card Background**:
+- Background image: /images/premium-bg.png (absolute path)
+- Fallback: Gradient from #5E5CE6 to #FF9500
+- Ensure image is visible after deployment
+- Image should show sunrise/dawn theme matching app branding
+
+## 3. Design Specifications
 
 ### 3.1 Color Scheme
 - Primary color: #5E5CE6 (indigo)
 - Accent color: #FF9500 (orange for streak indicators)
 - Sleep tracker accent: #4A90E2 (calming blue)
 - Premium badge color: #FFD700 (gold)
+- Paystack button gradient: #FFD700 to #FF9500 (gold to orange)
 - Success green: #34C759\n- Warning red: #FF3B30
 - Clean, minimalist aesthetic with generous whitespace
 
@@ -377,14 +408,17 @@ A production-ready Android habit tracking application built with Flutter and Mat
 ### 3.4 Iconography
 - Material Design Icons for system functions
 - Custom emoji picker with high-quality emoji set
-- Premium badge: Gold crown icon
-- Streak freeze: Snowflake icon
+- Premium badge: Gold crown icon\n- Streak freeze: Snowflake icon
 - Achievement badges: Custom illustrated icons
+- Paystack button: Lightning bolt or instant payment icon
 \n## 4. Technical Requirements
 
-### 4.1 Performance\n- All animations must run at 60 fps\n- App launch time under 2 seconds
+### 4.1 Performance
+- All animations must run at 60 fps
+- App launch time under 2 seconds
 - Smooth transitions and interactions
-- Optimized for production use\n- Efficient background processing for sleep tracking (minimal battery drain)
+- Optimized for production use
+- Efficient background processing for sleep tracking (minimal battery drain)
 - Fast data synchronization for premium cloud backup (delta sync)
 - Widget updates within 1 second of habit completion
 
@@ -399,8 +433,17 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Real-time sync across devices
 - Conflict resolution for simultaneous edits
 - Automatic daily backups\n- 30-day backup history
-\n### 4.3 Progressive Web App (PWA) Implementation
-\n#### 4.3.1 Service Worker
+
+#### 4.2.3 Premium Status Storage
+- localStorage key: 'rise_premium'
+- Value: 'true' when premium unlocked
+- Persists across sessions and offline usage
+- Checked on app initialization
+- Synced with cloud for cross-device access (premium users only)
+
+### 4.3 Progressive Web App (PWA) Implementation
+
+#### 4.3.1 Service Worker
 - **Core Functionality**:
   - Implement Service Worker for offline functionality and caching
   - Cache static assets (HTML, CSS, JavaScript, fonts, icons)
@@ -429,9 +472,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Orientation: portrait
 - **Install Prompt**:
   - Custom install banner with app benefits
-  - Defer prompt until user engagement (after 3 habit completions)
+  - Defer prompt until user engagement (after3 habit completions)
   - Track install acceptance rate
-\n#### 4.3.3 Offline Capabilities
+\n#### 4.3.3Offline Capabilities
 - **Offline-First Architecture**:
   - All core features work without internet connection
   - Queue actions when offline (habit completions, edits)\n  - Sync queued actions when connection restored
@@ -448,88 +491,124 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Loading Performance**:
   - First Contentful Paint (FCP) < 1.5 seconds
   - Time to Interactive (TTI) < 3 seconds
-  - Largest Contentful Paint (LCP) < 2.5 seconds\n- **Runtime Performance**:
+  - Largest Contentful Paint (LCP) < 2.5 seconds
+- **Runtime Performance**:
   - Smooth60fps animations
   - Lazy loading for images and heavy components
   - Code splitting for faster initial load
   - Minified and compressed assets
-\n### 4.4 Google Play In-App Billing Integration
+\n### 4.4 Payment Integration (Dual System)
 
-#### 4.4.1 Implementation Requirements
-- **Billing Library**: Google Play Billing Library v6+ (native JavaScript integration via TWA)
-- **Product ID**: premium_unlock
-- **Product Type**: One-time in-app purchase (non-consumable)
-- **Price**: $4.99 USD
-\n#### 4.4.2 Core Billing Logic (10-15 lines of code)
-\n**On App Initialization (when running as installed Android app):**
-```javascript
-// Check if running in TWA with billing support
+#### 4.4.1 Google Play Billing (Android)
+\n**Implementation Requirements:**
+- Billing Library: Google Play Billing Library v6+ (native JavaScript integration via TWA)
+- Product ID: premium_unlock
+- Product Type: One-time in-app purchase (non-consumable)
+- Price: $4.99 USD
+\n**Core Billing Logic:**
+\n```javascript
+// On App Initialization (Android only)
 if (window.AndroidBilling) {
-  // Query existing purchases on app start
   window.AndroidBilling.getPurchases().then(purchases => {
     const hasPremium = purchases.some(p => p.productId === 'premium_unlock' && p.purchaseState === 1);
     if (hasPremium) {
-      unlockPremiumFeatures(); // Enable all premium features
-      localStorage.setItem('isPremium', 'true'); // Persist offline
+      unlockPremiumFeatures();\n      localStorage.setItem('rise_premium', 'true');
     }
   }).catch(err => console.error('Billing check failed:', err));
 }
-\n// Fallback for web version (no billing)
-if (!window.AndroidBilling && localStorage.getItem('isPremium') === 'true') {
-  unlockPremiumFeatures(); // Restore from local storage
-}
-```
-
-**On 'Go Premium' Button Click:**
-```javascript
-function handlePremiumPurchase() {
+\n// On 'Go Premium' Button Click (Android)\nfunction handleGooglePlayPurchase() {
   if (window.AndroidBilling) {
     window.AndroidBilling.buy('premium_unlock').then(result => {
-      if (result.purchaseState === 1) { // Purchase successful
-        unlockPremiumFeatures();
-        localStorage.setItem('isPremium', 'true');
+      if (result.purchaseState === 1) {\n        unlockPremiumFeatures();
+        localStorage.setItem('rise_premium', 'true');
         showSuccessMessage('Premium unlocked forever!');
       }
     }).catch(err => {
       console.error('Purchase failed:', err);
       showErrorMessage('Purchase failed. Please try again.');
     });
-  } else {
-    // Web version: show message to install Android app
-    showMessage('Please install the Android app to purchase premium.');
   }
 }
 ```
 
-#### 4.4.3 Premium Feature Gating
-- **Ad Removal**: Hide banner ads when isPremium === true
-- **Sleep Tracker**: Unlock Sleep tab and all sleep features
-- **Smart Alarm**: Enable20+ premium alarm sounds and custom upload
-- **Advanced Analytics**: Unlock Analytics tab with AI predictions
-- **All27 Premium Features**: Gate behind purchase check
+#### 4.4.2 Paystack Payment (Web/PWA)
+\n**Implementation Requirements:**
+- Package: react-paystack (install via npm install react-paystack)
+- Amount: 800000 kobo (₦8,000 NGN)
+- Public Key: pk_live_XXXXXXXXXXXXXXXXXXXXXXXX (placeholder, to be replaced)
+- Email: user@soltide.app (placeholder)
+- Reference: new Date().getTime().toString()
+\n**Core Payment Logic:**
 
-#### 4.4.4 Offline Persistence
-- Purchase status stored in localStorage for offline access
-- On app restart, check localStorage first, then verify with AndroidBilling.getPurchases()
-- Premium features remain unlocked even without internet connection
+```javascript
+import { usePaystackPayment } from 'react-paystack';
+\n// Paystack Configuration
+const paystackConfig = {
+  reference: new Date().getTime().toString(),
+  email: 'user@soltide.app',
+  amount: 800000, // ₦8,000 in kobo
+  publicKey: 'pk_live_XXXXXXXXXXXXXXXXXXXXXXXX',
+};
 
+// Initialize Paystack
+const initializePayment = usePaystackPayment(paystackConfig);
+
+// On Success Callback
+const onPaystackSuccess = (reference) => {
+  console.log('Payment successful:', reference);
+  localStorage.setItem('rise_premium', 'true');
+  unlockPremiumFeatures();\n  showSuccessToast('Premium unlocked forever! Thank you 🌅');\n};
+
+// On Close Callback
+const onPaystackClose = () => {\n  console.log('Payment window closed');
+};
+\n// Button Click Handler (Web/PWA only)
+function handlePaystackPurchase() {
+  if (!window.AndroidBilling) {\n    initializePayment(onPaystackSuccess, onPaystackClose);
+  }
+}
+```
+\n#### 4.4.3 Platform Detection and Button Display
+
+```javascript
+// Detect platform and show appropriate button
+const isAndroid = !!window.AndroidBilling;
+
+// In Premium/Stats Page JSX:\n{isAndroid ? (
+  <button onClick={handleGooglePlayPurchase}>
+    Unlock Premium $4.99
+  </button>
+) : (
+  <button onClick={handlePaystackPurchase}>
+    Unlock Premium ₦8,000(Instant • No Google Cut)
+  </button>
+)}
+```
+
+#### 4.4.4 Premium Feature Gating
+- Check localStorage['rise_premium'] === 'true' to unlock features
+- Ad removal, sleep tracker, analytics, and all27 premium features gated behind this check
+- Premium status persists offline
+- On app restart, verify with AndroidBilling.getPurchases() (Android) or localStorage (Web)\n
 #### 4.4.5 Restore Purchases
-- 'Restore Purchases' button in Settings
-- Calls AndroidBilling.getPurchases() to re-verify ownership
+- Android: 'Restore Purchases' button calls AndroidBilling.getPurchases()
+- Web/PWA: Premium status already persisted in localStorage
 - Updates localStorage and unlocks features if purchase found
 
-#### 4.4.6 Netlify Build Compatibility
-- Billing code only executes when window.AndroidBilling exists (TWA environment)
-- Web version (Netlify) gracefully degrades: shows'Install Android app' message
-- No impact on existing Netlify deployment or build settings
-- Service Worker and PWA functionality remain unchanged
+#### 4.4.6 Premium Card Background Fix
+- Background image path: /images/premium-bg.png (absolute path from public folder)
+- Ensure image is included in build and deployed to Netlify
+- CSS: background-image: url('/images/premium-bg.png')
+- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
+- Image should display sunrise/dawn theme with warm colors
 
 ### 4.5 Permissions\n
 #### 4.5.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.5.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
+\n#### 4.5.2 Optional Permissions (Premium)
+- Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
@@ -560,24 +639,30 @@ function handlePremiumPurchase() {
 - Data deletion option (right to be forgotten)
 - Secure HTTPS connection for all network requests
 - Content Security Policy (CSP) headers
-- **Billing Security**: Purchase verification handled by Google Play Billing Library
+- **Payment Security**: \n  - Google Play Billing: Purchase verification handled by Google\n  - Paystack: PCI-DSS compliant payment processing
+  - No credit card data stored locally
 
 ### 4.9 Third-Party Integrations
-- Google Play Billing Library v6+ for in-app purchases
+- Google Play Billing Library v6+ for Android in-app purchases
+- Paystack (react-paystack) for Web/PWA payments
 - Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
-\n### 4.10 Testing Requirements
+
+### 4.10 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
 - Performance testing for 60 fps animations
 - Battery drain testing for sleep tracker
 - Cross-device sync testing for premium features
-- **Billing Testing**:
-  - Test purchase flow with Google Play test accounts
+- **Payment Testing**:
+  - Google Play: Test with Google Play test accounts
+  - Paystack: Test with Paystack test mode and test cards
   - Verify purchase restoration across devices
   - Test offline premium feature access
   - Validate purchase state persistence
+  - Test platform detection (Android vs Web)
+  - Verify correct button display on each platform
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -590,17 +675,19 @@ function handlePremiumPurchase() {
 
 ### 5.1 Code Deliverables
 - Complete Flutter project that compiles and runs successfully on first attempt
-- Ready-to-upload AAB (Android App Bundle) file with billing integration
+- Ready-to-upload AAB (Android App Bundle) with Google Play Billing integration
 - All27 premium features fully implemented with purchase gating
-- Google Play Billing v6+ integration (10-15 lines of native JavaScript code)
-- In-app purchase flow for product ID 'premium_unlock' ($4.99)
+- Dual payment system:\n  - Google Play Billing v6+ integration (Android)
+  - Paystack integration via react-paystack (Web/PWA)
+- Platform detection logic to show appropriate payment button
+- Premium card background image fix(/images/premium-bg.png)
 - Wear OS companion app APK (premium)\n- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
   - Offline fallback page
 - Comprehensive code documentation
-- README with setup instructions and billing configuration guide
+- README with setup instructions and dual payment configuration guide
 
 ### 5.2 Google Play Store Assets
 - **App Title**: Streak – Daily Habit Tracker\n- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
@@ -634,36 +721,39 @@ function handlePremiumPurchase() {
 - Terms of service
 - Subscription terms and conditions (updated for one-time purchase)
 - FAQdocument
-- **Billing Documentation**:
+- **Payment Documentation**:
   - Google Play Console setup guide for product ID 'premium_unlock'
-  - Testing guide for billing integration
+  - Paystack account setup guide and API key configuration
+  - Testing guide for both payment systems
   - Troubleshooting guide for purchase issues
+  - Platform detection logic explanation
 - **PWA Documentation**:
   - Service Worker implementation guide
   - Offline functionality documentation
   - Installation instructions for web users
   - Browser compatibility matrix
-
-## 6. Success Criteria
+\n## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
-- Google Play Billing integration working seamlessly:\n  - Purchase flow completes successfully
+- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden
+  - **Web/PWA**: Paystack button appears, Google Play hidden
+  - Purchase flow completes successfully on both platforms
   - Premium features unlock immediately after purchase
   - Purchase persists offline via localStorage
-  - Restore purchases works across devices
-- Smooth performance (consistent 60 fps)\n- Production-ready quality code
+  - Restore purchases works across devices (Android)\n- Premium card background image visible after deployment
+- Smooth performance (consistent 60 fps)
+- Production-ready quality code
 - Competitive with top20Productivity apps on Google Play
 - Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
 - All alarm sounds accessible offline without internet connection
 - Clear value differentiation between free and premium tiers
-- Premium features provide significant value to justify $4.99 price point
+- Premium features provide significant value to justify pricing
 - User retention rate >40% after 30 days (industry benchmark)
 - Premium conversion rate target: 5-8% of active users
 - **Netlify Deployment**: Existing build settings and online deployment remain unaffected
 - **PWA Success Metrics**:
-  - Lighthouse PWA score >90
-  - Service Worker successfully caches all critical assets
+  - Lighthouse PWA score >90\n  - Service Worker successfully caches all critical assets
   - Offline functionality works for all core features
   - Install prompt acceptance rate >15%
   - PWA load time <2seconds on3G connection
@@ -681,12 +771,13 @@ This app is designed to outperform competitors through:
 9. **Location & Weather Triggers**: Context-aware reminders
 10. **Generous Free Tier**: 5 habits free (competitors offer 3) to drive adoption
 11. **Affordable One-Time Purchase**: $4.99 lifetime unlock (no recurring fees)
-12. **Privacy-First**: Local-first storage with optional cloud sync
-13. **Beautiful Design**: Material 3 with premium glassmorphism effects
-14. **Performance**: Guaranteed 60 fps animations and fast load times
-15. **Offline-First**: Full functionality without internet connection
-16. **PWA Support**: Cross-platform access via web with native app experience
-17. **Service Worker**: Enhanced offline capabilities and faster load times
+12. **Dual Payment Options**: Google Play for Android, Paystack for Web/PWA (100% revenue retention)
+13. **Privacy-First**: Local-first storage with optional cloud sync
+14. **Beautiful Design**: Material3 with premium glassmorphism effects
+15. **Performance**: Guaranteed 60 fps animations and fast load times
+16. **Offline-First**: Full functionality without internet connection
+17. **PWA Support**: Cross-platform access via web with native app experience
+18. **Service Worker**: Enhanced offline capabilities and faster load times
 \n## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
@@ -698,6 +789,7 @@ This app is designed to outperform competitors through:
 - Gamification with XP and levels
 - Marketplace for community-created habit templates
 - API for third-party integrations
+- Additional payment gateways (Stripe, Flutterwave) for global reach
 \n---
 
 ## Reference Images
@@ -709,9 +801,22 @@ This app is designed to outperform competitors through:
 6. Screenshot_20251125-170740.png: Advanced Analytics page with success rate and insights
 \n---
 
-## Google Play Billing Configuration Checklist
+## Implementation Checklist
 
-**Before Publishing:**
+**Payment System Updates:**
+1. ✅ Install react-paystack package: npm install react-paystack
+2. ✅ Keep Google Play Billing code100% untouched (window.AndroidBilling)
+3. ✅ Add Paystack button to Premium/Stats page (Web/PWA only)
+4. ✅ Implement platform detection: if (!window.AndroidBilling) show Paystack\n5. ✅ Configure Paystack with amount800000 kobo, public key placeholder\n6. ✅ On Paystack success: localStorage.setItem('rise_premium', 'true')
+7. ✅ Show success toast:'Premium unlocked forever! Thank you 🌅'
+8. ✅ Hide Paystack button completely on Android\n9. ✅ Fix premium card background image: /images/premium-bg.png
+10. ✅ Test on desktop browser: Paystack button appears and works
+11. ✅ Test on Android Chrome: only Google Play button shows
+12. ✅ Verify background image is visible after deploy
+13. ✅ Commit message: 'Add Paystack direct payment + fix card background'
+14. ✅ Push to main branch for Netlify auto-deploy
+
+**Google Play Billing Configuration (Unchanged):**
 1. Create in-app product in Google Play Console:\n   - Product ID: premium_unlock
    - Product type: One-time purchase
    - Price: $4.99 USD
@@ -721,15 +826,13 @@ This app is designed to outperform competitors through:
 4. Verify purchase restoration works
 5. Confirm premium features unlock correctly
 6. Test offline premium access
-7. Validate Netlify deployment remains functional
+\n**Paystack Configuration (New):**
+1. Create Paystack account at https://paystack.com
+2. Obtain live public key from Paystack dashboard
+3. Replace placeholder pk_live_XXXXXXXXXXXXXXXXXXXXXXXX in code
+4. Test with Paystack test mode and test cards
+5. Verify payment success triggers premium unlock
+6. Confirm localStorage persistence\n7. Test on multiple browsers (Chrome, Safari, Firefox)
+\n---
 
-**Code Implementation:**
-- window.AndroidBilling.getPurchases() called on app start
-- window.AndroidBilling.buy('premium_unlock') triggered by'Go Premium' button
-- Premium features gated behind purchase check
-- localStorage persistence for offline access
-- Graceful degradation for web version (Netlify)
-
----
-
-**This requirements document now includes complete Google Play In-App Billing integration with minimal code implementation (10-15 lines), ensuring seamless premium unlock functionality while maintaining compatibility with the existing Netlify deployment.**
+**This requirements document now includes a complete dual payment system: Google Play Billing for Android users ($4.99 USD) and Paystack direct payment for Web/PWA users (₦8,000 NGN), allowing100% revenue retention from Twitter/PWA sideloading while maintaining full compatibility with the existing Android app and Netlify deployment. The premium card background image issue has also been addressed with absolute path specification.**

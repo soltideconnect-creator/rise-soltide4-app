@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Zap } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
@@ -41,6 +41,49 @@ export function Stats() {
       console.error('Error checking premium status:', error);
     });
   }, []);
+
+  // Paystack payment handler for web/PWA users
+  const handlePaystackPayment = () => {
+    if (!window.PaystackPop) {
+      toast.error('Payment system not loaded. Please refresh the page.');
+      return;
+    }
+
+    const handler = window.PaystackPop.setup({
+      key: 'pk_live_XXXXXXXXXXXXXXXXXXXXXXXX', // Replace with actual Paystack public key
+      email: 'user@soltide.app',
+      amount: 800000, // ₦8,000 in kobo
+      ref: 'rise_premium_' + new Date().getTime().toString(),
+      currency: 'NGN',
+      metadata: {
+        custom_fields: [
+          {
+            display_name: 'Product',
+            variable_name: 'product',
+            value: 'Rise Premium Unlock'
+          }
+        ]
+      },
+      onSuccess: (transaction: any) => {
+        // Unlock premium immediately
+        localStorage.setItem('rise_premium', 'true');
+        localStorage.setItem('streak_ads_removed', 'true');
+        setAdsRemoved(true);
+        toast.success('Premium unlocked forever! Thank you 🌅', {
+          duration: 5000,
+        });
+        console.log('Payment successful:', transaction);
+      },
+      onCancel: () => {
+        toast.error('Payment cancelled');
+      },
+      onClose: () => {
+        // Called when popup is closed
+      }
+    });
+
+    handler.newTransaction();
+  };
 
   const handleRemoveAds = async () => {
     try {
@@ -165,28 +208,53 @@ export function Stats() {
 
         {/* Premium Upgrade Section */}
         {!adsRemoved && (
-          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
+          <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-primary/30 shadow-lg">
+            {/* Decorative background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent rounded-full blur-3xl" />
+            </div>
+            
+            <CardContent className="relative pt-6">
+              <div className="text-center space-y-6">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Upgrade to Premium</h3>
+                  <h3 className="text-2xl font-bold">Upgrade to Premium</h3>
                   <p className="text-sm text-muted-foreground">
-                    Unlock Sleep Tracker for just $4.99!
+                    Unlock Sleep Tracker and enjoy an ad-free experience!
                   </p>
                 </div>
 
-                {/* Premium Purchase Button */}
-                <Button
-                  onClick={handleRemoveAds}
-                  className="w-full max-w-xs mx-auto"
-                  size="lg"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  Get Premium - $4.99 One-Time
-                </Button>
+                <div className="space-y-3 max-w-md mx-auto">
+                  {/* Google Play Button - Only show on Android */}
+                  {isTWAWithBilling() && (
+                    <Button
+                      onClick={handleRemoveAds}
+                      className="w-full"
+                      size="lg"
+                      variant="default"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Get Premium - $4.99 One-Time
+                    </Button>
+                  )}
+
+                  {/* Paystack Button - Only show on Web/PWA (not Android) */}
+                  {!isTWAWithBilling() && (
+                    <Button
+                      onClick={handlePaystackPayment}
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                      size="lg"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Unlock Premium ₦8,000 (Instant • No Google Cut)
+                    </Button>
+                  )}
+                </div>
                 
                 <p className="text-xs text-muted-foreground">
-                  Unlock Sleep Tracker Feature
+                  {isTWAWithBilling() 
+                    ? 'One-time purchase via Google Play' 
+                    : 'Instant unlock • Keep 100% of your payment'}
                 </p>
               </div>
             </CardContent>

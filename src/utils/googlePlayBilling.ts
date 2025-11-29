@@ -11,8 +11,9 @@
 // Product ID for premium unlock
 export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 
-// LocalStorage key for premium status (fallback for web)
+// LocalStorage keys for premium status (support both keys for compatibility)
 const PREMIUM_STORAGE_KEY = 'streak_ads_removed';
+const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 
 // Type definition for Android Billing interface injected by TWA
 interface AndroidBilling {
@@ -49,18 +50,21 @@ export async function isPremiumUnlocked(): Promise<boolean> {
       // Sync with localStorage for consistency
       if (hasPremium) {
         localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+        localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
       }
       
       return hasPremium;
     } catch (error) {
       console.error('Error checking Google Play purchases:', error);
       // Fallback to localStorage if API fails
-      return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true';
+      return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true' || 
+             localStorage.getItem(PREMIUM_STORAGE_KEY_ALT) === 'true';
     }
   }
   
-  // Fallback for web version: check localStorage
-  return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true';
+  // Fallback for web version: check both localStorage keys
+  return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true' || 
+         localStorage.getItem(PREMIUM_STORAGE_KEY_ALT) === 'true';
 }
 
 /**
@@ -77,6 +81,7 @@ export async function purchasePremium(): Promise<boolean> {
       if (success) {
         // Mark as premium in localStorage for offline access
         localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+        localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
         return true;
       }
       
@@ -89,6 +94,7 @@ export async function purchasePremium(): Promise<boolean> {
   
   // Fallback for web version: simulate purchase (for testing)
   localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+  localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
   return true;
 }
 
@@ -115,5 +121,6 @@ export async function initializeBilling(): Promise<void> {
  * Use this for immediate UI rendering, then verify with isPremiumUnlocked()
  */
 export function getPremiumStatusSync(): boolean {
-  return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true';
+  return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true' || 
+         localStorage.getItem(PREMIUM_STORAGE_KEY_ALT) === 'true';
 }
