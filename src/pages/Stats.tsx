@@ -50,8 +50,8 @@ export function Stats() {
     }
 
     const handler = window.PaystackPop.setup({
-      key: 'pk_live_XXXXXXXXXXXXXXXXXXXXXXXX', // Replace with actual Paystack public key
-      email: 'user@soltide.app',
+      key: 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315', // Replace with actual Paystack public key
+      email: 'soltideapps@gmail.com',
       amount: 800000, // ₦8,000 in kobo
       ref: 'rise_premium_' + new Date().getTime().toString(),
       currency: 'NGN',
