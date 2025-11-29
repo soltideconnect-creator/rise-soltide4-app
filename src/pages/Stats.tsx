@@ -222,14 +222,6 @@ export function Stats() {
       : "Unlock Sleep Tracker, Smart Alarm & remove ads forever"}
   </p>
 </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  Unlock Sleep Tracker Feature
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {adsRemoved && (
           <Card className="bg-gradient-to-br from-success/5 to-primary/5 border-success/20">
