@@ -40,11 +40,44 @@ if ('serviceWorker' in navigator) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New service worker available, prompt user to refresh
-                console.log('[PWA] New version available! Please refresh.');
-                // You can show a toast notification here
+                console.log('[PWA] New version available! Reloading...');
+                
+                // Show notification and auto-reload after 2 seconds
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                  position: fixed;
+                  top: 20px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  background: #5E5CE6;
+                  color: white;
+                  padding: 16px 24px;
+                  border-radius: 12px;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                  z-index: 10000;
+                  font-family: system-ui, -apple-system, sans-serif;
+                  font-size: 14px;
+                  font-weight: 500;
+                  animation: slideDown 0.3s ease-out;
+                `;
+                notification.textContent = '🎉 New version available! Updating...';
+                document.body.appendChild(notification);
+                
+                // Tell the new service worker to take over immediately
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                
+                // Reload the page after a short delay
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
               }
             });
           }
+        });
+        
+        // Listen for the service worker taking control
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('[PWA] New service worker activated');
         });
       })
       .catch((error) => {

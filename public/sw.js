@@ -1,8 +1,8 @@
 // Rise – Habit Tracker & Smart Sleep
 // Service Worker for PWA and Offline Support
 
-const CACHE_NAME = 'rise-v1.3.0';
-const RUNTIME_CACHE = 'rise-runtime';
+const CACHE_NAME = 'rise-v1.4.0';
+const RUNTIME_CACHE = 'rise-runtime-v1.4.0';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -48,7 +48,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network First for app files, Cache First for images
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
@@ -60,49 +60,75 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached response and update cache in background
-        event.waitUntil(
-          fetch(event.request).then((response) => {
-            if (response && response.status === 200) {
-              return caches.open(RUNTIME_CACHE).then((cache) => {
-                cache.put(event.request, response.clone());
-                return response;
-              });
-            }
-          }).catch(() => {
-            // Network failed, but we have cache
-          })
-        );
-        return cachedResponse;
-      }
+  const url = new URL(event.request.url);
+  const isAppFile = url.pathname.endsWith('.html') || 
+                    url.pathname.endsWith('.js') || 
+                    url.pathname.endsWith('.css') ||
+                    url.pathname === '/' ||
+                    url.pathname.startsWith('/assets/');
+  
+  const isImage = url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|ico)$/);
 
-      // Not in cache, fetch from network
-      return fetch(event.request).then((response) => {
-        // Don't cache non-successful responses
-        if (!response || response.status !== 200 || response.type === 'error') {
+  // Network First strategy for app files (HTML, JS, CSS)
+  if (isAppFile) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the new version
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
           return response;
+        })
+        .catch(() => {
+          // Network failed, try cache
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache First strategy for images
+  if (isImage) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
+        return fetch(event.request).then((response) => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
 
-        // Clone the response
-        const responseToCache = response.clone();
-
-        // Cache the fetched response
-        event.waitUntil(
+  // Default: Network First
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
           caches.open(RUNTIME_CACHE).then((cache) => {
             cache.put(event.request, responseToCache);
-          })
-        );
-
+          });
+        }
         return response;
-      }).catch(() => {
-        // Network failed and not in cache
-        // Return offline page if available
-        return caches.match('/index.html');
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
 
