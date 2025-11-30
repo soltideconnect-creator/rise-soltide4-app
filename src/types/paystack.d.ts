@@ -16,7 +16,7 @@ interface PaystackPopupOptions {
 }
 
 interface PaystackPopup {
-  newTransaction: () => void;
+  newTransaction: (options: PaystackPopupOptions) => void;
 }
 
 interface Window {
