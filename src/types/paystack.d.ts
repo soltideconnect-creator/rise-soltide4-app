@@ -23,4 +23,6 @@ interface Window {
   PaystackPop?: {
     setup: (options: PaystackPopupOptions) => PaystackPopup;
   };
+  paystackLoadAttempted?: boolean;
+  paystackLoadFailed?: boolean;
 }

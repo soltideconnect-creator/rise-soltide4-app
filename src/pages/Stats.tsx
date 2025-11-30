@@ -20,6 +20,7 @@ export function Stats() {
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
   const [adsRemoved, setAdsRemoved] = useState(false);
   const [paystackLoaded, setPaystackLoaded] = useState(false);
+  const [paystackFailed, setPaystackFailed] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -43,19 +44,51 @@ export function Stats() {
     });
 
     // Check if Paystack script is loaded (for web/PWA payment)
+    let retryCount = 0;
+    const maxRetries = 20; // 10 seconds total (20 * 500ms)
+    
     const checkPaystackLoaded = () => {
+      console.log(`🔍 Checking Paystack... Attempt ${retryCount + 1}/${maxRetries}`);
+      console.log('window.PaystackPop exists?', !!window.PaystackPop);
+      console.log('window.paystackLoadAttempted?', window.paystackLoadAttempted);
+      console.log('window.paystackLoadFailed?', window.paystackLoadFailed);
+      
+      // Check if script explicitly failed to load
+      if (window.paystackLoadFailed) {
+        console.error('❌ Paystack script failed to load (network error or blocked)');
+        setPaystackFailed(true);
+        toast.error('Payment system blocked. Please disable ad blockers or try a different browser.', {
+          duration: 7000,
+        });
+        return;
+      }
+      
       if (window.PaystackPop) {
         setPaystackLoaded(true);
-        console.log('✅ Paystack payment system loaded');
+        console.log('✅ Paystack payment system loaded successfully!');
       } else {
-        console.warn('⚠️ Paystack not loaded yet, retrying...');
-        setTimeout(checkPaystackLoaded, 500);
+        retryCount++;
+        if (retryCount < maxRetries) {
+          console.warn(`⚠️ Paystack not loaded yet, retrying in 500ms... (${retryCount}/${maxRetries})`);
+          setTimeout(checkPaystackLoaded, 500);
+        } else {
+          console.error('❌ Paystack failed to load after 10 seconds');
+          setPaystackFailed(true);
+          toast.error('Payment system failed to load. Please refresh the page.', {
+            duration: 5000,
+          });
+        }
       }
     };
     
     // Only check for Paystack on web/PWA (not Android TWA)
     if (!isTWAWithBilling()) {
-      checkPaystackLoaded();
+      console.log('🚀 Starting Paystack initialization check...');
+      console.log('Is TWA with billing?', isTWAWithBilling());
+      // Wait a bit for the async script to load
+      setTimeout(checkPaystackLoaded, 100);
+    } else {
+      console.log('📱 Running in TWA mode, skipping Paystack check');
     }
   }, []);
 
@@ -298,19 +331,39 @@ export function Stats() {
                   {/* Paystack Button - Only show on Web/PWA */}
                   {!isTWAWithBilling() && (
                     <>
-                      <Button
-                        onClick={handlePaystackPayment}
-                        disabled={!paystackLoaded}
-                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 disabled:opacity-50"
-                        size="lg"
-                      >
-                        <Zap className="w-4 h-4 mr-2" />
-                        {paystackLoaded ? 'Unlock Premium ₦8,000' : 'Loading Payment System...'}
-                      </Button>
-                      {!paystackLoaded && (
-                        <p className="text-xs text-amber-600 dark:text-amber-400">
-                          ⏳ Initializing secure payment gateway...
-                        </p>
+                      {paystackFailed ? (
+                        <div className="space-y-2">
+                          <Button
+                            onClick={() => window.location.reload()}
+                            className="w-full bg-amber-600 hover:bg-amber-700"
+                            size="lg"
+                          >
+                            🔄 Refresh Page to Load Payment
+                          </Button>
+                          <p className="text-xs text-red-600 dark:text-red-400">
+                            ❌ Payment system failed to load. This may be due to:
+                            <br />• Ad blockers or privacy extensions
+                            <br />• Incognito mode restrictions
+                            <br />• Network connectivity issues
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={handlePaystackPayment}
+                            disabled={!paystackLoaded}
+                            className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 disabled:opacity-50"
+                            size="lg"
+                          >
+                            <Zap className="w-4 h-4 mr-2" />
+                            {paystackLoaded ? 'Unlock Premium ₦8,000' : 'Loading Payment System...'}
+                          </Button>
+                          {!paystackLoaded && (
+                            <p className="text-xs text-amber-600 dark:text-amber-400">
+                              ⏳ Initializing secure payment gateway...
+                            </p>
+                          )}
+                        </>
                       )}
                     </>
                   )}
