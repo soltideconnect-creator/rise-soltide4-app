@@ -70,7 +70,7 @@ export async function isPremiumUnlocked(): Promise<boolean> {
 /**
  * Purchase premium unlock
  * In TWA: triggers Google Play billing flow
- * On web: simulates purchase (for testing)
+ * On web: triggers Paystack payment (handled by Stats.tsx)
  */
 export async function purchasePremium(): Promise<boolean> {
   // If running in TWA with billing support, use Google Play
@@ -92,10 +92,9 @@ export async function purchasePremium(): Promise<boolean> {
     }
   }
   
-  // Fallback for web version: simulate purchase (for testing) - set both keys
-  localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
-  localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
-  return true;
+  // PRODUCTION MODE: Web version must use Paystack (no test unlock)
+  // This function should not be called directly on web - use Paystack button in Stats.tsx
+  throw new Error('Please use Paystack payment button to purchase premium on web');
 }
 
 /**
@@ -113,6 +112,35 @@ export async function initializeBilling(): Promise<void> {
     }
   } catch (error) {
     console.error('Error initializing billing:', error);
+  }
+}
+
+/**
+ * Restore purchases (for Android TWA)
+ * Checks Google Play for existing purchases and syncs with localStorage
+ */
+export async function restorePurchases(): Promise<boolean> {
+  if (!isTWAWithBilling() || !window.AndroidBilling) {
+    throw new Error('Restore purchases is only available on Android app');
+  }
+  
+  try {
+    const purchases = await window.AndroidBilling.getPurchases();
+    const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
+    
+    if (hasPremium) {
+      // Restore premium status in localStorage
+      localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+      localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+      console.log('✅ Premium restored from Google Play');
+      return true;
+    } else {
+      console.log('ℹ️ No premium purchase found');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error restoring purchases:', error);
+    throw new Error('Failed to restore purchases. Please try again.');
   }
 }
 

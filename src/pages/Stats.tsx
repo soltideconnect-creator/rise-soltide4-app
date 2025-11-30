@@ -7,7 +7,7 @@ import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Zap } from 'lu
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
-import { isPremiumUnlocked, purchasePremium, isTWAWithBilling } from '@/utils/googlePlayBilling';
+import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -94,7 +94,7 @@ export function Stats() {
           : 'Processing purchase...'
       );
       
-      // Trigger purchase (Google Play in TWA, simulated on web)
+      // Trigger purchase (Google Play in TWA, error on web)
       const success = await purchasePremium();
       
       // Dismiss loading toast
@@ -111,6 +111,29 @@ export function Stats() {
     } catch (error) {
       console.error('Purchase error:', error);
       toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+    }
+  };
+
+  // Restore purchases handler (Android only)
+  const handleRestorePurchases = async () => {
+    try {
+      const loadingToast = toast.loading('Restoring purchases...');
+      
+      const restored = await restorePurchases();
+      
+      toast.dismiss(loadingToast);
+      
+      if (restored) {
+        toast.success('Premium restored successfully! 🎉', {
+          duration: 5000,
+        });
+        setAdsRemoved(true);
+      } else {
+        toast.info('No premium purchase found. Please purchase premium first.');
+      }
+    } catch (error) {
+      console.error('Restore error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to restore purchases.');
     }
   };
 
@@ -232,15 +255,27 @@ export function Stats() {
                 <div className="space-y-3 max-w-sm mx-auto">
                   {/* Google Play Button - Only show on Android TWA */}
                   {isTWAWithBilling() && (
-                    <Button
-                      onClick={handleRemoveAds}
-                      className="w-full"
-                      size="lg"
-                      variant="default"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Get Premium - $4.99 One-Time
-                    </Button>
+                    <>
+                      <Button
+                        onClick={handleRemoveAds}
+                        className="w-full"
+                        size="lg"
+                        variant="default"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Get Premium - $4.99 One-Time
+                      </Button>
+                      
+                      {/* Restore Purchase Button */}
+                      <Button
+                        onClick={handleRestorePurchases}
+                        className="w-full"
+                        size="sm"
+                        variant="outline"
+                      >
+                        Restore Purchase
+                      </Button>
+                    </>
                   )}
 
                   {/* Paystack Button - Only show on Web/PWA */}

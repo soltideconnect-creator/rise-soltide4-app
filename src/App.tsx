@@ -27,9 +27,9 @@ function App() {
     try {
       console.log('App initializing...');
       
-      // Enable premium features by default for testing
-      localStorage.setItem('streak_ads_removed', 'true');
-      console.log('Premium features enabled');
+      // PRODUCTION MODE: Premium must be purchased (no test unlock)
+      // Premium is only unlocked after real Paystack or Google Play purchase
+      console.log('Premium status:', localStorage.getItem('streak_ads_removed') === 'true' ? 'Unlocked' : 'Locked');
       
       // Initialize theme
       themeService.initializeTheme();
