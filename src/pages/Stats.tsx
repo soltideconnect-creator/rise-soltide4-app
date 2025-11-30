@@ -19,6 +19,7 @@ export function Stats() {
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
   const [adsRemoved, setAdsRemoved] = useState(false);
+  const [paystackLoaded, setPaystackLoaded] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -40,12 +41,28 @@ export function Stats() {
     }).catch(error => {
       console.error('Error checking premium status:', error);
     });
+
+    // Check if Paystack script is loaded (for web/PWA payment)
+    const checkPaystackLoaded = () => {
+      if (window.PaystackPop) {
+        setPaystackLoaded(true);
+        console.log('✅ Paystack payment system loaded');
+      } else {
+        console.warn('⚠️ Paystack not loaded yet, retrying...');
+        setTimeout(checkPaystackLoaded, 500);
+      }
+    };
+    
+    // Only check for Paystack on web/PWA (not Android TWA)
+    if (!isTWAWithBilling()) {
+      checkPaystackLoaded();
+    }
   }, []);
 
   // Paystack payment handler for web/PWA users
   const handlePaystackPayment = () => {
     if (!window.PaystackPop) {
-      toast.error('Payment system not loaded. Please refresh the page.');
+      toast.error('Payment system is still loading. Please wait a moment and try again.');
       return;
     }
 
@@ -280,14 +297,22 @@ export function Stats() {
 
                   {/* Paystack Button - Only show on Web/PWA */}
                   {!isTWAWithBilling() && (
-                    <Button
-                      onClick={handlePaystackPayment}
-                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                      size="lg"
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      Unlock Premium ₦8,000
-                    </Button>
+                    <>
+                      <Button
+                        onClick={handlePaystackPayment}
+                        disabled={!paystackLoaded}
+                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 disabled:opacity-50"
+                        size="lg"
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        {paystackLoaded ? 'Unlock Premium ₦8,000' : 'Loading Payment System...'}
+                      </Button>
+                      {!paystackLoaded && (
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          ⏳ Initializing secure payment gateway...
+                        </p>
+                      )}
+                    </>
                   )}
                   
                   <p className="text-xs text-muted-foreground">
