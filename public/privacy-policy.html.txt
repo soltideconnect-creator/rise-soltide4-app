@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Privacy Policy – Rise: Habit Tracker and Smart Sleep</title>
+  <style>body{font-family:system-ui,sans-serif;padding:2rem;line-height:1.6;max-width:800px;margin:auto;}</style>
+</head>
+<body>
+
+<h1>Privacy Policy – Rise: Habit Tracker and Smart Sleep</h1>
+
+<p><strong>Last updated: 30 November 2025</strong></p>
+
+<p>All data you create in <strong>Rise: Habit Tracker and Smart Sleep</strong> (habits, streaks, sleep recordings, notes, etc.) is stored <strong>only locally on your device</strong> using the browser’s secure storage (IndexedDB / localStorage). Your data is never uploaded to any server, cloud, or third party.</p>
+
+<p>The developer — <strong>Solomon Awotide</strong> (soltideconnect@gmail.com) — does not have access to your personal information and cannot view, collect, or share it under any circumstances.</p>
+
+<p>Rise contains <strong>no advertisement networks, no third-party analytics</strong> (such as Google Analytics, Facebook SDK, Mixpanel, Amplitude, etc.), and no tracking pixels.</p>
+
+<h3>Android Backup Note (Google Play version only)</h3>
+<p>If you have enabled “Back up my data” in your Android settings (Settings → System → Backup), Google itself (not Rise) may create periodic encrypted backups of your device data to Google Drive. This is a standard Android feature and is completely outside the control of Rise or its developer. You can disable it at any time in your phone settings.</p>
+
+<h3>Permissions Explained</h3>
+<ul>
+  <li><strong>Microphone & Motion sensors</strong> – used only for the optional premium Sleep Tracker & Smart Alarm features (never active without your explicit consent).</li>
+  <li><strong>No internet permission</strong> is required or requested after installation – everything works 100 % offline.</li>
+</ul>
+
+<h3>Software License</h3>
+<p>Copyright © 2025 Solomon Awotide</p>
+<p>Rise: Habit Tracker and Smart Sleep is proprietary software. All rights reserved.</p>
+
+<h3>Contact</h3>
+<p>For any privacy-related questions, reach out to:</p>
+<p><strong>Solomon Awotide</strong><br>
+Email: soltideconnect@gmail.com</p>
+
+<p>Thank you for trusting Rise with your habits and sleep 🌅</p>
+
+</body>
+</html>
