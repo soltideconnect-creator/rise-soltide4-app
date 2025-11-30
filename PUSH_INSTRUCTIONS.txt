@@ -1,0 +1,103 @@
+═══════════════════════════════════════════════════════════════════
+🚀 READY TO PUSH - TWO FIXES COMPLETE
+═══════════════════════════════════════════════════════════════════
+
+✅ FIX #1: Netlify Deployment Error (ERR_PNPM_TARBALL_INTEGRITY)
+   - Created .npmrc to use public npm registry
+   - Regenerated pnpm-lock.yaml with correct integrity hash
+   - Updated miaoda-sc-plugin to ^1.0.31
+   - Build tested successfully
+
+✅ FIX #2: Missing Social Preview Image
+   - Added og-image.jpg (1344x768px)
+   - Added Open Graph meta tags (og:image, og:url, etc.)
+   - Added Twitter Card meta tags
+   - Fixes missing image in Netlify site card
+
+═══════════════════════════════════════════════════════════════════
+📦 COMMITS READY TO PUSH (14 total)
+═══════════════════════════════════════════════════════════════════
+
+Latest commits:
+  ac9bd47 - Fix: Add Open Graph social preview image for Netlify site card
+  db676fd - ISSUE: # Issue
+  72accb9 - Fix: Regenerate pnpm lockfile with correct integrity hash
+  cd45f8f - Fix: Update pnpm lockfile to match package.json dependencies
+  5fee35b - Add official privacy-policy.html for Google Play submission
+  15e53ad - PWA OPTIMIZATION – Enhanced SEO, accessibility, and PWA compliance
+  2b8c844 - FIX PREMIUM LEAK – switch to production mode
+  ... and 7 more commits
+
+═══════════════════════════════════════════════════════════════════
+🎯 PUSH COMMAND
+═══════════════════════════════════════════════════════════════════
+
+Run this command to push all fixes:
+
+    git push origin master
+
+═══════════════════════════════════════════════════════════════════
+📋 POST-PUSH CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+After pushing, follow these steps:
+
+1. ⏳ WAIT FOR NETLIFY AUTO-DEPLOY
+   - Netlify will automatically detect the push
+   - Build should complete in 2-3 minutes
+   - Check Netlify dashboard for deploy status
+
+2. 🗑️ CLEAR NETLIFY CACHE (IMPORTANT for lockfile fix)
+   - Go to: Netlify Dashboard → Deploys
+   - Click: "Trigger deploy" → "Clear cache and deploy site"
+   - This ensures fresh package installation
+
+3. ✅ VERIFY DEPLOYMENT SUCCESS
+   - Check build logs for no errors
+   - Verify site loads correctly
+   - Test that all features work
+
+4. 🖼️ VERIFY SOCIAL PREVIEW IMAGE
+   - Visit: https://rise-soltide-app.netlify.app/og-image.jpg
+   - Should display the preview image
+   - Check Netlify site card in dashboard
+   - May take 5-10 minutes to update
+
+5. 🧪 TEST SOCIAL SHARING (Optional)
+   - Facebook Debug Tool: https://developers.facebook.com/tools/debug/
+   - Twitter Card Validator: https://cards-dev.twitter.com/validator
+   - Share URL in Slack/Discord to see preview
+
+═══════════════════════════════════════════════════════════════════
+🎉 EXPECTED RESULTS
+═══════════════════════════════════════════════════════════════════
+
+After successful deployment:
+
+✅ Netlify build completes without errors
+✅ No ERR_PNPM_TARBALL_INTEGRITY errors
+✅ Site loads and functions correctly
+✅ Social preview image appears in Netlify card
+✅ Rich previews work on social media
+✅ Professional appearance when sharing
+
+═══════════════════════════════════════════════════════════════════
+🆘 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+If deployment still fails:
+  → Check build logs for specific errors
+  → Verify .npmrc file was pushed
+  → Try manual "Clear cache and retry deploy"
+
+If image still doesn't appear:
+  → Wait 5-10 minutes for CDN propagation
+  → Check if og-image.jpg is accessible at URL
+  → Use Facebook Debug Tool to force refresh
+  → Clear browser cache
+
+═══════════════════════════════════════════════════════════════════
+
+Ready to push? Run: git push origin master
+
+═══════════════════════════════════════════════════════════════════
