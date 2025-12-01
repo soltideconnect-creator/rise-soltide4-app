@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
 import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
 import { PaystackButton } from '@/components/PaystackButton';
-import { unlockPremium, getUserEmail, formatAmount } from '@/utils/paystack';
+import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -21,6 +22,9 @@ export function Stats() {
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
   const [adsRemoved, setAdsRemoved] = useState(false);
+  const [userEmail, setUserEmailState] = useState('');
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [tempEmail, setTempEmail] = useState('');
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -42,6 +46,12 @@ export function Stats() {
     }).catch(error => {
       console.error('Error checking premium status:', error);
     });
+
+    // Load user email from localStorage
+    const storedEmail = getUserEmail();
+    if (storedEmail && isValidEmail(storedEmail)) {
+      setUserEmailState(storedEmail);
+    }
   }, []);
 
   // Paystack payment success handler
@@ -52,14 +62,15 @@ export function Stats() {
     unlockPremium(transaction.reference);
     setAdsRemoved(true);
     
-    toast.success('🎉 Premium unlocked forever! Sleep Tracker and all premium features are now available!', {
+    toast.success('🎉 Premium Unlocked Forever!', {
+      description: `Receipt sent to ${userEmail}. All premium features are now available!`,
       duration: 5000,
     });
     
     console.log('Transaction details:', {
       reference: transaction.reference,
       amount: formatAmount(800000),
-      email: getUserEmail(),
+      email: userEmail,
       timestamp: new Date().toISOString(),
     });
   };
@@ -120,6 +131,34 @@ export function Stats() {
       console.error('Restore error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to restore purchases.');
     }
+  };
+
+  // Email handling functions
+  const handleSaveEmail = () => {
+    if (!tempEmail.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+
+    if (!isValidEmail(tempEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setUserEmail(tempEmail);
+    setUserEmailState(tempEmail);
+    setIsEditingEmail(false);
+    toast.success('Email saved! You can now proceed with payment.');
+  };
+
+  const handleEditEmail = () => {
+    setTempEmail(userEmail);
+    setIsEditingEmail(true);
+  };
+
+  const handleCancelEdit = () => {
+    setTempEmail('');
+    setIsEditingEmail(false);
   };
 
   return (
@@ -265,16 +304,93 @@ export function Stats() {
 
                   {/* Paystack Button - Only show on Web/PWA */}
                   {!isTWAWithBilling() && (
-                    <div className="space-y-2">
-                      <PaystackButton
-                        email={getUserEmail()}
-                        amount={800000}
-                        publicKey="pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"
-                        text="⚡ Unlock Premium - ₦8,000"
-                        onSuccess={handlePaystackSuccess}
-                        onClose={handlePaystackClose}
-                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-base font-semibold h-12"
-                      />
+                    <div className="space-y-4">
+                      {/* Email Input Section */}
+                      {!userEmail || isEditingEmail ? (
+                        <Card className="border-primary/20 bg-primary/5">
+                          <CardContent className="pt-6 space-y-4">
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 bg-primary/10 rounded-lg">
+                                <Mail className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="flex-1 space-y-1">
+                                <h4 className="font-semibold text-sm">Email Required for Receipt</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  Your payment receipt will be sent to this email address
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <Input
+                                type="email"
+                                placeholder="Enter your email address"
+                                value={tempEmail}
+                                onChange={(e) => setTempEmail(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveEmail();
+                                  }
+                                }}
+                                className="w-full"
+                                autoFocus
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={handleSaveEmail}
+                                  className="flex-1"
+                                  size="sm"
+                                >
+                                  Save Email
+                                </Button>
+                                {isEditingEmail && (
+                                  <Button
+                                    onClick={handleCancelEdit}
+                                    variant="outline"
+                                    size="sm"
+                                  >
+                                    Cancel
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        <div className="space-y-3">
+                          {/* Email Display */}
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-4 h-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-xs text-muted-foreground">Receipt will be sent to:</p>
+                                <p className="text-sm font-medium">{userEmail}</p>
+                              </div>
+                            </div>
+                            <Button
+                              onClick={handleEditEmail}
+                              variant="ghost"
+                              size="sm"
+                              className="h-8"
+                            >
+                              <Edit2 className="w-3 h-3 mr-1" />
+                              Change
+                            </Button>
+                          </div>
+
+                          {/* Paystack Payment Button */}
+                          <PaystackButton
+                            email={userEmail}
+                            amount={800000}
+                            publicKey="pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"
+                            text="⚡ Unlock Premium - ₦8,000"
+                            onSuccess={handlePaystackSuccess}
+                            onClose={handlePaystackClose}
+                            className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-base font-semibold h-12"
+                          />
+                        </div>
+                      )}
+                      
                       <p className="text-xs text-center text-muted-foreground">
                         Secure payment via Paystack • Instant access • Lifetime premium
                       </p>

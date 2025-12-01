@@ -88,7 +88,7 @@ export const isValidEmail = (email: string): boolean => {
  * Gets or sets user email in localStorage
  */
 export const getUserEmail = (): string => {
-  return localStorage.getItem('rise_user_email') || 'soltideapps@gmail.com';
+  return localStorage.getItem('rise_user_email') || '';
 };
 
 export const setUserEmail = (email: string): void => {
