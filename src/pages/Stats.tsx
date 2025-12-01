@@ -216,7 +216,7 @@ export function Stats() {
                 {/* Header */}
                 <div className="space-y-3">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-2">
-                    <Zap className="w-8 h-8 text-primary" />
+                    <Trophy className="w-8 h-8 text-primary" />
                   </div>
                   <h3 className="text-2xl font-bold">Upgrade to Premium</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">

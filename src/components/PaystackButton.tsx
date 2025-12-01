@@ -116,7 +116,7 @@ export const PaystackButton = ({
         }
       });
 
-      handler.openIframe();
+      handler.newTransaction();
     } catch (error) {
       console.error('Error initializing Paystack:', error);
       toast.error('Failed to initialize payment. Please try again.');

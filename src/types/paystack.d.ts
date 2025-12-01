@@ -16,7 +16,8 @@ interface PaystackPopupOptions {
 }
 
 interface PaystackPopup {
-  newTransaction: (options: PaystackPopupOptions) => void;
+  newTransaction: () => void;
+  openIframe: () => void;
 }
 
 interface Window {
