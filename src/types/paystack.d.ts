@@ -10,7 +10,8 @@ interface PaystackPopupOptions {
   ref?: string;
   currency?: string;
   metadata?: Record<string, any>;
-  onSuccess?: (transaction: any) => void;
+  callback?: (response: any) => void;  // Official Paystack callback
+  onSuccess?: (transaction: any) => void;  // Alternative callback
   onCancel?: () => void;
   onClose?: () => void;
 }

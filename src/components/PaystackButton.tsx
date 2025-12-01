@@ -103,20 +103,18 @@ export const PaystackButton = ({
             }
           ]
         },
-        onSuccess: (transaction: any) => {
-          console.log('Payment successful:', transaction);
-          onSuccess(transaction);
-        },
-        onCancel: () => {
-          console.log('Payment cancelled by user');
-          toast.error('Payment cancelled');
+        callback: (response: any) => {
+          console.log('Payment successful:', response);
+          onSuccess(response);
         },
         onClose: () => {
+          console.log('Payment popup closed');
           onClose();
         }
       });
 
-      handler.newTransaction();
+      // Use openIframe() to match official react-paystack behavior
+      handler.openIframe();
     } catch (error) {
       console.error('Error initializing Paystack:', error);
       toast.error('Failed to initialize payment. Please try again.');
