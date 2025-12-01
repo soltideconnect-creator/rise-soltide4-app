@@ -4,15 +4,20 @@
 
 ### 1. **Infinite Loading Bug** → FIXED ✅
 - **Problem**: Button stuck on "Loading Payment System..." forever
-- **Solution**: Added 10-second timeout (20 retries × 500ms)
-- **Result**: Button either loads successfully or shows error after 10 seconds
+- **Solution**: Added 15-second timeout (30 retries × 500ms)
+- **Result**: Button either loads successfully or shows error after 15 seconds
 
-### 2. **No Error Feedback** → FIXED ✅
+### 2. **False Positive "Ad Blocker" Error** → FIXED ✅
+- **Problem**: Users WITHOUT ad blockers getting "Payment system blocked" error
+- **Solution**: Removed premature failure check, only check after all retries exhausted
+- **Result**: Button loads correctly for users without ad blockers
+
+### 3. **No Error Feedback** → FIXED ✅
 - **Problem**: Silent failures, no user feedback
 - **Solution**: Added error detection and user-friendly messages
 - **Result**: Clear error messages with possible causes
 
-### 3. **Netlify Deployment Error** → FIXED ✅
+### 4. **Netlify Deployment Error** → FIXED ✅
 - **Problem**: `ERR_PNPM_OUTDATED_LOCKFILE` - version specifier mismatch
 - **Solution**: Changed `'miaoda-sc-plugin': '1.0.31'` → `'^1.0.31'`
 - **Result**: Deployment now works correctly
@@ -55,7 +60,10 @@ Navigate to the Stats tab in your app.
 **✅ SUCCESS (Normal Browser):**
 ```
 🚀 Starting Paystack initialization check...
-🔍 Checking Paystack... Attempt 1/20
+🔍 Checking Paystack... Attempt 1/30
+window.PaystackPop exists? false
+⚠️ Paystack not loaded yet, retrying... (1/30)
+🔍 Checking Paystack... Attempt 2/30
 window.PaystackPop exists? true
 ✅ Paystack payment system loaded successfully!
 ```
@@ -63,19 +71,22 @@ window.PaystackPop exists? true
 
 **❌ BLOCKED (Ad Blocker):**
 ```
-❌ Paystack script failed to load
-window.paystackLoadFailed? true
-❌ Paystack script failed to load (network error or blocked)
+🔍 Checking Paystack... Attempt 30/30
+❌ Paystack failed to load after 15 seconds
+Final check - window.paystackLoadFailed? true
 ```
 → Button shows: **"🔄 Refresh Page to Load Payment"**
+→ Error: **"Payment system blocked by browser. Please disable ad blockers..."**
 → **Solution**: Disable ad blocker and refresh
 
 **⏳ TIMEOUT (Network Issue):**
 ```
-🔍 Checking Paystack... Attempt 20/20
-❌ Paystack failed to load after 10 seconds
+🔍 Checking Paystack... Attempt 30/30
+❌ Paystack failed to load after 15 seconds
+Final check - window.paystackLoadFailed? false
 ```
 → Button shows: **"🔄 Refresh Page to Load Payment"**
+→ Error: **"Payment system is taking too long to load. Please check your internet connection..."**
 → **Solution**: Check internet connection and refresh
 
 ---
