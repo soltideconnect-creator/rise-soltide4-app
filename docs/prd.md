@@ -1,4 +1,4 @@
-# Streak – Daily Habit Tracker Requirements Document (Dual Payment System Edition)
+# Streak – Daily Habit Tracker Requirements Document (Paystack Integration Update)
 
 ## 1. Application Overview
 
@@ -8,18 +8,21 @@ Streak – Daily Habit Tracker
 A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA).
 
 ### 1.3 Technical Stack
-- Framework: Flutter
+- Framework: Flutter (Android) + Next.js with TypeScript (Web/PWA)
 - Design System: Material 3 (Material You)
 - Database: Hive (offline storage)
 - Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - Google Play Billing Library v6+ (Android native)
-  - Paystack (Web/PWA via react-paystack)\n- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
+  - Paystack via react-paystack (Web/PWA)
+- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
 - Sensors: Microphone, Accelerometer, GPS (premium)
 - PWA: Service Worker, Web App Manifest, Cache API
+- UI Components: shadcn/ui (@/components/ui/*)
+- Icons: lucide-react\n- Toasts: sonner
 
 ## 2. Core Features
 
 ### 2.1 Onboarding Flow
--3 full-screen slides explaining streak concept and app features
+- 3 full-screen slides explaining streak concept and app features
 - Highlight premium features with gold accents
 - Request notification permission during onboarding
 - Optional: Request location and camera permissions for premium features
@@ -38,8 +41,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.2.2 Premium Version
 - Unlimited habits display with smooth scrolling
 - Habit grouping by custom categories with collapsible sections
-- Color-coded category headers
-- Habit chain visual connections (lines connecting dependent habits)
+- Color-coded category headers\n- Habit chain visual connections (lines connecting dependent habits)
 - Quick filter buttons: All / Today / Category view
 - Focus Mode toggle button in top bar
 - Premium badge indicator in top-right corner
@@ -181,7 +183,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
+  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
@@ -249,12 +252,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Full-screen mode with minimal design
   - Swipe to complete habits
 - **Pomodoro Timer Integration**:
-  - Built-in25/5 minute Pomodoro timer
+  - Built-in 25/5 minute Pomodoro timer
   - Link timer to specific habits
   - Track time spent on habits
   - Pomodoro session history
 - **Do Not Disturb Mode**: Automatically silence notifications during focus sessions
-\n#### 2.11.2 Notes and Journaling
+
+#### 2.11.2 Notes and Journaling
 - **Habit Notes**: Add text notes to each habit completion (e.g., 'Ran 5km in 30 minutes')
 - **Daily Journal**: Dedicated journal entry for each day\n- **Photo Attachments**:
   - Attach photos to habit completions (e.g., meal photos, workout selfies)
@@ -318,21 +322,26 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n**Android Users (Google Play Billing):**
 - Product ID: premium_unlock
 - Product Type: One-time in-app purchase (non-consumable)
-- Price: $4.99 USD\n- Payment Method: Google Play Billing Library v6+
+- Price: $4.99 USD
+- Payment Method: Google Play Billing Library v6+
 - Button Text: 'Unlock Premium $4.99'
 - Visibility: Only shown when window.AndroidBilling exists
 
 **Web/PWA Users (Paystack Direct Payment):**
 - Amount: 800000 kobo (₦8,000 NGN)
 - Payment Gateway: Paystack via react-paystack package
-- Public Key: pk_live_XXXXXXXXXXXXXXXXXXXXXXXX (to be replaced by developer)
-- Email: user@soltide.app (placeholder)
+- Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
+- Email: soltideapps@gmail.com
 - Reference: new Date().getTime().toString()
 - Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
 - Visibility: Only shown when window.AndroidBilling is NOT present
-- On Success:\n  - localStorage.setItem('rise_premium', 'true')
+- On Success:\n  - Verify payment via backend API(/api/verify-payment)
+  - localStorage.setItem('rise_premium', 'true')
+  - localStorage.setItem('streak_ads_removed', 'true')
+  - Store transaction metadata (reference, timestamp, email)
   - Unlock all premium features immediately
-  - Show success toast: 'Premium unlocked forever! Thank you 🌅'\n
+  - Show success toast: 'Premium unlocked forever! Thank you 🌅'
+
 #### 2.12.4 Premium Benefits Summary
 1. ✅ Unlimited habits
 2. ✅ Ad-free experience
@@ -374,6 +383,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Button style: Material3 elevated button with gold/orange gradient background
 - Icon: Lightning bolt or instant payment icon
 - Subtext: 'Keep100% • No Google Cut • Instant Unlock'
+- Email input field for payment receipt (default: soltideapps@gmail.com)
+- Loading state during payment processing
+- Success message after payment verification
 
 **Premium Card Background**:
 - Background image: /images/premium-bg.png (absolute path)
@@ -411,10 +423,10 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Premium badge: Gold crown icon\n- Streak freeze: Snowflake icon
 - Achievement badges: Custom illustrated icons
 - Paystack button: Lightning bolt or instant payment icon
+- lucide-react icons for web/PWA interface
 \n## 4. Technical Requirements
 
-### 4.1 Performance
-- All animations must run at 60 fps
+### 4.1 Performance\n- All animations must run at 60 fps
 - App launch time under 2 seconds
 - Smooth transitions and interactions
 - Optimized for production use
@@ -437,6 +449,10 @@ A production-ready Android habit tracking application built with Flutter and Mat
 #### 4.2.3 Premium Status Storage
 - localStorage key: 'rise_premium'
 - Value: 'true' when premium unlocked
+- Additional key: 'streak_ads_removed' = 'true'
+- Transaction metadata stored with keys:\n  - 'paystack_reference': payment reference
+  - 'paystack_timestamp': payment timestamp
+  - 'paystack_email': user email
 - Persists across sessions and offline usage
 - Checked on app initialization
 - Synced with cloud for cross-device access (premium users only)
@@ -455,11 +471,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Network-first strategy for dynamic data with fallback to cache
   - Stale-while-revalidate for images and media files
 - **Update Mechanism**:
-  - Automatic Service Worker updates
-  - User notification when new version is available
+  - Automatic Service Worker updates\n  - User notification when new version is available
   - Seamless update without disrupting user experience
-
-#### 4.3.2 Web App Manifest
+\n#### 4.3.2 Web App Manifest
 - **Manifest Configuration**:
   - App name: 'Streak – Daily Habit Tracker'
   - Short name: 'Streak'
@@ -472,7 +486,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Orientation: portrait
 - **Install Prompt**:
   - Custom install banner with app benefits
-  - Defer prompt until user engagement (after3 habit completions)
+  - Defer prompt until user engagement (after 3 habit completions)
   - Track install acceptance rate
 \n#### 4.3.3Offline Capabilities
 - **Offline-First Architecture**:
@@ -532,60 +546,295 @@ if (window.AndroidBilling) {
 ```
 
 #### 4.4.2 Paystack Payment (Web/PWA)
-\n**Implementation Requirements:**
+
+**Implementation Requirements:**
 - Package: react-paystack (install via npm install react-paystack)
 - Amount: 800000 kobo (₦8,000 NGN)
-- Public Key: pk_live_XXXXXXXXXXXXXXXXXXXXXXXX (placeholder, to be replaced)
-- Email: user@soltide.app (placeholder)
+- Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315\n- Email: soltideapps@gmail.com (default, user can modify)
 - Reference: new Date().getTime().toString()
-\n**Core Payment Logic:**
+\n**File Structure:**
+1. /components/PaystackButton.tsx - Reusable Paystack button component
+2. /utils/paystack.ts - Utility functions for payment handling
+3. /pages/api/verify-payment.ts - Backend API for payment verification
+4. /components/Stats.tsx - Updated Stats component with Paystack integration
+5. .env.local - Environment variables configuration
 
-```javascript
-import { usePaystackPayment } from 'react-paystack';
-\n// Paystack Configuration
-const paystackConfig = {
-  reference: new Date().getTime().toString(),
-  email: 'user@soltide.app',
-  amount: 800000, // ₦8,000 in kobo
-  publicKey: 'pk_live_XXXXXXXXXXXXXXXXXXXXXXXX',
+**Core Payment Logic:**
+
+```typescript\n// /components/PaystackButton.tsx\nimport { usePaystackPayment } from 'react-paystack';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Loader2, Zap } from 'lucide-react';
+
+interface PaystackButtonProps {
+  email: string;
+  amount: number;
+  publicKey: string;
+  onSuccess: (reference: any) => void;
+  onClose: () => void;
+  disabled?: boolean;
+}
+
+export function PaystackButton({
+  email,
+  amount,
+  publicKey,
+  onSuccess,
+  onClose,
+  disabled = false
+}: PaystackButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);\n\n  const config = {
+    reference: new Date().getTime().toString(),\n    email,
+    amount,
+    publicKey,
 };
 
-// Initialize Paystack
-const initializePayment = usePaystackPayment(paystackConfig);
+  const initializePayment = usePaystackPayment(config);
+\n  const handleClick = () => {
+    setIsLoading(true);
+    initializePayment(\n      (reference) => {
+        setIsLoading(false);
+        onSuccess(reference);
+      },
+      () => {
+        setIsLoading(false);
+        onClose();
+      }
+    );
+  };
 
-// On Success Callback
-const onPaystackSuccess = (reference) => {
-  console.log('Payment successful:', reference);
-  localStorage.setItem('rise_premium', 'true');
-  unlockPremiumFeatures();\n  showSuccessToast('Premium unlocked forever! Thank you 🌅');\n};
-
-// On Close Callback
-const onPaystackClose = () => {\n  console.log('Payment window closed');
-};
-\n// Button Click Handler (Web/PWA only)
-function handlePaystackPurchase() {
-  if (!window.AndroidBilling) {\n    initializePayment(onPaystackSuccess, onPaystackClose);
-  }
+  return (
+    <Button\n      onClick={handleClick}
+      disabled={disabled || isLoading || !email}\n      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'\n    >
+      {isLoading ? (
+        <>\n          <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+          Processing...
+        </>
+      ) : (
+        <>\n          <Zap className='mr-2 h-5 w-5' />
+          Unlock Premium ₦8,000\n        </>
+      )}\n    </Button>
+  );
 }
 ```
-\n#### 4.4.3 Platform Detection and Button Display
+\n```typescript
+// /utils/paystack.ts
+export function createPaymentReference(): string {
+  return new Date().getTime().toString();
+}
 
-```javascript
-// Detect platform and show appropriate button
-const isAndroid = !!window.AndroidBilling;
+export function unlockPremiumFeatures(transactionData?:{
+  reference: string;
+  email: string;
+}) {
+  localStorage.setItem('rise_premium', 'true');
+  localStorage.setItem('streak_ads_removed', 'true');
+  
+  if (transactionData) {
+    localStorage.setItem('paystack_reference', transactionData.reference);
+    localStorage.setItem('paystack_timestamp', new Date().toISOString());\n    localStorage.setItem('paystack_email', transactionData.email);
+  }
+}
+\nexport function isPremiumUnlocked(): boolean {
+  return localStorage.getItem('rise_premium') === 'true';
+}
 
-// In Premium/Stats Page JSX:\n{isAndroid ? (
-  <button onClick={handleGooglePlayPurchase}>
-    Unlock Premium $4.99
-  </button>
-) : (
-  <button onClick={handlePaystackPurchase}>
-    Unlock Premium ₦8,000(Instant • No Google Cut)
-  </button>
-)}
+export function getPaystackPublicKey(): string {
+  return process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315';
+}
 ```
 
-#### 4.4.4 Premium Feature Gating
+```typescript
+// /pages/api/verify-payment.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+typeVerifyResponse = {
+  success: boolean;
+  message: string;
+  data?: any;
+};
+
+export default async function handler(\n  req: NextApiRequest,
+  res: NextApiResponse<VerifyResponse>
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }\n
+  const { reference } = req.body;
+\n  if (!reference) {
+    return res.status(400).json({ success: false, message: 'Payment reference is required' });
+  }
+
+  try {
+    const secretKey = process.env.PAYSTACK_SECRET_KEY;
+    \n    if (!secretKey) {
+      throw new Error('Paystack secret key not configured');
+    }
+
+    const response = await fetch(
+      `https://api.paystack.co/transaction/verify/${reference}`,\n      {
+        method: 'GET',
+        headers: {\n          Authorization: `Bearer ${secretKey}`,
+          'Content-Type': 'application/json',
+        },\n      }
+    );\n
+    const data = await response.json();
+
+    if (data.status && data.data.status === 'success') {\n      return res.status(200).json({\n        success: true,
+        message: 'Payment verified successfully',
+        data: data.data,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment verification failed',
+      });
+    }
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error during payment verification',
+    });\n  }
+}
+```
+
+```typescript
+// Updated /components/Stats.tsx (key sections)
+import { useState, useEffect } from 'react';
+import { PaystackButton } from '@/components/PaystackButton';
+import { unlockPremiumFeatures, isPremiumUnlocked, getPaystackPublicKey } from '@/utils/paystack';
+import { toast } from 'sonner';\nimport { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+export function Stats() {
+  const [adsRemoved, setAdsRemoved] = useState(false);
+  const [userEmail, setUserEmail] = useState('soltideapps@gmail.com');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const isTWA = typeof window !== 'undefined' && !!(window as any).AndroidBilling;
+\n  useEffect(() => {
+    // Check premium status on mount
+    const premiumStatus = isPremiumUnlocked();
+    setAdsRemoved(premiumStatus);\n    
+    // Load saved email if exists
+    const savedEmail = localStorage.getItem('paystack_email');
+    if (savedEmail) {
+      setUserEmail(savedEmail);
+    }
+  }, []);
+
+  const handlePaystackSuccess = async (reference: any) => {
+    setIsProcessing(true);
+    
+    try {
+      // Verify payment with backend
+      const response = await fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: {\n          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reference: reference.reference }),
+      });
+\n      const result = await response.json();
+
+      if (result.success) {
+        // Unlock premium features
+        unlockPremiumFeatures({\n          reference: reference.reference,
+          email: userEmail,
+        });
+        \n        setAdsRemoved(true);
+        toast.success('Premium unlocked forever! Thank you 🌅', {
+          duration: 5000,
+        });
+      } else {
+        toast.error('Payment verification failed. Please contact support.');
+      }
+    } catch (error) {\n      console.error('Payment verification error:', error);
+      toast.error('An error occurred. Please contact support with your payment reference.');
+    } finally {\n      setIsProcessing(false);
+    }
+  };
+
+  const handlePaystackClose = () => {
+    toast.info('Payment window closed');
+  };
+
+  return (
+    <div className='stats-container'>
+      {/* Existing stats content */}
+      \n      {!adsRemoved && (
+        <div className='premium-card' style={{ backgroundImage: 'url(/images/premium-bg.png)' }}>
+          <h3>Unlock Premium Features</h3>
+          \n          {!isTWA ? (
+            // Web/PWA - Show Paystack\n            <div className='paystack-section'>
+              <div className='mb-4'>
+                <Label htmlFor='email'>Email for receipt</Label>
+                <Input\n                  id='email'
+                  type='email'
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  placeholder='Enter your email'\n                  className='mt-2'
+                />
+              </div>
+              
+              <PaystackButton
+                email={userEmail}
+                amount={800000}
+                publicKey={getPaystackPublicKey()}\n                onSuccess={handlePaystackSuccess}
+                onClose={handlePaystackClose}
+                disabled={isProcessing || !userEmail}
+              />\n              
+              <p className='text-sm text-center mt-2 text-gray-600'>
+                Keep100% • No Google Cut • Instant Unlock
+              </p>
+            </div>
+          ) : (
+            // Android TWA - Show Google Play\n            <button onClick={handleGooglePlayPurchase}>
+              Unlock Premium $4.99
+            </button>
+          )}\n        </div>
+      )}
+      
+      {adsRemoved && (
+        <div className='premium-active'>
+          <p>✅ Premium Active - All features unlocked!</p>
+        </div>
+      )}
+    </div>
+  );\n}
+```
+
+```env\n# .env.local.example
+# Paystack Configuration
+NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
+PAYSTACK_SECRET_KEY=your_secret_key_here
+
+# Instructions:\n# 1. Copy this file to .env.local
+# 2. Replace'your_secret_key_here' with your actual Paystack secret key\n# 3. Never commit .env.local to version control
+```
+
+#### 4.4.3 Platform Detection and Button Display
+
+```typescript
+// Detect platform and show appropriate button
+const isTWAWithBilling = () => {
+  return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
+};
+
+// In Premium/Stats Page JSX:\n{!isTWAWithBilling() ? (
+  // Web/PWA - Show Paystack
+  <PaystackButton
+    email={userEmail}
+    amount={800000}
+    publicKey={getPaystackPublicKey()}\n    onSuccess={handlePaystackSuccess}
+    onClose={handlePaystackClose}
+  />
+) : (
+  // Android TWA - Show Google Play
+  <button onClick={handleGooglePlayPurchase}>
+    Unlock Premium $4.99
+  </button>\n)}
+```
+\n#### 4.4.4 Premium Feature Gating
 - Check localStorage['rise_premium'] === 'true' to unlock features
 - Ad removal, sleep tracker, analytics, and all27 premium features gated behind this check
 - Premium status persists offline
@@ -602,7 +851,7 @@ const isAndroid = !!window.AndroidBilling;
 - Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
 - Image should display sunrise/dawn theme with warm colors
 
-### 4.5 Permissions\n
+###4.5 Permissions\n
 #### 4.5.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
@@ -618,8 +867,7 @@ const isAndroid = !!window.AndroidBilling;
 - Target Android 14 (API 34)
 - Material3 design system compliance
 - Wear OS 3.0+ for smartwatch companion app (premium)\n- Tablet optimization with responsive layouts
-- **PWA Compatibility**:
-  - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
+- **PWA Compatibility**:\n  - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
   - Mobile browsers: Chrome Mobile, Safari iOS14+\n  - Desktop platforms: Windows, macOS, Linux, Chrome OS
 
 ### 4.7 Audio Assets
@@ -628,8 +876,7 @@ const isAndroid = !!window.AndroidBilling;
 - Total audio assets size: ~50MB (optimized compression)
 - All sounds stored in app's assets folder for offline access
 - Service Worker caches alarm sounds for offline playback
-
-### 4.8 Security and Privacy
+\n### 4.8 Security and Privacy
 - All user data stored locally by default
 - Premium cloud backup uses AES-256 encryption
 - No personal data shared with third parties
@@ -640,7 +887,9 @@ const isAndroid = !!window.AndroidBilling;
 - Secure HTTPS connection for all network requests
 - Content Security Policy (CSP) headers
 - **Payment Security**: \n  - Google Play Billing: Purchase verification handled by Google\n  - Paystack: PCI-DSS compliant payment processing
+  - Backend payment verification via secure API route
   - No credit card data stored locally
+  - Paystack secret key stored in environment variables only
 
 ### 4.9 Third-Party Integrations
 - Google Play Billing Library v6+ for Android in-app purchases
@@ -648,21 +897,24 @@ const isAndroid = !!window.AndroidBilling;
 - Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
-
-### 4.10 Testing Requirements
+\n### 4.10 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
-- Performance testing for 60 fps animations
+- Performance testing for 60fps animations
 - Battery drain testing for sleep tracker
 - Cross-device sync testing for premium features
 - **Payment Testing**:
   - Google Play: Test with Google Play test accounts
   - Paystack: Test with Paystack test mode and test cards
+  - Test payment verification API endpoint
   - Verify purchase restoration across devices
   - Test offline premium feature access
   - Validate purchase state persistence
   - Test platform detection (Android vs Web)
   - Verify correct button display on each platform
+  - Test email input validation
+  - Test loading states during payment processing
+  - Verify success/error toast messages
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -670,8 +922,7 @@ const isAndroid = !!window.AndroidBilling;
   - Install prompt testing
   - Push notification testing
   - Lighthouse PWA audit (score 90+)
-
-## 5. Deliverables
+\n## 5. Deliverables
 
 ### 5.1 Code Deliverables
 - Complete Flutter project that compiles and runs successfully on first attempt
@@ -681,16 +932,23 @@ const isAndroid = !!window.AndroidBilling;
   - Paystack integration via react-paystack (Web/PWA)
 - Platform detection logic to show appropriate payment button
 - Premium card background image fix(/images/premium-bg.png)
-- Wear OS companion app APK (premium)\n- **PWA Build**:
+- Wear OS companion app APK (premium)
+- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
   - Offline fallback page
+- **Paystack Integration Files**:
+  - /components/PaystackButton.tsx\n  - /utils/paystack.ts
+  - /pages/api/verify-payment.ts
+  - Updated /components/Stats.tsx
+- .env.local.example template
 - Comprehensive code documentation
 - README with setup instructions and dual payment configuration guide
 
 ### 5.2 Google Play Store Assets
-- **App Title**: Streak – Daily Habit Tracker\n- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
+- **App Title**: Streak – Daily Habit Tracker
+- **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
 - **Full Description** (4000 chars): Highlighting all27 premium features with compelling copy
 - **Feature Bullet Points**:
   1. Track unlimited habits with beautiful streak visualization
@@ -724,7 +982,9 @@ const isAndroid = !!window.AndroidBilling;
 - **Payment Documentation**:
   - Google Play Console setup guide for product ID 'premium_unlock'
   - Paystack account setup guide and API key configuration
+  - Environment variables setup guide (.env.local)
   - Testing guide for both payment systems
+  - Payment verification API documentation
   - Troubleshooting guide for purchase issues
   - Platform detection logic explanation
 - **PWA Documentation**:
@@ -738,9 +998,13 @@ const isAndroid = !!window.AndroidBilling;
 - Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden
   - **Web/PWA**: Paystack button appears, Google Play hidden
   - Purchase flow completes successfully on both platforms
-  - Premium features unlock immediately after purchase
+  - Payment verification API works correctly
+  - Premium features unlock immediately after payment
   - Purchase persists offline via localStorage
-  - Restore purchases works across devices (Android)\n- Premium card background image visible after deployment
+  - Restore purchases works across devices (Android)\n  - Email input validation works properly
+  - Loading states display correctly during payment
+  - Success/error messages show appropriately
+- Premium card background image visible after deployment
 - Smooth performance (consistent 60 fps)
 - Production-ready quality code
 - Competitive with top20Productivity apps on Google Play
@@ -753,12 +1017,12 @@ const isAndroid = !!window.AndroidBilling;
 - Premium conversion rate target: 5-8% of active users
 - **Netlify Deployment**: Existing build settings and online deployment remain unaffected
 - **PWA Success Metrics**:
-  - Lighthouse PWA score >90\n  - Service Worker successfully caches all critical assets
+  - Lighthouse PWA score >90
+  - Service Worker successfully caches all critical assets
   - Offline functionality works for all core features
   - Install prompt acceptance rate >15%
-  - PWA load time <2seconds on3G connection
-
-## 7. Competitive Advantages
+  - PWA load time <2 seconds on3G connection
+\n## 7. Competitive Advantages
 
 This app is designed to outperform competitors through:
 \n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
@@ -778,7 +1042,10 @@ This app is designed to outperform competitors through:
 16. **Offline-First**: Full functionality without internet connection
 17. **PWA Support**: Cross-platform access via web with native app experience
 18. **Service Worker**: Enhanced offline capabilities and faster load times
-\n## 8. Post-Launch Roadmap (Future Enhancements)
+19. **Secure Payment Processing**: Backend verification for Paystack payments
+20. **Flexible Payment Email**: Users can specify email for payment receipts
+
+## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
 - Apple Watch companion app
@@ -799,22 +1066,33 @@ This app is designed to outperform competitors through:
 4. Screenshot_20251125-170720.png: Calendar view with perfect days and completion statistics
 5. Screenshot_20251125-170733.png: Statistics page showing current streak and total completions
 6. Screenshot_20251125-170740.png: Advanced Analytics page with success rate and insights
+7. Screenshot_20251130-011046.png: Netlify deployment dashboard showing production deploys
+8. Screenshot_20251130-210721_1.png: Rise app site information on Netlify
+9. Screenshot_20251130-223533.png: Paystack dashboard showing live API keys configuration
 \n---
 
 ## Implementation Checklist
 
-**Payment System Updates:**
+**Paystack Integration (New):**
 1. ✅ Install react-paystack package: npm install react-paystack
-2. ✅ Keep Google Play Billing code100% untouched (window.AndroidBilling)
-3. ✅ Add Paystack button to Premium/Stats page (Web/PWA only)
-4. ✅ Implement platform detection: if (!window.AndroidBilling) show Paystack\n5. ✅ Configure Paystack with amount800000 kobo, public key placeholder\n6. ✅ On Paystack success: localStorage.setItem('rise_premium', 'true')
-7. ✅ Show success toast:'Premium unlocked forever! Thank you 🌅'
-8. ✅ Hide Paystack button completely on Android\n9. ✅ Fix premium card background image: /images/premium-bg.png
-10. ✅ Test on desktop browser: Paystack button appears and works
-11. ✅ Test on Android Chrome: only Google Play button shows
-12. ✅ Verify background image is visible after deploy
-13. ✅ Commit message: 'Add Paystack direct payment + fix card background'
-14. ✅ Push to main branch for Netlify auto-deploy
+2. ✅ Create /components/PaystackButton.tsx with TypeScript types
+3. ✅ Create /utils/paystack.ts with utility functions
+4. ✅ Create /pages/api/verify-payment.ts for backend verification
+5. ✅ Update /components/Stats.tsx with Paystack integration
+6. ✅ Create .env.local.example with configuration template
+7. ✅ Add email input field for payment receipts
+8. ✅ Implement loading states during payment processing
+9. ✅ Add payment verification logic\n10. ✅ Store transaction metadata in localStorage
+11. ✅ Show success toast after payment verification
+12. ✅ Hide Paystack button on Android TWA
+13. ✅ Show Paystack button only on Web/PWA
+14. ✅ Use live public key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
+15. ✅ Use default email: soltideapps@gmail.com
+16. ✅ Test on desktop browser: Paystack button appears and works
+17. ✅ Test payment verification API\n18. ✅ Verify premium features unlock after payment
+19. ✅ Test offline premium access
+20. ✅ Commit message: 'Implement Paystack payment integration with backend verification'
+21. ✅ Push to main branch for Netlify auto-deploy
 
 **Google Play Billing Configuration (Unchanged):**
 1. Create in-app product in Google Play Console:\n   - Product ID: premium_unlock
@@ -826,13 +1104,24 @@ This app is designed to outperform competitors through:
 4. Verify purchase restoration works
 5. Confirm premium features unlock correctly
 6. Test offline premium access
-\n**Paystack Configuration (New):**
-1. Create Paystack account at https://paystack.com
-2. Obtain live public key from Paystack dashboard
-3. Replace placeholder pk_live_XXXXXXXXXXXXXXXXXXXXXXXX in code
-4. Test with Paystack test mode and test cards
-5. Verify payment success triggers premium unlock
-6. Confirm localStorage persistence\n7. Test on multiple browsers (Chrome, Safari, Firefox)
+\n**Environment Variables Setup:**
+1. Copy .env.local.example to .env.local
+2. Add Paystack secret key to .env.local
+3. Verify NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is set
+4. Ensure .env.local is in .gitignore
+5. Document environment setup in README
+
+**Testing Checklist:**
+1. Test Paystack payment flow on web browser
+2. Test payment verification API endpoint
+3. Verify premium unlock after successful payment
+4. Test email input validation
+5. Test loading states during payment
+6. Verify success/error toast messages\n7. Test platform detection (Android vs Web)
+8. Verify correct button display on each platform\n9. Test offline premium feature access
+10. Test payment with different email addresses
+11. Verify transaction metadata storage
+12. Test on multiple browsers (Chrome, Safari, Firefox)
 \n---
 
-**This requirements document now includes a complete dual payment system: Google Play Billing for Android users ($4.99 USD) and Paystack direct payment for Web/PWA users (₦8,000 NGN), allowing100% revenue retention from Twitter/PWA sideloading while maintaining full compatibility with the existing Android app and Netlify deployment. The premium card background image issue has also been addressed with absolute path specification.**
+**This updated requirements document now includes complete Paystack payment integration with backend verification, proper TypeScript implementation, email handling, loading states, and all necessary files and configurations for seamless Web/PWA payment processing alongside the existing Google Play Billing system.**
