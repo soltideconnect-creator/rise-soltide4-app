@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Zap } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
 import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
+import { PaystackButton } from '@/components/PaystackButton';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -19,8 +20,6 @@ export function Stats() {
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
   const [adsRemoved, setAdsRemoved] = useState(false);
-  const [paystackLoaded, setPaystackLoaded] = useState(false);
-  const [paystackFailed, setPaystackFailed] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -42,100 +41,23 @@ export function Stats() {
     }).catch(error => {
       console.error('Error checking premium status:', error);
     });
-
-    // Check if Paystack script is loaded (for web/PWA payment)
-    let retryCount = 0;
-    const maxRetries = 30; // 15 seconds total (30 * 500ms) - increased timeout
-    
-    const checkPaystackLoaded = () => {
-      console.log(`🔍 Checking Paystack... Attempt ${retryCount + 1}/${maxRetries}`);
-      console.log('window.PaystackPop exists?', !!window.PaystackPop);
-      
-      if (window.PaystackPop) {
-        setPaystackLoaded(true);
-        console.log('✅ Paystack payment system loaded successfully!');
-      } else {
-        retryCount++;
-        if (retryCount < maxRetries) {
-          console.warn(`⚠️ Paystack not loaded yet, retrying in 500ms... (${retryCount}/${maxRetries})`);
-          setTimeout(checkPaystackLoaded, 500);
-        } else {
-          // Only check for explicit failure after all retries exhausted
-          console.error('❌ Paystack failed to load after 15 seconds');
-          console.log('Final check - window.paystackLoadFailed?', window.paystackLoadFailed);
-          setPaystackFailed(true);
-          
-          // Provide specific error message based on failure reason
-          if (window.paystackLoadFailed) {
-            toast.error('Payment system blocked by browser. Please disable ad blockers or privacy extensions.', {
-              duration: 7000,
-            });
-          } else {
-            toast.error('Payment system is taking too long to load. Please check your internet connection and refresh.', {
-              duration: 7000,
-            });
-          }
-        }
-      }
-    };
-    
-    // Only check for Paystack on web/PWA (not Android TWA)
-    if (!isTWAWithBilling()) {
-      console.log('🚀 Starting Paystack initialization check...');
-      console.log('Is TWA with billing?', isTWAWithBilling());
-      // Wait a bit for the async script to load
-      setTimeout(checkPaystackLoaded, 500);
-    } else {
-      console.log('📱 Running in TWA mode, skipping Paystack check');
-    }
   }, []);
 
-  // Paystack payment handler for web/PWA users
-  const handlePaystackPayment = () => {
-    if (!window.PaystackPop) {
-      toast.error('Payment system is still loading. Please wait a moment and try again.');
-      return;
-    }
+  // Paystack payment success handler
+  const handlePaystackSuccess = (transaction: any) => {
+    console.log('Payment successful:', transaction);
+    // Unlock premium immediately
+    localStorage.setItem('rise_premium', 'true');
+    localStorage.setItem('streak_ads_removed', 'true');
+    setAdsRemoved(true);
+    toast.success('Premium unlocked forever! Thank you 🌅', {
+      duration: 5000,
+    });
+  };
 
-    try {
-      const handler = window.PaystackPop.setup({
-        key: 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315', // Paystack Live Public Key
-        email: 'user@riseapp.com', // Placeholder email - Paystack requires an email
-        amount: 800000, // ₦8,000 in kobo (1 Naira = 100 kobo)
-        ref: 'rise_premium_' + new Date().getTime().toString(),
-        currency: 'NGN',
-        metadata: {
-          custom_fields: [
-            {
-              display_name: 'Product',
-              variable_name: 'product',
-              value: 'Rise Premium Unlock'
-            }
-          ]
-        },
-        onSuccess: (transaction: any) => {
-          // Unlock premium immediately
-          localStorage.setItem('rise_premium', 'true');
-          localStorage.setItem('streak_ads_removed', 'true');
-          setAdsRemoved(true);
-          toast.success('Premium unlocked forever! Thank you 🌅', {
-            duration: 5000,
-          });
-          console.log('Payment successful:', transaction);
-        },
-        onCancel: () => {
-          toast.error('Payment cancelled');
-        },
-        onClose: () => {
-          // Called when popup is closed
-        }
-      });
-
-      handler.newTransaction();
-    } catch (error) {
-      console.error('Error initializing Paystack payment:', error);
-      toast.error('Failed to initialize payment. Please try again.');
-    }
+  // Paystack payment close handler
+  const handlePaystackClose = () => {
+    console.log('Payment popup closed');
   };
 
   const handleRemoveAds = async () => {
@@ -333,42 +255,15 @@ export function Stats() {
 
                   {/* Paystack Button - Only show on Web/PWA */}
                   {!isTWAWithBilling() && (
-                    <>
-                      {paystackFailed ? (
-                        <div className="space-y-2">
-                          <Button
-                            onClick={() => window.location.reload()}
-                            className="w-full bg-amber-600 hover:bg-amber-700"
-                            size="lg"
-                          >
-                            🔄 Refresh Page to Load Payment
-                          </Button>
-                          <p className="text-xs text-red-600 dark:text-red-400">
-                            ❌ Payment system failed to load. This may be due to:
-                            <br />• Ad blockers or privacy extensions
-                            <br />• Incognito mode restrictions
-                            <br />• Network connectivity issues
-                          </p>
-                        </div>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={handlePaystackPayment}
-                            disabled={!paystackLoaded}
-                            className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 disabled:opacity-50"
-                            size="lg"
-                          >
-                            <Zap className="w-4 h-4 mr-2" />
-                            {paystackLoaded ? 'Unlock Premium ₦8,000' : 'Loading Payment System...'}
-                          </Button>
-                          {!paystackLoaded && (
-                            <p className="text-xs text-amber-600 dark:text-amber-400">
-                              ⏳ Initializing secure payment gateway...
-                            </p>
-                          )}
-                        </>
-                      )}
-                    </>
+                    <PaystackButton
+                      email="user@riseapp.com"
+                      amount={800000}
+                      publicKey="pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"
+                      text="⚡ Unlock Premium ₦8,000"
+                      onSuccess={handlePaystackSuccess}
+                      onClose={handlePaystackClose}
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    />
                   )}
                   
                   <p className="text-xs text-muted-foreground">
