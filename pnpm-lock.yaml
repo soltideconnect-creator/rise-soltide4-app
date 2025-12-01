@@ -126,7 +126,7 @@ importers:
         specifier: 2.0.6
         version: 2.0.6(@supabase/supabase-js@2.86.0)(react-dom@18.3.1(react@18.3.1))(react-router-dom@7.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       miaoda-sc-plugin:
-        specifier: ^1.0.31
+        specifier: 1.0.31
         version: 1.0.31(vite@5.4.21(@types/node@24.10.1))
       qrcode:
         specifier: ^1.5.4
