@@ -97,40 +97,45 @@ export function Stats() {
       return;
     }
 
-    const handler = window.PaystackPop.setup({
-      key: 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315', // Replace with actual Paystack public key
-      email: 'soltideapps@gmail.com',
-      amount: 800000, // ₦8,000 in kobo
-      ref: 'rise_premium_' + new Date().getTime().toString(),
-      currency: 'NGN',
-      metadata: {
-        custom_fields: [
-          {
-            display_name: 'Product',
-            variable_name: 'product',
-            value: 'Rise Premium Unlock'
-          }
-        ]
-      },
-      onSuccess: (transaction: any) => {
-        // Unlock premium immediately
-        localStorage.setItem('rise_premium', 'true');
-        localStorage.setItem('streak_ads_removed', 'true');
-        setAdsRemoved(true);
-        toast.success('Premium unlocked forever! Thank you 🌅', {
-          duration: 5000,
-        });
-        console.log('Payment successful:', transaction);
-      },
-      onCancel: () => {
-        toast.error('Payment cancelled');
-      },
-      onClose: () => {
-        // Called when popup is closed
-      }
-    });
+    try {
+      const handler = window.PaystackPop.setup({
+        key: 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315', // Paystack Live Public Key
+        email: 'user@riseapp.com', // Placeholder email - Paystack requires an email
+        amount: 800000, // ₦8,000 in kobo (1 Naira = 100 kobo)
+        ref: 'rise_premium_' + new Date().getTime().toString(),
+        currency: 'NGN',
+        metadata: {
+          custom_fields: [
+            {
+              display_name: 'Product',
+              variable_name: 'product',
+              value: 'Rise Premium Unlock'
+            }
+          ]
+        },
+        onSuccess: (transaction: any) => {
+          // Unlock premium immediately
+          localStorage.setItem('rise_premium', 'true');
+          localStorage.setItem('streak_ads_removed', 'true');
+          setAdsRemoved(true);
+          toast.success('Premium unlocked forever! Thank you 🌅', {
+            duration: 5000,
+          });
+          console.log('Payment successful:', transaction);
+        },
+        onCancel: () => {
+          toast.error('Payment cancelled');
+        },
+        onClose: () => {
+          // Called when popup is closed
+        }
+      });
 
-    handler.newTransaction();
+      handler.newTransaction();
+    } catch (error) {
+      console.error('Error initializing Paystack payment:', error);
+      toast.error('Failed to initialize payment. Please try again.');
+    }
   };
 
   const handleRemoveAds = async () => {
