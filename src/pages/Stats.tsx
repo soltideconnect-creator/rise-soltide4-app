@@ -45,23 +45,11 @@ export function Stats() {
 
     // Check if Paystack script is loaded (for web/PWA payment)
     let retryCount = 0;
-    const maxRetries = 20; // 10 seconds total (20 * 500ms)
+    const maxRetries = 30; // 15 seconds total (30 * 500ms) - increased timeout
     
     const checkPaystackLoaded = () => {
       console.log(`🔍 Checking Paystack... Attempt ${retryCount + 1}/${maxRetries}`);
       console.log('window.PaystackPop exists?', !!window.PaystackPop);
-      console.log('window.paystackLoadAttempted?', window.paystackLoadAttempted);
-      console.log('window.paystackLoadFailed?', window.paystackLoadFailed);
-      
-      // Check if script explicitly failed to load
-      if (window.paystackLoadFailed) {
-        console.error('❌ Paystack script failed to load (network error or blocked)');
-        setPaystackFailed(true);
-        toast.error('Payment system blocked. Please disable ad blockers or try a different browser.', {
-          duration: 7000,
-        });
-        return;
-      }
       
       if (window.PaystackPop) {
         setPaystackLoaded(true);
@@ -72,11 +60,21 @@ export function Stats() {
           console.warn(`⚠️ Paystack not loaded yet, retrying in 500ms... (${retryCount}/${maxRetries})`);
           setTimeout(checkPaystackLoaded, 500);
         } else {
-          console.error('❌ Paystack failed to load after 10 seconds');
+          // Only check for explicit failure after all retries exhausted
+          console.error('❌ Paystack failed to load after 15 seconds');
+          console.log('Final check - window.paystackLoadFailed?', window.paystackLoadFailed);
           setPaystackFailed(true);
-          toast.error('Payment system failed to load. Please refresh the page.', {
-            duration: 5000,
-          });
+          
+          // Provide specific error message based on failure reason
+          if (window.paystackLoadFailed) {
+            toast.error('Payment system blocked by browser. Please disable ad blockers or privacy extensions.', {
+              duration: 7000,
+            });
+          } else {
+            toast.error('Payment system is taking too long to load. Please check your internet connection and refresh.', {
+              duration: 7000,
+            });
+          }
         }
       }
     };
@@ -86,7 +84,7 @@ export function Stats() {
       console.log('🚀 Starting Paystack initialization check...');
       console.log('Is TWA with billing?', isTWAWithBilling());
       // Wait a bit for the async script to load
-      setTimeout(checkPaystackLoaded, 100);
+      setTimeout(checkPaystackLoaded, 500);
     } else {
       console.log('📱 Running in TWA mode, skipping Paystack check');
     }
