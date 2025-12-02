@@ -157,6 +157,7 @@ function main() {
   } else {
     log('❌ SOME CHECKS FAILED - Please fix the issues above', 'red');
     log('═'.repeat(65) + '\n', 'bold');
+    log('💡 To fix duplicate dependencies, run: npm run fix-deps', 'yellow');
     log('💡 To fix lockfile issues, run: pnpm install', 'yellow');
     process.exit(1);
   }

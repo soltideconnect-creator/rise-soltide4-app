@@ -8,6 +8,9 @@
     "preview": "vite preview",
     "verify-pwa": "node verify-pwa.cjs",
     "check-deps": "node scripts/check-dependencies.cjs",
+    "fix-deps": "node scripts/fix-duplicate-deps.cjs",
+    "postinstall": "node scripts/fix-duplicate-deps.cjs || true",
+    "prebuild": "node scripts/fix-duplicate-deps.cjs || true",
     "lint": "node scripts/check-dependencies.cjs && tsgo -p tsconfig.check.json; npx biome lint; .rules/check.sh;npx tailwindcss -i ./src/index.css -o /dev/null 2>&1 | grep -E '^(CssSyntaxError|Error):.*' || true;vite build --minify false --logLevel error --outDir /tmp/outdir"
   },
   "dependencies": {
