@@ -9,35 +9,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
-// Extend Window interface to include PaystackPop
-declare global {
-  interface Window {
-    PaystackPop?: {
-      setup: (config: PaystackConfig) => {
-        openIframe: () => void;
-      };
-    };
-  }
-}
-
-interface PaystackConfig {
-  key: string;
-  email: string;
-  amount: number;
-  currency: string;
-  ref: string;
-  channels?: string[];
-  metadata?: {
-    custom_fields: Array<{
-      display_name: string;
-      variable_name: string;
-      value: string;
-    }>;
-  };
-  onSuccess: (transaction: PaystackTransaction) => void;
-  onClose: () => void;
-}
-
+// Use existing Paystack types from src/types/paystack.d.ts
 interface PaystackTransaction {
   reference: string;
   status: string;
@@ -159,14 +131,14 @@ export function PaystackPayment({
       });
 
       // Configure Paystack payment
-      const config: PaystackConfig = {
+      const config: PaystackPopupOptions = {
         key: publicKey,
         email,
         amount, // Amount in kobo
         currency: 'NGN',
         ref: reference,
-        channels: ['card', 'bank', 'ussd', 'mobile_money'],
         metadata: {
+          channels: ['card', 'bank', 'ussd', 'mobile_money'],
           custom_fields: [
             {
               display_name: 'Product',
