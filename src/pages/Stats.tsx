@@ -9,7 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
 import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
-import { PaystackButton } from '@/components/PaystackButton';
+import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 
 export function Stats() {
@@ -379,14 +379,14 @@ export function Stats() {
                           </div>
 
                           {/* Paystack Payment Button */}
-                          <PaystackButton
+                          <PaystackPayment
                             email={userEmail}
                             amount={800000}
                             publicKey="pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"
                             text="⚡ Unlock Premium - ₦8,000"
                             onSuccess={handlePaystackSuccess}
                             onClose={handlePaystackClose}
-                            className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-base font-semibold h-12"
+                            className="w-full"
                           />
                         </div>
                       )}
