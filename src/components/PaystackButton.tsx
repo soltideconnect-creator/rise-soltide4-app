@@ -37,6 +37,7 @@ export const PaystackButton = ({
     amount, // Amount in kobo (₦8,000 = 800,000 kobo)
     publicKey,
     currency: 'NGN',
+    channels: ['card', 'bank', 'ussd', 'mobile_money'], // All payment channels
     metadata: {
       custom_fields: [
         {

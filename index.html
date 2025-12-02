@@ -25,6 +25,9 @@
     <meta name="msapplication-TileColor" content="#5E5CE6" />
     <meta name="msapplication-tap-highlight" content="no" />
     
+    <!-- Content Security Policy - Allows Paystack payment integration -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://js.paystack.co https://api.paystack.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https: https://api.paystack.co; frame-src 'self' https://checkout.paystack.co https://standard.paystack.co; child-src 'self' https://checkout.paystack.co https://standard.paystack.co; manifest-src 'self';" />
+    
     <!-- SEO & Social Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Rise – Habit Tracker & Smart Sleep" />
