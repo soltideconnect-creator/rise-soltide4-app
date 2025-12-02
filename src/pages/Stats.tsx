@@ -271,7 +271,7 @@ export function Stats() {
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
                     {isTWAWithBilling() 
                       ? 'Unlock Sleep Tracker and premium features forever!'
-                      : 'Get premium features instantly - 100% of your payment supports development!'}
+                      : 'Download the Android app to unlock premium features with Google Play billing'}
                   </p>
                 </div>
 
@@ -287,7 +287,7 @@ export function Stats() {
                         variant="default"
                       >
                         <X className="w-4 h-4 mr-2" />
-                        Get Premium - $4.99 One-Time
+                        Get Premium - $4.99 (Google Play)
                       </Button>
                       
                       {/* Restore Purchase Button */}
@@ -302,10 +302,47 @@ export function Stats() {
                     </>
                   )}
 
-                  {/* Paystack Button - Only show on Web/PWA */}
+                  {/* Web - Show Android App Download Message */}
                   {!isTWAWithBilling() && (
                     <div className="space-y-4">
-                      {/* Email Input Section */}
+                      {/* Android App Download Card */}
+                      <Card className="border-primary/20 bg-primary/5">
+                        <CardContent className="pt-6 space-y-4">
+                          <div className="text-center space-y-3">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
+                              <Trophy className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-base mb-1">Premium Available on Android</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Download the Android app to unlock premium features with secure Google Play billing
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Download Button */}
+                      <Button
+                        onClick={() => {
+                          // TODO: Replace with actual Play Store link when published
+                          window.open('https://play.google.com/store/apps/details?id=com.soltide.rise', '_blank');
+                        }}
+                        className="w-full"
+                        size="lg"
+                        variant="default"
+                      >
+                        📱 Get Android App
+                      </Button>
+                      
+                      <p className="text-xs text-center text-muted-foreground">
+                        Web payments coming soon • Premium features available now on Android
+                      </p>
+
+                      {/* 
+                        PAYSTACK CODE PRESERVED FOR FUTURE USE
+                        Uncomment this section when Paystack is ready for web
+                        
                       {!userEmail || isEditingEmail ? (
                         <Card className="border-primary/20 bg-primary/5">
                           <CardContent className="pt-6 space-y-4">
@@ -358,7 +395,6 @@ export function Stats() {
                         </Card>
                       ) : (
                         <div className="space-y-3">
-                          {/* Email Display */}
                           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                             <div className="flex items-center gap-2">
                               <Mail className="w-4 h-4 text-muted-foreground" />
@@ -378,7 +414,6 @@ export function Stats() {
                             </Button>
                           </div>
 
-                          {/* Paystack Payment Button */}
                           <PaystackPayment
                             email={userEmail}
                             amount={Number(import.meta.env.VITE_PREMIUM_PRICE) || 800000}
@@ -394,13 +429,14 @@ export function Stats() {
                       <p className="text-xs text-center text-muted-foreground">
                         Secure payment via Paystack • Instant access • Lifetime premium
                       </p>
+                      */}
                     </div>
                   )}
                   
                   <p className="text-xs text-muted-foreground">
                     {isTWAWithBilling() 
                       ? 'One-time purchase • Unlock Sleep Tracker'
-                      : 'Instant • No Google Cut • Direct Payment'}
+                      : 'Available on Android • Coming soon to web'}
                   </p>
                 </div>
 
