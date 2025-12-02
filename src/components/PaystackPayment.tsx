@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Use existing Paystack types from src/types/paystack.d.ts
 interface PaystackTransaction {
@@ -98,6 +99,14 @@ export function PaystackPayment({
 
   // Handle payment button click
   const handlePayment = () => {
+    // Validate environment configuration
+    if (!publicKey || publicKey === 'undefined') {
+      console.error('❌ Missing Paystack public key');
+      setScriptError('Payment configuration error. Please contact support.');
+      toast.error('Payment configuration error. VITE_PAYSTACK_PUBLIC_KEY is missing.');
+      return;
+    }
+
     if (!isScriptLoaded) {
       console.error('❌ Paystack script not loaded');
       setScriptError('Payment system not ready. Please wait a moment and try again.');
@@ -127,6 +136,8 @@ export function PaystackPayment({
         reference,
         email,
         amount: `₦${(amount / 100).toLocaleString()}`,
+        publicKey: publicKey.substring(0, 10) + '...',
+        appUrl: import.meta.env.VITE_APP_URL || window.location.origin,
         timestamp: new Date().toISOString(),
       });
 
@@ -149,6 +160,11 @@ export function PaystackPayment({
               display_name: 'Description',
               variable_name: 'description',
               value: 'Lifetime premium access with Sleep Tracker'
+            },
+            {
+              display_name: 'App URL',
+              variable_name: 'app_url',
+              value: import.meta.env.VITE_APP_URL || window.location.origin
             }
           ]
         },

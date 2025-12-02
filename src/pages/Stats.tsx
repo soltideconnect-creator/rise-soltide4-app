@@ -381,8 +381,8 @@ export function Stats() {
                           {/* Paystack Payment Button */}
                           <PaystackPayment
                             email={userEmail}
-                            amount={800000}
-                            publicKey="pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"
+                            amount={Number(import.meta.env.VITE_PREMIUM_PRICE) || 800000}
+                            publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"}
                             text="⚡ Unlock Premium - ₦8,000"
                             onSuccess={handlePaystackSuccess}
                             onClose={handlePaystackClose}

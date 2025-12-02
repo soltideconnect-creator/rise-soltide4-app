@@ -61,8 +61,11 @@
     # Permissions policy
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
     
-    # Content Security Policy - Allows Paystack payment integration
-    Content-Security-Policy = "default-src 'self' https://js.paystack.co https://api.paystack.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https: https://api.paystack.co; frame-src 'self' https://checkout.paystack.co https://standard.paystack.co; child-src 'self' https://checkout.paystack.co https://standard.paystack.co; manifest-src 'self';"
+    # Content Security Policy - Allows Paystack payment integration for rise-soltide-app.netlify.app
+    Content-Security-Policy = "default-src 'self' https://rise-soltide-app.netlify.app https://*.paystack.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https: https://api.paystack.co; frame-src 'self' https://checkout.paystack.co https://standard.paystack.co; child-src 'self' https://checkout.paystack.co https://standard.paystack.co; manifest-src 'self';"
+    
+    # Allow Paystack iframe
+    X-Frame-Options = "ALLOW-FROM https://standard.paystack.co"
 
 # Cache static assets
 [[headers]]
