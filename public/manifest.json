@@ -3,7 +3,7 @@
   "name": "Rise – Habit Tracker & Smart Sleep",
   "short_name": "Rise",
   "description": "Unbreakable streaks meet perfect mornings. The only habit tracker that protects your streaks with sleep intelligence.",
-  "start_url": "/",
+  "start_url": "/ ",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "minimal-ui", "standalone", "browser"],
