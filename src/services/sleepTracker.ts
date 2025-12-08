@@ -108,6 +108,68 @@ class SleepTracker {
     return sessionId;
   }
 
+  // Start sleep tracking with pre-authorized stream
+  async startTrackingWithStream(mediaStream: MediaStream): Promise<string> {
+    if (this.isRecording) {
+      throw new Error('Already recording');
+    }
+
+    // Check if already has active session
+    if (sleepStorage.hasActiveSession()) {
+      throw new Error('Active session already exists');
+    }
+
+    // Use the provided stream
+    this.mediaStream = mediaStream;
+    this.setupAudioAnalysis();
+
+    // Request motion permission (iOS)
+    if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+      try {
+        const permission = await (DeviceMotionEvent as any).requestPermission();
+        if (permission !== 'granted') {
+          throw new Error('Motion access required for sleep tracking');
+        }
+      } catch (error) {
+        console.error('Motion permission denied:', error);
+      }
+    }
+
+    // Setup motion tracking
+    this.setupMotionTracking();
+
+    // Create new session
+    const sessionId = `sleep_${Date.now()}`;
+    const session: SleepSession = {
+      id: sessionId,
+      date: new Date().toISOString().split('T')[0],
+      startTime: new Date().toISOString(),
+      quality: 'fair',
+      qualityScore: 50,
+      movements: 0,
+      soundLevel: 0,
+      lightSleepPhases: [],
+      deepSleepPhases: [],
+      awakePhases: [],
+      alarmWindow: 30,
+    };
+
+    sleepStorage.addSession(session);
+    this.currentSessionId = sessionId;
+    this.isRecording = true;
+    this.sleepData = [];
+
+    // Start recording data every 30 seconds
+    this.recordingInterval = window.setInterval(() => {
+      this.recordDataPoint();
+    }, 30000);
+
+    // Setup smart alarm if enabled
+    this.setupSmartAlarm();
+
+    return sessionId;
+  }
+
   // Stop sleep tracking
   stopTracking(): SleepSession | null {
     if (!this.isRecording || !this.currentSessionId) {

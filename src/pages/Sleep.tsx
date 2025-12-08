@@ -26,6 +26,8 @@ export default function Sleep() {
   const [isPremium, setIsPremium] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [sessions, setSessions] = useState<SleepSession[]>([]);
+  const [permissionError, setPermissionError] = useState<string | null>(null);
+  const [permissionGranted, setPermissionGranted] = useState(false);
   const [alarmSettings, setAlarmSettings] = useState<AlarmSettings>({
     enabled: false,
     targetTime: '07:00',
@@ -61,12 +63,53 @@ export default function Sleep() {
   };
 
   const handleStartTracking = async () => {
+    if (!isPremium) {
+      toast.error('Premium feature required');
+      return;
+    }
+
+    setPermissionError(null);
+
     try {
-      await sleepTracker.startTracking();
+      // 1. Request Microphone
+      const micStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
+      });
+
+      // 2. Request Motion Sensors (iOS 13+ requires permission)
+      if ('DeviceMotionEvent' in window) {
+        // @ts-ignore - iOS 13+ requires permission
+        if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+          const response = await (DeviceMotionEvent as any).requestPermission();
+          if (response !== 'granted') {
+            // Stop microphone stream if motion denied
+            micStream.getTracks().forEach(track => track.stop());
+            throw new Error('Motion denied');
+          }
+        }
+      }
+
+      // Success — both permissions granted
+      setPermissionGranted(true);
+      
+      // Start tracking with the microphone stream
+      await sleepTracker.startTrackingWithStream(micStream);
       setIsRecording(true);
       toast.success('Sleep tracking started. Good night! 🌙');
-    } catch (error) {
-      toast.error((error as Error).message);
+      
+    } catch (err: any) {
+      console.error('Permission error:', err);
+      
+      const errorMessage = err.message?.includes('Motion')
+        ? 'Motion sensor access denied. Go to Settings → Apps → Rise → Permissions and allow "Physical activity".'
+        : 'Microphone access denied. Please allow microphone in your browser/Android settings:\n\nAndroid: Settings → Apps → Rise → Permissions → Microphone\niOS: Settings → Rise → Microphone';
+      
+      setPermissionError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -217,6 +260,20 @@ export default function Sleep() {
                   <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                     🔒 Microphone access is local only — no data leaves your device. All sleep analysis happens on your phone.
                   </p>
+                  {permissionError && (
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 max-w-xs mx-auto">
+                      <p className="text-xs text-destructive whitespace-pre-line">
+                        {permissionError}
+                      </p>
+                    </div>
+                  )}
+                  {permissionGranted && !isRecording && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 max-w-xs mx-auto">
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        ✅ Microphone ready — tracking active!
+                      </p>
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
