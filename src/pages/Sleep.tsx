@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Moon, Sun, Clock, Activity, TrendingUp, Bell, Play, Square, Lock } from 'lucide-react';
+import { Moon, Sun, Clock, Activity, TrendingUp, Bell, Play, Square, Lock, Smartphone } from 'lucide-react';
 import { sleepTracker } from '@/services/sleepTracker';
 import { sleepStorage } from '@/services/sleepStorage';
+import { permissionService } from '@/services/permissionService';
 import type { SleepSession, AlarmSettings } from '@/types/sleep';
 import { toast } from 'sonner';
 import { isPremiumUnlocked } from '@/utils/googlePlayBilling';
@@ -90,30 +91,39 @@ export default function Sleep() {
         }
       }
 
-      // Check if browser supports required APIs
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      // Step 1: Check permission info for debugging
+      const permInfo = await permissionService.getPermissionInfo();
+      console.log('[Sleep] Permission info:', permInfo);
+
+      if (!permInfo.supported) {
         throw new Error('Microphone API not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.');
       }
 
-      // 1. Request Microphone with timeout
+      if (!permInfo.hasMicrophone) {
+        throw new Error('No microphone found on this device. Please connect a microphone and try again.');
+      }
+
+      // Step 2: Request microphone permission (with platform-specific handling)
       console.log('[Sleep] Requesting microphone permission...');
-      
-      const micStreamPromise = navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
-      });
+      const permResult = await permissionService.requestMicrophonePermission(30000);
 
-      // Add 30 second timeout for permission request
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Microphone permission request timed out after 30 seconds')), 30000);
-      });
+      if (!permResult.granted) {
+        console.error('[Sleep] Microphone permission denied:', permResult);
+        
+        // Show platform-specific error message
+        setPermissionError(permResult.error || 'Microphone permission denied');
+        setPermissionGranted(false);
+        toast.error('Microphone permission denied');
+        return;
+      }
 
-      const micStream = await Promise.race([micStreamPromise, timeoutPromise]);
+      console.log('[Sleep] Microphone permission granted on platform:', permResult.platform);
 
-      console.log('[Sleep] Microphone permission granted');
+      // Step 3: Get actual microphone stream for recording
+      console.log('[Sleep] Requesting microphone stream for recording...');
+      const micStream = await permissionService.requestMicrophoneStream();
+
+      console.log('[Sleep] Microphone stream obtained');
       console.log('[Sleep] Audio tracks:', micStream.getAudioTracks().length);
 
       // Verify stream has audio tracks
@@ -154,27 +164,33 @@ export default function Sleep() {
 
       console.log('[Sleep] All audio tracks verified and active');
 
-      // 2. Request Motion Sensors (iOS 13+ requires permission)
+      // Step 4: Request Motion Sensors (iOS 13+ requires permission)
       if ('DeviceMotionEvent' in window) {
         // @ts-ignore - iOS 13+ requires permission
         if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
           console.log('[Sleep] Requesting motion permission (iOS)...');
-          const response = await (DeviceMotionEvent as any).requestPermission();
-          if (response !== 'granted') {
-            console.error('[Sleep] Motion permission denied');
-            // Stop microphone stream if motion denied
+          try {
+            const response = await (DeviceMotionEvent as any).requestPermission();
+            if (response !== 'granted') {
+              console.error('[Sleep] Motion permission denied');
+              // Stop microphone stream if motion denied
+              micStream.getTracks().forEach(track => track.stop());
+              throw new Error('Motion sensor access denied. Go to Settings → Rise → Motion & Fitness and enable access.');
+            }
+            console.log('[Sleep] Motion permission granted');
+          } catch (motionError: any) {
+            console.error('[Sleep] Motion permission error:', motionError);
             micStream.getTracks().forEach(track => track.stop());
-            throw new Error('Motion denied');
+            throw new Error('Motion sensor access denied. Go to Settings → Rise → Motion & Fitness and enable access.');
           }
-          console.log('[Sleep] Motion permission granted');
         }
       }
 
-      // Success — both permissions granted
+      // Success — all permissions granted
       console.log('[Sleep] All permissions granted, starting tracker...');
       setPermissionGranted(true);
       
-      // Start tracking with the microphone stream
+      // Step 5: Start tracking with the microphone stream
       try {
         const sessionId = await sleepTracker.startTrackingWithStream(micStream);
         console.log('[Sleep] Sleep tracker started successfully, session:', sessionId);
@@ -207,16 +223,22 @@ export default function Sleep() {
           toast.error('Active session already exists');
           return; // Don't show generic error
         }
-      } else if (err.message?.includes('timeout') || err.message?.includes('timed out')) {
-        errorMessage = 'Microphone permission request timed out. Please try again and respond to the permission prompt quickly.';
-      } else if (err.message?.includes('Motion')) {
-        errorMessage = 'Motion sensor access denied. Go to Settings → Apps → Rise → Permissions and allow "Physical activity".';
       } else if (err.message?.includes('not supported')) {
         errorMessage = err.message;
-      } else if (err.message?.includes('audio') || err.message?.includes('microphone') || err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        errorMessage = 'Microphone access denied. Please allow microphone in your browser/Android settings:\n\nAndroid: Settings → Apps → Rise → Permissions → Microphone\niOS: Settings → Rise → Microphone';
-      } else if (err.message?.includes('tracker')) {
-        errorMessage = 'Failed to start sleep tracking: ' + err.message + '\n\nPlease try again or check browser console for details.';
+      } else if (err.message?.includes('No microphone found')) {
+        errorMessage = err.message;
+      } else if (err.message?.includes('Motion sensor')) {
+        errorMessage = err.message;
+      } else if (err.message?.includes('Microphone access denied') || err.message?.includes('Settings →')) {
+        // Already formatted by permissionService
+        errorMessage = err.message;
+      } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errorMessage = `Microphone access denied. Please allow microphone permission:
+
+Android: Settings → Apps → Rise → Permissions → Microphone
+iOS: Settings → Rise → Microphone
+
+Then restart the app and try again.`;
       } else if (err.name === 'NotFoundError') {
         errorMessage = 'No microphone found. Please connect a microphone and try again.';
       } else if (err.name === 'NotReadableError') {
@@ -231,7 +253,7 @@ export default function Sleep() {
       
       setPermissionError(errorMessage);
       setPermissionGranted(false);
-      toast.error(errorMessage);
+      toast.error('Failed to start sleep tracking');
     }
   };
 

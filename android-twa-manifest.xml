@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android TWA (Trusted Web Activity) Manifest Template
+  
+  This file should be used when building the Android app wrapper.
+  Place this in your Android project at: app/src/main/AndroidManifest.xml
+  
+  CRITICAL PERMISSIONS FOR SLEEP TRACKING:
+  - RECORD_AUDIO: Required for microphone access during sleep tracking
+  - MODIFY_AUDIO_SETTINGS: Required for audio processing
+  - WAKE_LOCK: Keeps device awake during sleep tracking
+  - INTERNET: Required for PWA functionality
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.soltide.rise">
+
+    <!-- CRITICAL: Microphone permission for sleep tracking -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!-- Audio settings for sleep tracking -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    
+    <!-- Keep device awake during sleep tracking -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- Internet access for PWA -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Network state for connectivity checks -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Notifications for habit reminders -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- Vibration for haptic feedback -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Declare microphone feature (optional but recommended) -->
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Rise"
+        android:usesCleartextTraffic="false">
+
+        <!-- Main TWA Activity -->
+        <activity
+            android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Rise.Launcher">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="your-domain.com" />
+            </intent-filter>
+
+            <!-- TWA Configuration -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                android:value="https://your-domain.com" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+                android:resource="@color/colorPrimary" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+                android:resource="@color/colorPrimary" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+                android:resource="@drawable/splash" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+                android:resource="@color/colorPrimary" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+                android:value="300" />
+            
+            <meta-data
+                android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+                android:value="com.soltide.rise.fileprovider" />
+        </activity>
+
+        <!-- Service for background tasks -->
+        <service
+            android:name="com.google.androidbrowserhelper.trusted.DelegationService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- File provider for file access -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.soltide.rise.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>
