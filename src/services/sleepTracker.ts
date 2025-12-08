@@ -370,11 +370,10 @@ class SleepTracker {
       // Create source from media stream
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
       console.log('[SleepTracker] MediaStreamSource created');
+      console.log('[SleepTracker] MediaStreamSource channels:', source.channelCount);
 
-      // Verify source has valid number of inputs
-      if (source.numberOfInputs === 0) {
-        throw new Error('MediaStreamSource has no inputs');
-      }
+      // Note: MediaStreamSource nodes don't have inputs (numberOfInputs is always 0)
+      // They ARE the source, so they generate audio rather than receive it
 
       // Connect source to analyser
       source.connect(this.analyser);
