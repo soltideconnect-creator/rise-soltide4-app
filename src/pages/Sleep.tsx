@@ -42,6 +42,9 @@ export default function Sleep() {
       setIsPremium(premium);
 
       if (premium) {
+        // Clean up stale sessions (older than 24 hours)
+        sleepStorage.cleanupStaleSessions();
+
         // Load sessions
         loadSessions();
         
@@ -175,7 +178,22 @@ export default function Sleep() {
       
       let errorMessage = '';
       
-      if (err.message?.includes('timeout') || err.message?.includes('timed out')) {
+      if (err.message?.includes('Active session already exists')) {
+        // Special handling for active session error
+        const activeSession = sleepStorage.getActiveSession();
+        if (activeSession) {
+          const startTime = new Date(activeSession.startTime);
+          const hoursAgo = Math.round((Date.now() - startTime.getTime()) / (1000 * 60 * 60));
+          
+          errorMessage = `An active sleep tracking session already exists (started ${hoursAgo} hours ago).\n\nPlease stop the current session first, or click "Force Stop & Start New" below to end it and start a new session.`;
+          
+          // Set a flag to show the force stop button
+          setPermissionError(errorMessage);
+          setPermissionGranted(false);
+          toast.error('Active session already exists');
+          return; // Don't show generic error
+        }
+      } else if (err.message?.includes('timeout') || err.message?.includes('timed out')) {
         errorMessage = 'Microphone permission request timed out. Please try again and respond to the permission prompt quickly.';
       } else if (err.message?.includes('Motion')) {
         errorMessage = 'Motion sensor access denied. Go to Settings → Apps → Rise → Permissions and allow "Physical activity".';
@@ -210,6 +228,37 @@ export default function Sleep() {
     if (session) {
       loadSessions();
       toast.success(`Sleep session recorded! Quality: ${session.quality} (${session.qualityScore}/100)`);
+    }
+  };
+
+  const handleForceStopAndRestart = async () => {
+    console.log('[Sleep] Force stopping active session and restarting...');
+    
+    try {
+      // Force end the active session
+      const endedSession = sleepStorage.forceEndActiveSession();
+      
+      if (endedSession) {
+        console.log('[Sleep] Active session force-ended:', endedSession.id);
+        toast.success('Previous session ended successfully');
+        
+        // Reload sessions to show the ended session
+        loadSessions();
+        
+        // Clear error and try starting again
+        setPermissionError(null);
+        
+        // Wait a moment for UI to update
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Start new tracking session
+        await handleStartTracking();
+      } else {
+        toast.error('No active session found to end');
+      }
+    } catch (error: any) {
+      console.error('[Sleep] Error in force stop and restart:', error);
+      toast.error('Failed to force stop session: ' + error.message);
     }
   };
 
@@ -351,10 +400,20 @@ export default function Sleep() {
                     🔒 Microphone access is local only — no data leaves your device. All sleep analysis happens on your phone.
                   </p>
                   {permissionError && (
-                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 max-w-xs mx-auto">
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 max-w-xs mx-auto space-y-2">
                       <p className="text-xs text-destructive whitespace-pre-line">
                         {permissionError}
                       </p>
+                      {permissionError.includes('Active session already exists') && (
+                        <Button
+                          onClick={handleForceStopAndRestart}
+                          variant="destructive"
+                          size="sm"
+                          className="w-full text-xs"
+                        >
+                          Force Stop & Start New
+                        </Button>
+                      )}
                     </div>
                   )}
                   {permissionGranted && !isRecording && (

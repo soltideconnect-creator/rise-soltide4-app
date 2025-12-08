@@ -78,6 +78,54 @@ class SleepStorage {
     return this.getActiveSession() !== null;
   }
 
+  // Check if active session is stale (older than 24 hours)
+  hasStaleSession(): boolean {
+    const activeSession = this.getActiveSession();
+    if (!activeSession) return false;
+
+    const startTime = new Date(activeSession.startTime).getTime();
+    const now = Date.now();
+    const hoursSinceStart = (now - startTime) / (1000 * 60 * 60);
+
+    // Consider session stale if it's been running for more than 24 hours
+    return hoursSinceStart > 24;
+  }
+
+  // Force end the active session (for recovery)
+  forceEndActiveSession(): SleepSession | null {
+    const activeSession = this.getActiveSession();
+    if (!activeSession) return null;
+
+    console.log('[SleepStorage] Force ending active session:', activeSession.id);
+
+    // End the session with current time
+    const endTime = new Date().toISOString();
+    const startTime = new Date(activeSession.startTime);
+    const duration = Math.round((new Date(endTime).getTime() - startTime.getTime()) / 1000 / 60); // minutes
+
+    const updatedSession: SleepSession = {
+      ...activeSession,
+      endTime,
+      duration,
+    };
+
+    this.updateSession(updatedSession);
+    console.log('[SleepStorage] Active session force-ended successfully');
+
+    return updatedSession;
+  }
+
+  // Clean up stale sessions on app load
+  cleanupStaleSessions(): void {
+    if (this.hasStaleSession()) {
+      console.log('[SleepStorage] Detected stale session, cleaning up...');
+      const endedSession = this.forceEndActiveSession();
+      if (endedSession) {
+        console.log('[SleepStorage] Stale session cleaned up:', endedSession.id);
+      }
+    }
+  }
+
   // Statistics
   getAverageDuration(): number {
     const sessions = this.getSessions().filter(s => s.duration);
