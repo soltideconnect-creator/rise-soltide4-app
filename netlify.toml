@@ -58,8 +58,11 @@
     # Referrer policy
     Referrer-Policy = "strict-origin-when-cross-origin"
     
-    # Permissions policy
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    # Permissions policy - ALLOW microphone for sleep tracking
+    Permissions-Policy = "microphone=(self), camera=(), geolocation=(), payment=()"
+    
+    # Feature Policy (legacy support for older browsers)
+    Feature-Policy = "microphone 'self'; camera 'none'; geolocation 'none'; payment 'none'"
     
     # Content Security Policy - Allows Paystack payment integration for rise-soltide-app.netlify.app
     Content-Security-Policy = "default-src 'self' https://rise-soltide-app.netlify.app https://*.paystack.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https: https://api.paystack.co; frame-src 'self' https://checkout.paystack.co https://standard.paystack.co; child-src 'self' https://checkout.paystack.co https://standard.paystack.co; manifest-src 'self';"
