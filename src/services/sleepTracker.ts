@@ -24,13 +24,41 @@ class SleepTracker {
       throw new Error('Active session already exists');
     }
 
-    // Request microphone permission
+    // Request microphone permission with enhanced error handling
     try {
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // First, check if microphone permission is already granted
+      let permissionGranted = false;
+      
+      try {
+        const permission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        if (permission.state === 'granted') {
+          permissionGranted = true;
+        }
+      } catch (err) {
+        // Fallback for browsers that don't support permissions API
+        console.log('Permissions API not supported, will request directly');
+      }
+
+      // Request microphone access
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
+      });
+      
       this.setupAudioAnalysis();
     } catch (error) {
       console.error('Microphone access denied:', error);
-      throw new Error('Microphone access required for sleep tracking');
+      
+      // Provide user-friendly error message
+      const errorMessage = 'Microphone access denied. Please enable microphone permission in your device settings:\n\n' +
+        'Android: Settings → Apps → Rise → Permissions → Microphone\n' +
+        'iOS: Settings → Rise → Microphone\n\n' +
+        'Then try again.';
+      
+      throw new Error(errorMessage);
     }
 
     // Request motion permission (iOS)

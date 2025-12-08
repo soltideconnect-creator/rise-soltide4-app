@@ -214,6 +214,9 @@ export default function Sleep() {
                     <Play className="w-4 h-4 mr-2" />
                     Start Sleep Tracking
                   </Button>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+                    🔒 Microphone access is local only — no data leaves your device. All sleep analysis happens on your phone.
+                  </p>
                 </>
               ) : (
                 <>
