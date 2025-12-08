@@ -73,9 +73,15 @@ export default function Sleep() {
     setPermissionGranted(false);
 
     try {
-      // 1. Request Microphone
+      // Check if browser supports required APIs
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Microphone API not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.');
+      }
+
+      // 1. Request Microphone with timeout
       console.log('[Sleep] Requesting microphone permission...');
-      const micStream = await navigator.mediaDevices.getUserMedia({
+      
+      const micStreamPromise = navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
@@ -83,13 +89,53 @@ export default function Sleep() {
         },
       });
 
+      // Add 30 second timeout for permission request
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Microphone permission request timed out after 30 seconds')), 30000);
+      });
+
+      const micStream = await Promise.race([micStreamPromise, timeoutPromise]);
+
       console.log('[Sleep] Microphone permission granted');
       console.log('[Sleep] Audio tracks:', micStream.getAudioTracks().length);
 
       // Verify stream has audio tracks
       if (micStream.getAudioTracks().length === 0) {
+        micStream.getTracks().forEach(track => track.stop());
         throw new Error('No audio tracks in microphone stream');
       }
+
+      // Verify audio tracks are enabled and live
+      const audioTracks = micStream.getAudioTracks();
+      const disabledTracks = audioTracks.filter(track => !track.enabled);
+      const endedTracks = audioTracks.filter(track => track.readyState === 'ended');
+
+      if (disabledTracks.length > 0) {
+        console.warn('[Sleep] Some audio tracks are disabled:', disabledTracks.length);
+        // Try to enable them
+        disabledTracks.forEach(track => {
+          track.enabled = true;
+          console.log('[Sleep] Enabled audio track:', track.id);
+        });
+      }
+
+      if (endedTracks.length > 0) {
+        console.error('[Sleep] Some audio tracks have ended:', endedTracks.length);
+        micStream.getTracks().forEach(track => track.stop());
+        throw new Error('Audio tracks ended before tracking could start');
+      }
+
+      // Add event listener for track ended
+      audioTracks.forEach(track => {
+        track.addEventListener('ended', () => {
+          console.error('[Sleep] Audio track ended unexpectedly');
+          setPermissionError('Microphone access was lost. Please restart sleep tracking.');
+          setIsRecording(false);
+          toast.error('Microphone access was lost');
+        });
+      });
+
+      console.log('[Sleep] All audio tracks verified and active');
 
       // 2. Request Motion Sensors (iOS 13+ requires permission)
       if ('DeviceMotionEvent' in window) {
@@ -129,12 +175,24 @@ export default function Sleep() {
       
       let errorMessage = '';
       
-      if (err.message?.includes('Motion')) {
+      if (err.message?.includes('timeout') || err.message?.includes('timed out')) {
+        errorMessage = 'Microphone permission request timed out. Please try again and respond to the permission prompt quickly.';
+      } else if (err.message?.includes('Motion')) {
         errorMessage = 'Motion sensor access denied. Go to Settings → Apps → Rise → Permissions and allow "Physical activity".';
-      } else if (err.message?.includes('audio') || err.message?.includes('microphone') || err.name === 'NotAllowedError') {
+      } else if (err.message?.includes('not supported')) {
+        errorMessage = err.message;
+      } else if (err.message?.includes('audio') || err.message?.includes('microphone') || err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         errorMessage = 'Microphone access denied. Please allow microphone in your browser/Android settings:\n\nAndroid: Settings → Apps → Rise → Permissions → Microphone\niOS: Settings → Rise → Microphone';
       } else if (err.message?.includes('tracker')) {
         errorMessage = 'Failed to start sleep tracking: ' + err.message + '\n\nPlease try again or check browser console for details.';
+      } else if (err.name === 'NotFoundError') {
+        errorMessage = 'No microphone found. Please connect a microphone and try again.';
+      } else if (err.name === 'NotReadableError') {
+        errorMessage = 'Microphone is already in use by another application. Please close other apps using the microphone and try again.';
+      } else if (err.name === 'OverconstrainedError') {
+        errorMessage = 'Microphone does not support the required audio settings. Please try with a different microphone.';
+      } else if (err.name === 'SecurityError') {
+        errorMessage = 'Microphone access blocked by browser security settings. Please check your browser permissions.';
       } else {
         errorMessage = 'Failed to start sleep tracking: ' + err.message;
       }

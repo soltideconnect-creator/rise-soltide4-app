@@ -136,10 +136,15 @@ class SleepTracker {
     
     // Setup audio analysis with error handling
     try {
-      this.setupAudioAnalysis();
+      await this.setupAudioAnalysis();
       console.log('[SleepTracker] Audio analysis setup complete');
     } catch (error) {
       console.error('[SleepTracker] Failed to setup audio analysis:', error);
+      // Cleanup media stream on failure
+      if (this.mediaStream) {
+        this.mediaStream.getTracks().forEach(track => track.stop());
+        this.mediaStream = null;
+      }
       throw new Error('Failed to setup audio analysis: ' + (error as Error).message);
     }
 
@@ -276,7 +281,7 @@ class SleepTracker {
   }
 
   // Setup audio analysis
-  private setupAudioAnalysis(): void {
+  private async setupAudioAnalysis(): Promise<void> {
     console.log('[SleepTracker] Setting up audio analysis');
     
     if (!this.mediaStream) {
@@ -292,9 +297,22 @@ class SleepTracker {
       throw new Error('No audio tracks in stream');
     }
 
-    // Check if audio track is enabled
+    // Check if audio tracks are enabled and live
     audioTracks.forEach((track, index) => {
-      console.log(`[SleepTracker] Track ${index}: enabled=${track.enabled}, readyState=${track.readyState}`);
+      console.log(`[SleepTracker] Track ${index}: enabled=${track.enabled}, readyState=${track.readyState}, muted=${track.muted}`);
+      
+      if (!track.enabled) {
+        console.warn(`[SleepTracker] Track ${index} is disabled, attempting to enable...`);
+        track.enabled = true;
+      }
+      
+      if (track.readyState === 'ended') {
+        throw new Error(`Audio track ${index} has ended`);
+      }
+      
+      if (track.muted) {
+        console.warn(`[SleepTracker] Track ${index} is muted`);
+      }
     });
 
     try {
@@ -309,26 +327,67 @@ class SleepTracker {
 
       // Resume audio context if suspended (required on some browsers)
       if (this.audioContext.state === 'suspended') {
-        console.log('[SleepTracker] Resuming suspended AudioContext');
-        this.audioContext.resume();
+        console.log('[SleepTracker] AudioContext is suspended, resuming...');
+        try {
+          await this.audioContext.resume();
+          console.log('[SleepTracker] AudioContext resumed successfully, new state:', this.audioContext.state);
+          
+          // Verify it actually resumed
+          if (this.audioContext.state !== 'running') {
+            throw new Error(`AudioContext failed to resume, state is still: ${this.audioContext.state}`);
+          }
+        } catch (resumeError) {
+          console.error('[SleepTracker] Failed to resume AudioContext:', resumeError);
+          throw new Error('Failed to resume AudioContext: ' + (resumeError as Error).message);
+        }
+      }
+
+      // Verify AudioContext is running
+      if (this.audioContext.state !== 'running') {
+        console.error('[SleepTracker] AudioContext is not running, state:', this.audioContext.state);
+        throw new Error(`AudioContext is not running (state: ${this.audioContext.state})`);
       }
 
       // Create analyser
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = 256;
+      this.analyser.smoothingTimeConstant = 0.8;
       console.log('[SleepTracker] Analyser created, fftSize:', this.analyser.fftSize);
 
       // Create source from media stream
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
       console.log('[SleepTracker] MediaStreamSource created');
 
+      // Verify source has valid number of inputs
+      if (source.numberOfInputs === 0) {
+        throw new Error('MediaStreamSource has no inputs');
+      }
+
       // Connect source to analyser
       source.connect(this.analyser);
       console.log('[SleepTracker] Source connected to analyser');
 
-      console.log('[SleepTracker] Audio analysis setup complete');
+      // Verify connection by checking frequency data
+      const dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+      this.analyser.getByteFrequencyData(dataArray);
+      console.log('[SleepTracker] Frequency data check, bins:', dataArray.length);
+
+      console.log('[SleepTracker] Audio analysis setup complete and verified');
     } catch (error) {
       console.error('[SleepTracker] Error setting up audio analysis:', error);
+      
+      // Cleanup on error
+      if (this.audioContext) {
+        try {
+          await this.audioContext.close();
+          console.log('[SleepTracker] AudioContext closed after error');
+        } catch (closeError) {
+          console.error('[SleepTracker] Failed to close AudioContext:', closeError);
+        }
+        this.audioContext = null;
+        this.analyser = null;
+      }
+      
       throw error;
     }
   }
