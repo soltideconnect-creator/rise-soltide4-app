@@ -76,6 +76,20 @@ export default function Sleep() {
     setPermissionGranted(false);
 
     try {
+      // Pre-check: Clean up any stale sessions before starting
+      const activeSession = sleepStorage.getActiveSession();
+      if (activeSession && !isRecording) {
+        console.warn('[Sleep] Found stale session in storage (not currently recording)');
+        console.log('[Sleep] Auto-cleaning stale session before starting new one');
+        
+        const cleaned = sleepStorage.forceEndActiveSession();
+        if (cleaned) {
+          console.log('[Sleep] Stale session auto-cleaned:', cleaned.id);
+          loadSessions(); // Refresh session list
+          toast.info('Previous incomplete session was saved');
+        }
+      }
+
       // Check if browser supports required APIs
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Microphone API not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.');

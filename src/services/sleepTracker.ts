@@ -117,10 +117,23 @@ class SleepTracker {
       throw new Error('Already recording');
     }
 
-    // Check if already has active session
+    // Check if already has active session in storage
     if (sleepStorage.hasActiveSession()) {
-      console.error('[SleepTracker] Active session already exists');
-      throw new Error('Active session already exists');
+      // Double-check: if storage says active but tracker says not recording,
+      // it's a stale session that should be cleaned up
+      if (!this.isRecording) {
+        console.warn('[SleepTracker] Found stale session in storage (tracker not recording)');
+        console.log('[SleepTracker] Cleaning up stale session before starting new one');
+        
+        const staleSession = sleepStorage.forceEndActiveSession();
+        if (staleSession) {
+          console.log('[SleepTracker] Stale session cleaned up:', staleSession.id);
+        }
+      } else {
+        // Both storage and tracker say active - this is a real conflict
+        console.error('[SleepTracker] Active session already exists (tracker is recording)');
+        throw new Error('Active session already exists');
+      }
     }
 
     // Verify the stream is valid and has audio tracks
