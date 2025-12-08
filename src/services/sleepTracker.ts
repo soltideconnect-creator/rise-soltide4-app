@@ -110,33 +110,63 @@ class SleepTracker {
 
   // Start sleep tracking with pre-authorized stream
   async startTrackingWithStream(mediaStream: MediaStream): Promise<string> {
+    console.log('[SleepTracker] Starting tracking with pre-authorized stream');
+    
     if (this.isRecording) {
+      console.error('[SleepTracker] Already recording');
       throw new Error('Already recording');
     }
 
     // Check if already has active session
     if (sleepStorage.hasActiveSession()) {
+      console.error('[SleepTracker] Active session already exists');
       throw new Error('Active session already exists');
     }
 
+    // Verify the stream is valid and has audio tracks
+    if (!mediaStream || mediaStream.getAudioTracks().length === 0) {
+      console.error('[SleepTracker] Invalid media stream - no audio tracks');
+      throw new Error('Invalid media stream - no audio tracks');
+    }
+
+    console.log('[SleepTracker] Media stream valid, audio tracks:', mediaStream.getAudioTracks().length);
+
     // Use the provided stream
     this.mediaStream = mediaStream;
-    this.setupAudioAnalysis();
+    
+    // Setup audio analysis with error handling
+    try {
+      this.setupAudioAnalysis();
+      console.log('[SleepTracker] Audio analysis setup complete');
+    } catch (error) {
+      console.error('[SleepTracker] Failed to setup audio analysis:', error);
+      throw new Error('Failed to setup audio analysis: ' + (error as Error).message);
+    }
 
     // Request motion permission (iOS)
     if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
       try {
+        console.log('[SleepTracker] Requesting motion permission (iOS)');
         const permission = await (DeviceMotionEvent as any).requestPermission();
         if (permission !== 'granted') {
+          console.error('[SleepTracker] Motion permission denied');
           throw new Error('Motion access required for sleep tracking');
         }
+        console.log('[SleepTracker] Motion permission granted');
       } catch (error) {
-        console.error('Motion permission denied:', error);
+        console.error('[SleepTracker] Motion permission error:', error);
+        // Don't throw - motion is optional for Android
       }
     }
 
     // Setup motion tracking
-    this.setupMotionTracking();
+    try {
+      this.setupMotionTracking();
+      console.log('[SleepTracker] Motion tracking setup complete');
+    } catch (error) {
+      console.error('[SleepTracker] Failed to setup motion tracking:', error);
+      // Don't throw - motion tracking is optional
+    }
 
     // Create new session
     const sessionId = `sleep_${Date.now()}`;
@@ -159,14 +189,25 @@ class SleepTracker {
     this.isRecording = true;
     this.sleepData = [];
 
+    console.log('[SleepTracker] Session created:', sessionId);
+
     // Start recording data every 30 seconds
     this.recordingInterval = window.setInterval(() => {
       this.recordDataPoint();
     }, 30000);
 
-    // Setup smart alarm if enabled
-    this.setupSmartAlarm();
+    console.log('[SleepTracker] Recording interval started');
 
+    // Setup smart alarm if enabled
+    try {
+      this.setupSmartAlarm();
+      console.log('[SleepTracker] Smart alarm setup complete');
+    } catch (error) {
+      console.error('[SleepTracker] Failed to setup smart alarm:', error);
+      // Don't throw - alarm is optional
+    }
+
+    console.log('[SleepTracker] Sleep tracking started successfully');
     return sessionId;
   }
 
@@ -236,13 +277,60 @@ class SleepTracker {
 
   // Setup audio analysis
   private setupAudioAnalysis(): void {
-    if (!this.mediaStream) return;
+    console.log('[SleepTracker] Setting up audio analysis');
+    
+    if (!this.mediaStream) {
+      console.error('[SleepTracker] No media stream available');
+      throw new Error('No media stream available');
+    }
 
-    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    this.analyser = this.audioContext.createAnalyser();
-    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
-    source.connect(this.analyser);
-    this.analyser.fftSize = 256;
+    const audioTracks = this.mediaStream.getAudioTracks();
+    console.log('[SleepTracker] Audio tracks:', audioTracks.length);
+    
+    if (audioTracks.length === 0) {
+      console.error('[SleepTracker] No audio tracks in stream');
+      throw new Error('No audio tracks in stream');
+    }
+
+    // Check if audio track is enabled
+    audioTracks.forEach((track, index) => {
+      console.log(`[SleepTracker] Track ${index}: enabled=${track.enabled}, readyState=${track.readyState}`);
+    });
+
+    try {
+      // Create audio context
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) {
+        throw new Error('AudioContext not supported in this browser');
+      }
+
+      this.audioContext = new AudioContextClass();
+      console.log('[SleepTracker] AudioContext created, state:', this.audioContext.state);
+
+      // Resume audio context if suspended (required on some browsers)
+      if (this.audioContext.state === 'suspended') {
+        console.log('[SleepTracker] Resuming suspended AudioContext');
+        this.audioContext.resume();
+      }
+
+      // Create analyser
+      this.analyser = this.audioContext.createAnalyser();
+      this.analyser.fftSize = 256;
+      console.log('[SleepTracker] Analyser created, fftSize:', this.analyser.fftSize);
+
+      // Create source from media stream
+      const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+      console.log('[SleepTracker] MediaStreamSource created');
+
+      // Connect source to analyser
+      source.connect(this.analyser);
+      console.log('[SleepTracker] Source connected to analyser');
+
+      console.log('[SleepTracker] Audio analysis setup complete');
+    } catch (error) {
+      console.error('[SleepTracker] Error setting up audio analysis:', error);
+      throw error;
+    }
   }
 
   // Setup motion tracking
