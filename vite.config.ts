@@ -15,4 +15,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // Single bundle for faster TWA cold start
+      },
+    },
+  },
+  server: {
+    headers: {
+      'Cache-Control': 'public, max-age=31536000, immutable', // Aggressive caching for assets
+    },
+  },
 });

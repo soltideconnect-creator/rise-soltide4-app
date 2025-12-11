@@ -21,6 +21,7 @@ createRoot(document.getElementById("root")!).render(
 );
 
 // Register Service Worker for PWA and Offline Support
+// Optimized for TWA cold start - aggressive caching with skipWaiting
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
@@ -33,43 +34,48 @@ if ('serviceWorker' in navigator) {
           registration.update();
         }, 60000); // Check every minute
         
-        // Handle updates
+        // Handle updates with aggressive skipWaiting for TWA
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New service worker available, prompt user to refresh
-                console.log('[PWA] New version available! Reloading...');
+              // Immediately activate new service worker for TWA cold start optimization
+              if (newWorker.state === 'installed') {
+                console.log('[PWA] New service worker installed, activating immediately');
                 
-                // Show notification and auto-reload after 2 seconds
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                  position: fixed;
-                  top: 20px;
-                  left: 50%;
-                  transform: translateX(-50%);
-                  background: #5E5CE6;
-                  color: white;
-                  padding: 16px 24px;
-                  border-radius: 12px;
-                  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                  z-index: 10000;
-                  font-family: system-ui, -apple-system, sans-serif;
-                  font-size: 14px;
-                  font-weight: 500;
-                  animation: slideDown 0.3s ease-out;
-                `;
-                notification.textContent = '🎉 New version available! Updating...';
-                document.body.appendChild(notification);
-                
-                // Tell the new service worker to take over immediately
+                // Tell the new service worker to skip waiting and activate immediately
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
                 
-                // Reload the page after a short delay
-                setTimeout(() => {
-                  window.location.reload();
-                }, 2000);
+                // If there's an existing controller, show update notification
+                if (navigator.serviceWorker.controller) {
+                  console.log('[PWA] New version available! Reloading...');
+                  
+                  // Show notification and auto-reload after 2 seconds
+                  const notification = document.createElement('div');
+                  notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #5E5CE6;
+                    color: white;
+                    padding: 16px 24px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    font-family: system-ui, -apple-system, sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    animation: slideDown 0.3s ease-out;
+                  `;
+                  notification.textContent = '🎉 New version available! Updating...';
+                  document.body.appendChild(notification);
+                  
+                  // Reload the page after a short delay
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 2000);
+                }
               }
             });
           }
@@ -77,7 +83,7 @@ if ('serviceWorker' in navigator) {
         
         // Listen for the service worker taking control
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-          console.log('[PWA] New service worker activated');
+          console.log('[PWA] New service worker activated and took control');
         });
       })
       .catch((error) => {
