@@ -61,9 +61,9 @@ try {
 }
 
 // Register Service Worker for PWA and Offline Support
-// TEMPORARILY DISABLED TO DEBUG BLANK SCREEN ISSUE
+// Re-enabled after fixing CSP issue
 // Optimized for TWA cold start - aggressive caching with skipWaiting
-if (false && 'serviceWorker' in navigator) { // DISABLED FOR DEBUGGING
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
