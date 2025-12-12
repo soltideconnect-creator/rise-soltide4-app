@@ -387,6 +387,11 @@ Then restart the app and try again.`;
                   <li>• Detailed graphs & statistics</li>
                 </ul>
               </div>
+              {/* 
+                NAVIGATION: This button navigates to Stats page where users can purchase premium.
+                Uses onNavigateToStats callback passed from App.tsx.
+                DO NOT use window.location.href or hash-based navigation.
+              */}
               <Button
                 onClick={() => onNavigateToStats?.()}
                 size="lg"

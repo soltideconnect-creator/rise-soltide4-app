@@ -15,6 +15,39 @@ import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 
+/**
+ * ============================================================================
+ * NAVIGATION SYSTEM - READ THIS BEFORE ADDING NAVIGATION
+ * ============================================================================
+ * 
+ * This app uses VIEW-BASED NAVIGATION with setCurrentView().
+ * 
+ * ❌ DO NOT USE:
+ *    - window.location.href = '#/stats'
+ *    - window.location.hash = '#stats'
+ *    - <a href="#/stats">
+ *    - Any hash-based navigation
+ * 
+ * ✅ CORRECT WAY TO NAVIGATE:
+ * 
+ * 1. Add navigation prop to your component:
+ *    interface MyComponentProps {
+ *      onNavigateToStats?: () => void;
+ *    }
+ * 
+ * 2. Pass callback from App.tsx:
+ *    <MyComponent onNavigateToStats={() => setCurrentView('stats')} />
+ * 
+ * 3. Use it in your component:
+ *    <Button onClick={() => onNavigateToStats?.()}>
+ *      Go to Stats
+ *    </Button>
+ * 
+ * EXAMPLE: See Sleep component for correct implementation
+ * 
+ * ============================================================================
+ */
+
 type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit';
 
 function App() {
