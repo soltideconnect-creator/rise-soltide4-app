@@ -270,9 +270,7 @@ export function Stats() {
                   </div>
                   <h3 className="text-2xl font-bold">Upgrade to Premium</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    {isTWAWithBilling() 
-                      ? 'Unlock Sleep Tracker and premium features forever!'
-                      : 'Download the Android app to unlock premium features with Google Play billing'}
+                    Unlock Sleep Tracker and premium features forever!
                   </p>
                 </div>
 
