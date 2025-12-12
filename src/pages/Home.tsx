@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CircularProgress } from '@/components/CircularProgress';
 import { HabitItem } from '@/components/HabitItem';
 import { HabitNotesDialog } from '@/components/HabitNotesDialog';
