@@ -303,59 +303,10 @@ export function Stats() {
                     </>
                   )}
 
-                  {/* Web - Show Android App Download Message */}
+                  {/* Web - Paystack Payment */}
                   {!isTWAWithBilling() && (
                     <div className="space-y-4">
-                      {/* Android App Download Card */}
-                      <Card className="border-primary/20 bg-primary/5">
-                        <CardContent className="pt-6 space-y-4">
-                          <div className="text-center space-y-3">
-                            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
-                              <Trophy className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-base mb-1">Premium Available on Android</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Download the Android app to unlock premium features with secure Google Play billing
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Download Button */}
-                      <Button
-                        onClick={() => {
-                          // TODO: Replace with actual Play Store link when published
-                          window.open('https://play.google.com/store/apps/details?id=com.soltide.rise', '_blank');
-                        }}
-                        className="w-full"
-                        size="lg"
-                        variant="default"
-                      >
-                        📱 Get Android App
-                      </Button>
-                      
-                      <p className="text-xs text-center text-muted-foreground">
-                        Web payments coming soon • Premium features available now on Android
-                      </p>
-
-                      {/* Restore Premium for Web Users */}
-                      <div className="pt-4">
-                        <RestorePremiumWeb 
-                          onRestoreSuccess={async () => {
-                            setAdsRemoved(true);
-                            // Refresh premium status
-                            const premium = await isPremiumUnlocked();
-                            setAdsRemoved(premium);
-                          }}
-                        />
-                      </div>
-
-                      {/* 
-                        PAYSTACK CODE PRESERVED FOR FUTURE USE
-                        Uncomment this section when Paystack is ready for web
-                        
+                      {/* Email Input Section */}
                       {!userEmail || isEditingEmail ? (
                         <Card className="border-primary/20 bg-primary/5">
                           <CardContent className="pt-6 space-y-4">
@@ -442,14 +393,13 @@ export function Stats() {
                       <p className="text-xs text-center text-muted-foreground">
                         Secure payment via Paystack • Instant access • Lifetime premium
                       </p>
-                      */}
                     </div>
                   )}
                   
                   <p className="text-xs text-muted-foreground">
                     {isTWAWithBilling() 
                       ? 'One-time purchase • Unlock Sleep Tracker'
-                      : 'Available on Android • Coming soon to web'}
+                      : 'Secure payment via Paystack • Instant premium access'}
                   </p>
                 </div>
 
