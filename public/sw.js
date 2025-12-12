@@ -1,8 +1,9 @@
 // Rise – Habit Tracker & Smart Sleep
 // Production-Ready Service Worker for TWA Cold Start Optimization
-// v1.0.3 - Fixed white screen issue with resilient caching
+// v1.0.4 - Android browser compatibility fix
 
-const CACHE_NAME = 'rise-cache-v1.0.3';
+const CACHE_NAME = 'rise-cache-v1.0.4';
+const OLD_CACHES = ['rise-cache-v1.0.3', 'rise-cache-v1.0.2', 'rise-cache-v1.0.1', 'rise-cache-v1.0.0'];
 
 // Critical assets to precache - only essential files to avoid blocking
 const urlsToCache = [
@@ -22,7 +23,7 @@ const optionalAssets = [
 
 // Install event — resilient precaching that won't cause white screen
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing v1.0.3 - Resilient caching');
+  console.log('[SW] Installing v1.0.4 - Android browser fix');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -59,12 +60,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate event — clean old caches and take control immediately
+// Activate event — clean old caches aggressively and take control immediately
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating v1.0.3');
+  console.log('[SW] Activating v1.0.4 - Cleaning old caches');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
+        // Delete ALL old caches, including specific old versions
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
@@ -172,4 +174,4 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-console.log('[SW] Rise Service Worker v1.0.3 loaded - Resilient caching, no white screen');
+console.log('[SW] Rise Service Worker v1.0.4 loaded - Android browser fix, aggressive cache clearing');
