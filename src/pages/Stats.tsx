@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
+import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -338,6 +339,18 @@ export function Stats() {
                       <p className="text-xs text-center text-muted-foreground">
                         Web payments coming soon • Premium features available now on Android
                       </p>
+
+                      {/* Restore Premium for Web Users */}
+                      <div className="pt-4">
+                        <RestorePremiumWeb 
+                          onRestoreSuccess={async () => {
+                            setAdsRemoved(true);
+                            // Refresh premium status
+                            const premium = await isPremiumUnlocked();
+                            setAdsRemoved(premium);
+                          }}
+                        />
+                      </div>
 
                       {/* 
                         PAYSTACK CODE PRESERVED FOR FUTURE USE

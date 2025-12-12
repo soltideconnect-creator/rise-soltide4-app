@@ -1,16 +1,14 @@
-# Streak – Daily Habit Tracker Requirements Document (Complete Paystack Integration Update)
-
-## 1. Application Overview
+# Streak – Daily Habit Tracker Requirements Document (Complete with Device Transfer & Purchase Restoration)
+\n## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
 \n### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA).
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). **Includes robust device transfer and purchase restoration system for seamless premium access across devices.**
 
 ### 1.3 Technical Stack
 - Framework: Flutter (Android) + Next.js with TypeScript (Web/PWA)
-- Design System: Material 3 (Material You)
-- Database: Hive (offline storage)
+- Design System: Material 3 (Material You)\n- Database: Hive (offline storage)
 - Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - Google Play Billing Library v6+ (Android native)
   - Paystack via react-paystack (Web/PWA)
 - Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
@@ -23,7 +21,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 ## 2. Core Features
 
 ### 2.1 Onboarding Flow
--3 full-screen slides explaining streak concept and app features
+- 3 full-screen slides explaining streak concept and app features
 - Highlight premium features with gold accents
 - Request notification permission during onboarding
 - Optional: Request location and camera permissions for premium features
@@ -184,14 +182,34 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
-  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
     - Export habits with notes and photos as ZIP archive
   - **Import Options**: Import data from CSV/JSON\n
-#### 2.7.4 Other Settings
+#### 2.7.4 Device Transfer & Purchase Restoration
+- **Restore Purchases Button**: Prominently displayed in Settings page
+- **Android Device Transfer**:
+  - 'Restore Purchases' button calls AndroidBilling.getPurchases()
+  - Verifies premium_unlock purchase with Google Play\n  - Automatically unlocks premium features if purchase found
+  - Shows success message: '✅ Premium restored! All features unlocked.'
+  - Shows error message if no purchase found:'No premium purchase found. Please contact support if you believe this is an error.'
+- **Web/PWA Device Transfer**:
+  - 'Restore Premium Access' button in Settings\n  - User enters email used for Paystack payment
+  - Backend API verifies payment history via Paystack API
+  - If verified, unlocks premium and stores in localStorage
+  - Shows success message: '✅ Premium restored! All features unlocked.'
+  - Fallback: User can contact support with transaction reference
+- **Cloud Sync for Premium Users**:
+  - Premium status synced via Firebase Firestore
+  - On new device login, checks Firestore for premium status
+  - Automatically unlocks if premium found in cloud
+- **Support Contact**:
+  - 'Contact Support' button with pre-filled email template
+  - Includes device info, purchase platform, and transaction ID
+  - Support email: support@risehabittracker.com
+\n#### 2.7.5 Other Settings
 - Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)
 - Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
@@ -210,8 +228,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Location-based Reminders**: Trigger when entering/leaving geofenced area
 - **Weather-based Reminders**: Conditional reminders based on weather conditions
 - **Reminder Snooze**: Snooze for 15/30/60 minutes with custom intervals
-
-### 2.9 Home Screen Widgets
+\n### 2.9 Home Screen Widgets
 
 #### 2.9.1 Free Version
 - **1×1 Widget**: Displays today's completion percentage in circular progress ring
@@ -253,13 +270,12 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Full-screen mode with minimal design
   - Swipe to complete habits
 - **Pomodoro Timer Integration**:
-  - Built-in 25/5 minute Pomodoro timer
+  - Built-in25/5 minute Pomodoro timer
   - Link timer to specific habits
   - Track time spent on habits
   - Pomodoro session history
 - **Do Not Disturb Mode**: Automatically silence notifications during focus sessions
-
-#### 2.11.2 Notes and Journaling
+\n#### 2.11.2 Notes and Journaling
 - **Habit Notes**: Add text notes to each habit completion (e.g., 'Ran 5km in 30 minutes')
 - **Daily Journal**: Dedicated journal entry for each day\n- **Photo Attachments**:
   - Attach photos to habit completions (e.g., meal photos, workout selfies)
@@ -314,8 +330,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Basic stats and 30-day chart
 - 8 alarm sounds
 - Banner ad at bottom of Stats screen
-- No cloud backup
-
+- No cloud backup\n
 #### 2.12.2 Premium Pricing
 - **Android (Google Play)**: $4.99 USD one-time purchase
 - **Web/PWA (Paystack)**: ₦8,000 NGN one-time payment
@@ -325,10 +340,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Product Type: One-time in-app purchase (non-consumable)
 - Price: $4.99 USD
 - Payment Method: Google Play Billing Library v6+
-- Button Text: 'Unlock Premium $4.99'
-- Visibility: Only shown when window.AndroidBilling exists
-
-**Web/PWA Users (Paystack Direct Payment):**
+- Button Text: 'Unlock Premium $4.99'\n- Visibility: Only shown when window.AndroidBilling exists
+\n**Web/PWA Users (Paystack Direct Payment):**
 - Amount: 800000 kobo (₦8,000 NGN)
 - Payment Gateway: Paystack via react-paystack package
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
@@ -336,7 +349,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
 - Visibility: Only shown when window.AndroidBilling is NOT present
 - Payment Channels: Card, Bank, USSD, QR, Mobile Money
-- On Success:\n  - Verify payment via backend API(/api/verify-payment)
+- On Success:\n  - Verify payment via backend API (/api/verify-payment)
   - Store premium data in localStorage with structure:
     ```json
     {
@@ -344,10 +357,10 @@ A production-ready Android habit tracking application built with Flutter and Mat
       'unlockedAt': ISO timestamp,
       'transactionId': payment reference,
       'features': ['sleep_tracker', 'no_ads', 'advanced_analytics'],
-      'platform': 'web'
-    }
-    ```
-  - localStorage.setItem('streak_ads_removed', 'true')\n  - Dispatch'premiumStatusChanged' event
+      'platform': 'web',
+      'userEmail': user email\n    }
+    ```\n  - localStorage.setItem('streak_ads_removed', 'true')
+  - Dispatch'premiumStatusChanged' event
   - Unlock all premium features immediately
   - Show success toast: '🎉 Premium unlocked! Sleep Tracker and all premium features are now available!'
 
@@ -361,7 +374,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 7. ✅ Data export (CSV, JSON, PDF)
 8. ✅ Multiple reminders per habit
 9. ✅ Custom notification messages
-10. ✅20+ additional alarm sounds + custom upload
+10. ✅ 20+ additional alarm sounds + custom upload
 11. ✅ Custom theme colors and premium themes
 12. ✅ Automatic cloud backup and cross-device sync
 13. ✅ Sleep insights and recommendations
@@ -379,6 +392,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 25. ✅ Wear OS smartwatch support
 26. ✅ Streak freeze feature (2 per month)
 27. ✅ Priority customer support
+28. ✅ **Device transfer and purchase restoration**
 \n#### 2.12.5 Premium Unlock UI
 \n**Location**: Stats Tab and Premium/Settings Page
 
@@ -440,7 +454,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - All animations must run at 60 fps
 - App launch time under 2 seconds
 - Smooth transitions and interactions
-- Optimized for production use\n- Efficient background processing for sleep tracking (minimal battery drain)
+- Optimized for production use
+- Efficient background processing for sleep tracking (minimal battery drain)
 - Fast data synchronization for premium cloud backup (delta sync)
 - Widget updates within 1 second of habit completion
 
@@ -456,7 +471,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Conflict resolution for simultaneous edits
 - Automatic daily backups
 - 30-day backup history
-\n#### 4.2.3 Premium Status Storage
+- **Premium Status Sync**: Store premium purchase info in Firestore for cross-device access
+
+#### 4.2.3 Premium Status Storage
 - localStorage key: 'rise_premium'\n- Value: JSON object with structure:
   ```json
   {
@@ -464,11 +481,12 @@ A production-ready Android habit tracking application built with Flutter and Mat
     'unlockedAt': '2025-12-01T20:06:32Z',
     'transactionId': 'RISE_1733079992_abc123xyz',
     'features': ['sleep_tracker', 'no_ads', 'advanced_analytics'],
-    'platform': 'web'
+    'platform': 'web',
+    'userEmail': 'user@example.com'
   }
   ```
 - Additional key: 'streak_ads_removed' = 'true'
-- User email key: 'rise_user_email' (for payment receipts)
+- User email key: 'rise_user_email' (for payment receipts and restoration)
 - Persists across sessions and offline usage
 - Checked on app initialization
 - Synced with cloud for cross-device access (premium users only)
@@ -567,6 +585,26 @@ showSuccessMessage('Premium unlocked forever!');
     });
   }
 }
+\n// Restore Purchases (Android)
+function restoreAndroidPurchases() {
+  if (window.AndroidBilling) {
+    window.AndroidBilling.getPurchases().then(purchases => {
+      const hasPremium = purchases.some(p => p.productId === 'premium_unlock' && p.purchaseState === 1);
+      if (hasPremium) {\n        unlockPremiumFeatures();
+        localStorage.setItem('rise_premium', JSON.stringify({
+          unlocked: true,
+          unlockedAt: new Date().toISOString(),
+          transactionId: 'google_play_restored',
+          features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n          platform: 'android'\n        }));
+        showSuccessMessage('✅ Premium restored! All features unlocked.');
+      } else {
+        showErrorMessage('No premium purchase found. Please contact support if you believe this is an error.');
+      }
+    }).catch(err => {
+      console.error('Restore failed:', err);
+      showErrorMessage('Restore failed. Please try again or contact support.');
+    });\n  }
+}
 ```
 
 #### 4.4.2 Paystack Payment (Web/PWA)
@@ -579,19 +617,22 @@ showSuccessMessage('Premium unlocked forever!');
 1. /components/PaystackButton.tsx - Reusable Paystack button component
 2. /utils/paystack.ts - Utility functions for payment handling
 3. /pages/api/verify-payment.ts - Backend API for payment verification
-4. /components/Stats.tsx - Updated Stats component with Paystack integration
-5. .env.local - Environment variables configuration
+4. /pages/api/restore-premium.ts - Backend API for premium restoration
+5. /components/Stats.tsx - Updated Stats component with Paystack integration
+6. /components/Settings.tsx - Settings page with restore purchases button
+7. .env.local - Environment variables configuration
 
 **Core Payment Logic:**
 
 ```typescript\n// /components/PaystackButton.tsx\nimport React, { useState } from 'react';
-import { usePaystackPayment } from 'react-paystack';\nimport { Button, ButtonProps } from '@/components/ui/button';
+import { usePaystackPayment } from 'react-paystack';
+import { Button, ButtonProps } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 interface PaystackButtonProps extends ButtonProps {
   email: string;
-  amount: number; // amount in kobo (800000 = ₦8,000)\n  publicKey: string;
-  text?: string;
+  amount: number;
+  publicKey: string;\n  text?: string;
   onSuccess: (reference: any) => void;
   onClose: () => void;
   metadata?: Record<string, any>;
@@ -610,8 +651,7 @@ export function PaystackButton({
 }: PaystackButtonProps) {\n  const [isLoading, setIsLoading] = useState(false);
 \n  const config = {
     reference: `RISE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    email,
-    amount,
+    email,\n    amount,
     publicKey,
     metadata: {
       custom_fields: [\n        {
@@ -662,7 +702,6 @@ export function PaystackButton({
 
 ```typescript
 // /utils/paystack.ts
-// Paystack utility functions
 
 export const createPaymentReference = (): string => {
   return `RISE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -672,8 +711,8 @@ export const verifyPayment = async (reference: string): Promise<boolean> => {
   try {
     const response = await fetch('/api/verify-payment', {
       method: 'POST',
-      headers: {\n        'Content-Type': 'application/json',
-      },
+      headers: {
+        'Content-Type': 'application/json',\n      },
       body: JSON.stringify({ reference }),
     });
 \n    if (!response.ok) {
@@ -687,16 +726,38 @@ export const verifyPayment = async (reference: string): Promise<boolean> => {
     return false;
   }
 };
-\nexport const unlockPremium = (transactionId?: string): void => {
+
+export const restorePremiumByEmail = async (email: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await fetch('/api/restore-premium', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',\n      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }\n
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Premium restoration failed:', error);
+    return { success: false, message: 'Restoration failed. Please try again or contact support.' };
+  }
+};
+\nexport const unlockPremium = (transactionId?: string, userEmail?: string): void => {
   const premiumData = {
     unlocked: true,
     unlockedAt: new Date().toISOString(),
     transactionId: transactionId || createPaymentReference(),
-    features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n    platform: 'web'\n  };
+    features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n    platform: 'web',
+    userEmail: userEmail || localStorage.getItem('rise_user_email') || 'customer@riseapp.com'
+  };
 
   localStorage.setItem('rise_premium', JSON.stringify(premiumData));
   localStorage.setItem('streak_ads_removed', 'true');
-  \n  // Dispatch event for other components to update\n  window.dispatchEvent(new Event('premiumStatusChanged'));
+  \n  window.dispatchEvent(new Event('premiumStatusChanged'));
 };
 \nexport const getPremiumStatus = (): boolean => {
   const premium = localStorage.getItem('rise_premium');
@@ -725,220 +786,252 @@ export default async function handler(\n  req: NextApiRequest,
   }
 
   try {\n    // In production, verify with Paystack
-    // For now, simulate successful verification
-    return res.status(200).json({
-      status: 'success',
-      data: {
-        amount: 8000,
-        currency: 'NGN',
-        reference: reference,
-        paidAt: new Date().toISOString(),
-      },
-    });
-\n    // Actual Paystack verification (uncomment when secret key is added):
-    /*
     const response = await fetch(\n      `https://api.paystack.co/transaction/verify/${reference}`,
       {\n        headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           'Content-Type': 'application/json',
-        },\n      }
-    );\n
-    const data = await response.json();\n\n    if (data.status && data.data.status === 'success') {
-      return res.status(200).json({\n        status: 'success',
+        },
+      }
+    );
+
+    const data = await response.json();\n
+    if (data.status && data.data.status === 'success') {
+      return res.status(200).json({
+        status: 'success',
         data: {
           amount: data.data.amount / 100,
-          currency: data.data.currency,
-          customer: data.data.customer,\n          paidAt: data.data.paid_at,
-        },\n      });
+          currency: data.data.currency,\n          customer: data.data.customer,
+          paidAt: data.data.paid_at,
+        },
+      });
     } else {
       return res.status(400).json({
         status: 'failed',
         message: data.message || 'Payment verification failed',
       });
     }
-    */
   } catch (error) {
     console.error('Payment verification error:', error);
     return res.status(500).json({
       status: 'error',
       message: 'Internal server error',
-    });\n  }
+    });
+  }
 }
 ```
 
 ```typescript
-// Updated /components/Stats.tsx (key sections)
-import { useState, useEffect } from 'react';
-import { PaystackButton } from '@/components/PaystackButton';
-import { verifyPayment, unlockPremium, getPremiumStatus } from '@/utils/paystack';
-import { toast } from 'sonner';\nimport { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Zap } from 'lucide-react';
+// /pages/api/restore-premium.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export function Stats() {
-  const [adsRemoved, setAdsRemoved] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const isTWAWithBilling = () => {
-    return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
-  };
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+\n  const { email } = req.body;
 
-  useEffect(() => {
-    // Check premium status on mount
-    const premiumStatus = getPremiumStatus();
-    setAdsRemoved(premiumStatus);
-    
-    // Get user email from localStorage or use placeholder
-    const storedEmail = localStorage.getItem('rise_user_email');
-    if (storedEmail) {
-      setUserEmail(storedEmail);
-    } else {
-      setUserEmail('customer@riseapp.com'); // Default placeholder
-    }
-\n    // Listen for premium status changes
-    const handlePremiumChange = () => {
-      setAdsRemoved(getPremiumStatus());
-    };
-    window.addEventListener('premiumStatusChanged', handlePremiumChange);
-return () => window.removeEventListener('premiumStatusChanged', handlePremiumChange);
-  }, []);
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+\n  try {
+    // Query Paystack for transactions by customer email
+    const response = await fetch(
+      `https://api.paystack.co/transaction?customer=${encodeURIComponent(email)}&status=success`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+\n    const data = await response.json();
 
-  const handlePaystackSuccess = async (reference: any) => {
-    setIsProcessing(true);
-    console.log('Payment reference:', reference);
-    
-    try {
-      // Verify payment with backend
-      const isVerified = await verifyPayment(reference.reference);
-      
-      if (isVerified) {\n        // Unlock premium features\n        unlockPremium(reference.reference);
-        setAdsRemoved(true);\n        
-        toast.success('🎉 Premium unlocked! Sleep Tracker and all premium features are now available!', {
-          duration: 5000,
+    if (data.status && data.data && data.data.length > 0) {
+      // Check if any transaction is for premium unlock (amount = 800000 kobo)
+      const premiumPurchase = data.data.find(\n        (txn: any) => txn.amount === 800000 && txn.status === 'success'
+      );
+\n      if (premiumPurchase) {
+        return res.status(200).json({
+          success: true,
+          message: 'Premium purchase found',
+          data: {
+            transactionId: premiumPurchase.reference,
+            paidAt: premiumPurchase.paid_at,
+            email: email,
+          },
         });
-      } else {\n        throw new Error('Payment verification failed');\n      }
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: 'No premium purchase found for this email',
+        });
+      }
+    } else {\n      return res.status(404).json({
+        success: false,
+        message: 'No transactions found for this email',
+      });
+    }
+  } catch (error) {
+    console.error('Premium restoration error:', error);
+    return res.status(500).json({\n      success: false,
+      message: 'Internal server error',
+    });
+  }
+}
+```
+
+```typescript
+// Updated /components/Settings.tsx (key sections)
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { restorePremiumByEmail, unlockPremium, getPremiumStatus } from '@/utils/paystack';
+import { toast } from 'sonner';\nimport { Loader2 } from 'lucide-react';\n
+export function Settings() {
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreEmail, setRestoreEmail] = useState('');
+  const isPremium = getPremiumStatus();
+const isTWAWithBilling = () => {
+    return typeof window !== 'undefined' && !!(window as any).AndroidBilling;\n  };
+
+  const handleRestoreAndroid = async () => {
+    setIsRestoring(true);
+    try {
+      if ((window as any).AndroidBilling) {
+        const purchases = await (window as any).AndroidBilling.getPurchases();
+        const hasPremium = purchases.some(\n          (p: any) => p.productId === 'premium_unlock' && p.purchaseState === 1
+        );
+        if (hasPremium) {\n          unlockPremium('google_play_restored');
+          toast.success('✅ Premium restored! All features unlocked.');\n        } else {
+          toast.error('No premium purchase found. Please contact support if you believe this is an error.');
+        }
+      }
     } catch (error) {
-      console.error('Payment processing error:', error);
-      toast.error('Payment verification failed. Please contact support if your account was charged.');
-    } finally {\n      setIsProcessing(false);
-    }
-  };
+      console.error('Restore failed:', error);
+      toast.error('Restore failed. Please try again or contact support.');
+    } finally {
+      setIsRestoring(false);
+    }\n  };
 
-  const handlePaystackClose = () => {\n    if (!isProcessing) {
-      console.log('Payment popup closed');
-      toast.info('Payment cancelled. You can try again anytime.');
-    }
-  };
-
-  const handleEmailInput = () => {
-    const email = prompt('Please enter your email address for payment receipt:');
-    if (email && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
-      localStorage.setItem('rise_user_email', email);
-      setUserEmail(email);
-      toast.success('Email saved for payment receipts!');
-    } else if (email) {
+  const handleRestoreWeb = async () => {
+    if (!restoreEmail ||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(restoreEmail)) {
       toast.error('Please enter a valid email address.');
+      return;
+    }
+
+    setIsRestoring(true);
+    try {
+      const result = await restorePremiumByEmail(restoreEmail);
+      if (result.success) {
+        unlockPremium(result.data?.transactionId, restoreEmail);
+        toast.success('✅ Premium restored! All features unlocked.');
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error('Restore failed:', error);
+      toast.error('Restore failed. Please try again or contact support.');
+    } finally {
+      setIsRestoring(false);
     }
   };
 
   return (
-    <div className='stats-container'>
-      {/* Existing stats content */}
-      \n      {!adsRemoved && (
-        <div className='premium-card' style={{ backgroundImage: 'url(/images/premium-bg.png)' }}>
-          <h3>Unlock Premium Features</h3>
-          \n          {!isTWAWithBilling() && (
-            <div className='space-y-4'>
-              {/* Email Input Button */}
-              {!userEmail.includes('@riseapp.com') && (\n                <Button
-                  onClick={handleEmailInput}
-                  variant='outline'
-                  className='w-full'
-                >
-                  ✏️ Enter Email for Receipt
-                </Button>
+    <div className='settings-container'>
+      {/* Other settings sections */}
+\n      {!isPremium && (
+        <div className='restore-section'>
+          <h3>Restore Premium Purchase</h3>
+          <p className='text-sm text-gray-600 mb-4'>
+            Changed your device? Restore your premium access here.
+          </p>
+\n          {isTWAWithBilling() ? (
+            <Button
+              onClick={handleRestoreAndroid}
+              disabled={isRestoring}
+              className='w-full'
+            >
+              {isRestoring ? (
+                <>\n                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Restoring...
+                </>\n              ) : (
+                'Restore Purchases (Google Play)'
               )}
-              
-              {/* Paystack Payment Button */}
-              <PaystackButton
-                email={userEmail}
-                amount={800000}
-                publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
-                text='Unlock Premium ₦8,000'\n                onSuccess={handlePaystackSuccess}
-                onClose={handlePaystackClose}
-                disabled={isProcessing}
-                className='w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600text-white font-semibold py-6 text-lg'
-              />
-
-              <p className='text-sm text-center text-gray-600'>
-                Secure payment via Paystack • Instant access • Lifetime premium
-              </p>
+            </Button>
+          ) : (\n            <div className='space-y-4'>
+              <div>\n                <Label htmlFor='restore-email'>Email used for payment</Label>
+                <Input\n                  id='restore-email'
+                  type='email'\n                  placeholder='your@email.com'
+                  value={restoreEmail}
+                  onChange={(e) => setRestoreEmail(e.target.value)}
+                  disabled={isRestoring}
+                />
+              </div>
+              <Button
+                onClick={handleRestoreWeb}
+                disabled={isRestoring}
+                className='w-full'
+              >\n                {isRestoring ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Restoring...
+                  </>
+                ) : (
+                  'Restore Premium Access'
+                )}
+              </Button>
             </div>
           )}
-\n          {isTWAWithBilling() && (
-            <button onClick={handleGooglePlayPurchase}>
-              Unlock Premium $4.99
-            </button>
-          )}
-        </div>\n      )}
-      
-      {adsRemoved && (
+\n          <p className='text-xs text-gray-500 mt-4'>
+            Can't restore? Contact support at support@risehabittracker.com with your transaction reference.
+          </p>
+        </div>
+      )}
+
+      {isPremium && (
         <div className='premium-active'>
           <p>✅ Premium Active - All features unlocked!</p>
-        </div>
+</div>
       )}
     </div>
   );\n}
 ```
 
-```env
-# .env.local.example
-# Paystack Configuration
-NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
-PAYSTACK_SECRET_KEY=sk_live_your_secret_key_here
-
-# For testing use:
-# NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your_test_public_key\n# PAYSTACK_SECRET_KEY=sk_test_your_test_secret_key
-\n# Instructions:
-# 1. Copy this file to .env.local
-# 2. Replace'sk_live_your_secret_key_here' with your actual Paystack secret key
-# 3. Never commit .env.local to version control
-```
-
 ####4.4.3 Platform Detection and Button Display
 
 ```typescript
-// Detect platform and show appropriate button
 const isTWAWithBilling = () => {
   return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
 };
 
 // In Premium/Stats Page JSX:\n{!isTWAWithBilling() ? (
   // Web/PWA - Show Paystack\n  <div className='space-y-4'>
-    {!userEmail.includes('@riseapp.com') && (
-      <Button onClick={handleEmailInput} variant='outline' className='w-full'>\n        ✏️ Enter Email for Receipt
+    {!userEmail.includes('@riseapp.com') && (\n      <Button onClick={handleEmailInput} variant='outline' className='w-full'>
+        ✏️ Enter Email for Receipt
       </Button>
     )}
     <PaystackButton
       email={userEmail}
       amount={800000}
-      publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
+      publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
       text='Unlock Premium ₦8,000'
       onSuccess={handlePaystackSuccess}
       onClose={handlePaystackClose}
-      disabled={isProcessing}
-      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'
+disabled={isProcessing}
+      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'
     />
-    <p className='text-sm text-center text-gray-600'>\n      Secure payment via Paystack • Instant access • Lifetime premium
+<p className='text-sm text-center text-gray-600'>
+      Secure payment via Paystack • Instant access • Lifetime premium
     </p>
   </div>
-) : (
-  // Android TWA - Show Google Play\n  <button onClick={handleGooglePlayPurchase}>
+) : (\n  // Android TWA - Show Google Play\n  <button onClick={handleGooglePlayPurchase}>
     Unlock Premium $4.99
   </button>
-)}
-```
+)}\n```
 
 #### 4.4.4 Premium Feature Gating
 - Check getPremiumStatus() function to unlock features
@@ -947,24 +1040,25 @@ const isTWAWithBilling = () => {
 - On app restart, verify with AndroidBilling.getPurchases() (Android) or getPremiumStatus() (Web)
 - Event-driven updates via'premiumStatusChanged' event\n
 #### 4.4.5 Restore Purchases
-- Android: 'Restore Purchases' button calls AndroidBilling.getPurchases()
-- Web/PWA: Premium status already persisted in localStorage
+- **Android**: 'Restore Purchases' button calls AndroidBilling.getPurchases()
+- **Web/PWA**: 'Restore Premium Access' button queries Paystack API by email
 - Updates localStorage and unlocks features if purchase found
+- Shows success/error messages accordingly
+- Fallback: Contact support with transaction reference
 
 #### 4.4.6 Premium Card Background Fix
 - Background image path: /images/premium-bg.png (absolute path from public folder)
 - Ensure image is included in build and deployed to Netlify
-- CSS: background-image: url('/images/premium-bg.png')
-- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
+- CSS: background-image: url('/images/premium-bg.png')\n- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
 - Image should display sunrise/dawn theme with warm colors
 
-### 4.5 Permissions
-
+### 4.5 Permissions\n
 #### 4.5.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.5.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
+\n#### 4.5.2 Optional Permissions (Premium)
+- Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
@@ -994,12 +1088,12 @@ const isTWAWithBilling = () => {
 - Data deletion option (right to be forgotten)
 - Secure HTTPS connection for all network requests
 - Content Security Policy (CSP) headers
-- **Payment Security**: \n  - Google Play Billing: Purchase verification handled by Google
-  - Paystack: PCI-DSS compliant payment processing
+- **Payment Security**: \n  - Google Play Billing: Purchase verification handled by Google\n  - Paystack: PCI-DSS compliant payment processing
   - Backend payment verification via secure API route
   - No credit card data stored locally
   - Paystack secret key stored in environment variables only
   - Payment reference format includes timestamp and random string for uniqueness
+  - Email stored securely for purchase restoration
 
 ### 4.9 Third-Party Integrations
 - Google Play Billing Library v6+ for Android in-app purchases
@@ -1017,7 +1111,7 @@ const isTWAWithBilling = () => {
   - Google Play: Test with Google Play test accounts
   - Paystack: Test with Paystack test mode and test cards
   - Test payment verification API endpoint
-  - Verify purchase restoration across devices
+  - Verify purchase restoration works across devices
   - Test offline premium feature access
   - Validate purchase state persistence
   - Test platform detection (Android vs Web)
@@ -1029,6 +1123,13 @@ const isTWAWithBilling = () => {
   - Test payment channels (card, bank, USSD, QR, mobile money)
   - Test payment metadata transmission
   - Test premiumStatusChanged event dispatch
+  - **Test device transfer scenarios**:\n    - Android to Android (same Google account)
+    - Web to Web (same email)
+    - Android to Web (not supported, separate purchases)
+    - Test restore purchases button on new device
+    - Test email-based restoration on Web/PWA
+    - Verify premium status syncs via Firebase
+    - Test offline restoration (localStorage persistence)
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -1045,9 +1146,12 @@ const isTWAWithBilling = () => {
 - Dual payment system:\n  - Google Play Billing v6+ integration (Android)
   - Paystack integration via react-paystack (Web/PWA)
 - Platform detection logic to show appropriate payment button
-- Premium card background image fix(/images/premium-bg.png)
-- Wear OS companion app APK (premium)
-- **PWA Build**:
+- **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings
+  - Android restoration via Google Play Billing
+  - Web/PWA restoration via Paystack API query by email
+  - Firebase Firestore premium status sync
+  - Support contact integration\n- Premium card background image fix(/images/premium-bg.png)
+- Wear OS companion app APK (premium)\n- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
@@ -1056,7 +1160,9 @@ const isTWAWithBilling = () => {
   - /components/PaystackButton.tsx (complete TypeScript implementation)
   - /utils/paystack.ts (utility functions with proper types)
   - /pages/api/verify-payment.ts (backend verification endpoint)
+  - /pages/api/restore-premium.ts (backend restoration endpoint)
   - Updated /components/Stats.tsx (with email input and Paystack button)
+  - Updated /components/Settings.tsx (with restore purchases functionality)
 - .env.local.example template
 - Comprehensive code documentation
 - README with setup instructions and dual payment configuration guide
@@ -1074,6 +1180,7 @@ const isTWAWithBilling = () => {
   6. Wear OS support for on-the-go tracking
   7. One-time $4.99 purchase unlocks all premium features forever
   8. PWA support for cross-platform access
+  9. **Seamless device transfer - restore premium on new devices**
 - **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
   2. Calendar heatmap (Screenshot_20251125-170720.png)
   3. Stats dashboard (Screenshot_20251125-170733.png)
@@ -1083,7 +1190,8 @@ const isTWAWithBilling = () => {
 - **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon (Rise - Habit tracker and smart sleep Icon.png)
 - **Promotional Video**: 30-second video showcasing key features (optional)
 - **In-App Products Configuration**:
-  - Product ID: premium_unlock\n  - Product Type: One-time purchase (non-consumable)
+  - Product ID: premium_unlock
+  - Product Type: One-time purchase (non-consumable)
   - Price: $4.99 USD
   - Title: Premium Unlock
   - Description: Unlock all premium features forever
@@ -1096,9 +1204,12 @@ const isTWAWithBilling = () => {
 - **Payment Documentation**:
   - Google Play Console setup guide for product ID 'premium_unlock'
   - Paystack account setup guide and API key configuration
-  - Environment variables setup guide (.env.local)
-  - Testing guide for both payment systems
+  - Environment variables setup guide (.env.local)\n  - Testing guide for both payment systems
   - Payment verification API documentation
+  - **Device transfer and restoration guide**:\n    - How to restore purchases on Android
+    - How to restore premium on Web/PWA
+    - Troubleshooting common restoration issues
+    - Support contact information
   - Troubleshooting guide for purchase issues
   - Platform detection logic explanation
   - Email input and validation guide
@@ -1112,12 +1223,17 @@ const isTWAWithBilling = () => {
 \n## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
-- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden\n  - **Web/PWA**: Paystack button appears, Google Play hidden
+- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden
+  - **Web/PWA**: Paystack button appears, Google Play hidden
   - Purchase flow completes successfully on both platforms
   - Payment verification API works correctly
   - Premium features unlock immediately after payment
   - Purchase persists offline via localStorage
-  - Restore purchases works across devices (Android)\n  - Email input validation works properly
+  - **Restore purchases works across devices**:\n    - Android: Restore via Google Play Billing
+    - Web/PWA: Restore via email-based Paystack query
+    - Firebase Firestore syncs premium status
+    - Success/error messages display correctly
+  - Email input validation works properly
   - Email storage and retrieval functions correctly
   - Loading states display correctly during payment
   - Success/error messages show appropriately
@@ -1126,14 +1242,14 @@ const isTWAWithBilling = () => {
 - Premium card background image visible after deployment
 - Smooth performance (consistent 60 fps)
 - Production-ready quality code
-- Competitive with top20Productivity apps on Google Play
-- Sleep tracking accuracy >90%
+- Competitive with top20Productivity apps on Google Play\n- Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
 - All alarm sounds accessible offline without internet connection
 - Clear value differentiation between free and premium tiers
 - Premium features provide significant value to justify pricing
 - User retention rate >40% after 30 days (industry benchmark)
 - Premium conversion rate target: 5-8% of active users
+- **Device transfer success rate >95%**
 - **Netlify Deployment**: Existing build settings and online deployment remain unaffected
 - **PWA Success Metrics**:
   - Lighthouse PWA score >90\n  - Service Worker successfully caches all critical assets
@@ -1164,6 +1280,8 @@ This app is designed to outperform competitors through:
 20. **Flexible Payment Email**: Users can specify email for payment receipts
 21. **Multiple Payment Channels**: Card, Bank, USSD, QR, Mobile Money via Paystack
 22. **Event-Driven Architecture**: Real-time premium status updates across components
+23. **Seamless Device Transfer**: Easy premium restoration on new devices
+24. **Cross-Platform Premium**: Premium status syncs via cloud (Firebase)
 \n## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
@@ -1176,6 +1294,7 @@ This app is designed to outperform competitors through:
 - Marketplace for community-created habit templates
 - API for third-party integrations
 - Additional payment gateways (Stripe, Flutterwave) for global reach
+- Enhanced device transfer with QR code pairing
 \n---
 
 ## Reference Images
@@ -1187,15 +1306,43 @@ This app is designed to outperform competitors through:
 6. Screenshot_20251130-011046.png: Netlify deployment dashboard showing production deploys
 7. Screenshot_20251130-210721_1.png: Rise app site information on Netlify
 8. Screenshot_20251130-223533.png: Paystack dashboard showing live API keys configuration
+9. Screenshot_20251208-195202.png: Android app notification settings
+10. Screenshot_20251208-195214.png: Android app info page showing storage and permissions
+11. Screenshot_20251212-142304.png: Web app loading on appmedo.com
+12. Screenshot_20251212-151514.png: Web app loading on medo.dev
+13. Screenshot_20251212-152528.png: Premium feature unlock screen with upgrade button
 \n---
 
 ## Implementation Checklist
 
+**Device Transfer & Purchase Restoration (New Implementation):**
+1. ✅ Add 'Restore Purchases' button to Settings page
+2. ✅ Implement restoreAndroidPurchases() function for Android
+3. ✅ Implement restorePremiumByEmail() function for Web/PWA
+4. ✅ Create /pages/api/restore-premium.ts backend endpoint
+5. ✅ Query Paystack API for transactions by customer email
+6. ✅ Verify transaction amount matches premium unlock (800000 kobo)
+7. ✅ Store user email in premium data structure
+8. ✅ Update unlockPremium() to accept userEmail parameter
+9. ✅ Add email input field in Settings for restoration
+10. ✅ Add loading states during restoration process
+11. ✅ Show success message: '✅ Premium restored! All features unlocked.'
+12. ✅ Show error message if no purchase found
+13. ✅ Add support contact information with pre-filled email template
+14. ✅ Test Android restoration on new device
+15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync
+17. ✅ Test offline restoration (localStorage persistence)
+18. ✅ Update documentation with restoration guide
+19. ✅ Add FAQ section for device transfer
+20. ✅ Commit message: 'Implement device transfer and purchase restoration system'
+21. ✅ Push to main branch for Netlify auto-deploy
+
 **Paystack Integration (Complete Implementation):**
 1. ✅ Install react-paystack package: npm install react-paystack
 2. ✅ Create /components/PaystackButton.tsx with complete TypeScript implementation
-3. ✅ Create /utils/paystack.ts with utility functions (createPaymentReference, verifyPayment, unlockPremium, getPremiumStatus)
-4. ✅ Create /pages/api/verify-payment.ts for backend verification\n5. ✅ Update /components/Stats.tsx with Paystack integration
+3. ✅ Create /utils/paystack.ts with utility functions
+4. ✅ Create /pages/api/verify-payment.ts for backend verification
+5. ✅ Update /components/Stats.tsx with Paystack integration
 6. ✅ Create .env.local.example with configuration template
 7. ✅ Add email input field with validation
 8. ✅ Add email input button: '✏️ Enter Email for Receipt'
@@ -1203,26 +1350,20 @@ This app is designed to outperform competitors through:
 10. ✅ Add payment verification logic with error handling
 11. ✅ Store premium data in localStorage with JSON structure
 12. ✅ Store user email in localStorage ('rise_user_email')
-13. ✅ Show success toast after payment verification: '🎉 Premium unlocked! Sleep Tracker and all premium features are now available!'
-14. ✅ Hide Paystack button on Android TWA\n15. ✅ Show Paystack button only on Web/PWA
-16. ✅ Use live public key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
-17. ✅ Use default email: customer@riseapp.com
-18. ✅ Generate unique payment reference: RISE_{timestamp}_{random}\n19. ✅ Configure payment channels: card, bank, USSD, QR, mobile_money
-20. ✅ Add payment metadata with app name\n21. ✅ Implement premiumStatusChanged event dispatch
+13. ✅ Show success toast after payment verification
+14. ✅ Hide Paystack button on Android TWA
+15. ✅ Show Paystack button only on Web/PWA
+16. ✅ Use live public key\n17. ✅ Use default email: customer@riseapp.com
+18. ✅ Generate unique payment reference
+19. ✅ Configure payment channels\n20. ✅ Add payment metadata with app name\n21. ✅ Implement premiumStatusChanged event dispatch
 22. ✅ Add event listener for premium status changes
-23. ✅ Test on desktop browser: Paystack button appears and works
+23. ✅ Test on desktop browser
 24. ✅ Test payment verification API\n25. ✅ Verify premium features unlock after payment
 26. ✅ Test offline premium access
 27. ✅ Test email input and storage
 28. ✅ Test loading states and toast notifications
-29. ✅ Commit message: 'Implement complete Paystack payment integration with backend verification'
-30. ✅ Push to main branch for Netlify auto-deploy
-
-**Google Play Billing Configuration (Unchanged):**
-1. Create in-app product in Google Play Console:\n   - Product ID: premium_unlock
-   - Product type: One-time purchase
-   - Price: $4.99 USD
-   - Status: Active
+\n**Google Play Billing Configuration (Unchanged):**
+1. Create in-app product in Google Play Console
 2. Add test accounts for billing testing
 3. Test purchase flow with test account
 4. Verify purchase restoration works\n5. Confirm premium features unlock correctly
@@ -1242,16 +1383,19 @@ This app is designed to outperform competitors through:
 5. Test email storage and retrieval
 6. Test loading states during payment
 7. Verify success/error toast messages
-8. Test platform detection (Android vs Web)
-9. Verify correct button display on each platform\n10. Test offline premium feature access
+8. Test platform detection (Android vs Web)\n9. Verify correct button display on each platform
+10. Test offline premium feature access
 11. Test payment with different email addresses
 12. Verify premium data structure in localStorage
 13. Test on multiple browsers (Chrome, Safari, Firefox)
 14. Test payment reference uniqueness
-15. Test all payment channels (card, bank, USSD, QR, mobile money)
-16. Test payment metadata transmission
-17. Test premiumStatusChanged event dispatch and listening
-18. Test premium status persistence across page reloads
+15. Test all payment channels\n16. Test payment metadata transmission
+17. Test premiumStatusChanged event\n18. Test premium status persistence across page reloads
+19. **Test device transfer scenarios**\n20. **Test restore purchases on Android**
+21. **Test email-based restoration on Web/PWA**
+22. **Test Firebase premium status sync**
+23. **Test offline restoration**
+24. **Test support contact integration**
 \n---
 
-**This updated requirements document now includes complete Paystack payment integration with backend verification, proper TypeScript implementation, email handling with validation and storage, loading states, event-driven premium status updates, unique payment reference generation, multiple payment channels, payment metadata, and all necessary files and configurations for seamless Web/PWA payment processing alongside the existing Google Play Billing system.**
+**This updated requirements document now includes a comprehensive device transfer and purchase restoration system, ensuring users who change devices can seamlessly restore their premium access on both Android (via Google Play Billing) and Web/PWA (via email-based Paystack query). The system includes proper error handling, user feedback, and support contact integration for edge cases.**
