@@ -10,19 +10,60 @@ import { initializeBilling } from "./utils/googlePlayBilling";
 // To test if basic React works, uncomment the line below and comment out the App import
 // const App = TestApp;
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <AppWrapper>
-        <App />
-      </AppWrapper>
-    </ErrorBoundary>
-  </StrictMode>
-);
+// Add global error handler to catch any errors
+window.addEventListener('error', (event) => {
+  console.error('[Global Error]', event.error);
+  console.error('[Error Message]', event.message);
+  console.error('[Error Stack]', event.error?.stack);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[Unhandled Promise Rejection]', event.reason);
+});
+
+console.log('[App] Starting Rise app...');
+console.log('[App] Environment:', import.meta.env.MODE);
+console.log('[App] Base URL:', import.meta.env.BASE_URL);
+
+try {
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    throw new Error('Root element not found!');
+  }
+  
+  console.log('[App] Root element found, rendering app...');
+  
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <AppWrapper>
+          <App />
+        </AppWrapper>
+      </ErrorBoundary>
+    </StrictMode>
+  );
+  
+  console.log('[App] App rendered successfully');
+} catch (error) {
+  console.error('[App] Failed to render app:', error);
+  // Show error on screen
+  document.body.innerHTML = `
+    <div style="padding: 20px; font-family: sans-serif;">
+      <h1 style="color: red;">App Failed to Load</h1>
+      <p><strong>Error:</strong> ${error instanceof Error ? error.message : String(error)}</p>
+      <p><strong>Stack:</strong></p>
+      <pre style="background: #f5f5f5; padding: 10px; overflow: auto;">${error instanceof Error ? error.stack : 'No stack trace'}</pre>
+      <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px; cursor: pointer;">
+        Reload Page
+      </button>
+    </div>
+  `;
+}
 
 // Register Service Worker for PWA and Offline Support
+// TEMPORARILY DISABLED TO DEBUG BLANK SCREEN ISSUE
 // Optimized for TWA cold start - aggressive caching with skipWaiting
-if ('serviceWorker' in navigator) {
+if (false && 'serviceWorker' in navigator) { // DISABLED FOR DEBUGGING
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
