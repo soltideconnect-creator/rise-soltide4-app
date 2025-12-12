@@ -1,40 +1,59 @@
 // Rise – Habit Tracker & Smart Sleep
 // Production-Ready Service Worker for TWA Cold Start Optimization
-// Fixes: White screen on first open from Play Store closed test
+// v1.0.3 - Fixed white screen issue with resilient caching
 
-const CACHE_NAME = 'rise-cache-v1.0.2';
+const CACHE_NAME = 'rise-cache-v1.0.3';
 
-// Critical assets to precache for instant TWA load
+// Critical assets to precache - only essential files to avoid blocking
 const urlsToCache = [
-  '/', // Cache root for instant load
+  '/',
   '/index.html',
   '/manifest.json',
+];
+
+// Optional assets - cache if available, don't block if missing
+const optionalAssets = [
   '/rise-icon.png',
   '/icon-192x192.png',
   '/icon-512x512.png',
   '/shortcut-icon-96.png',
   '/shortcut-icon-192.png',
-  // Main JS/CSS bundles - automatically updated by update-sw-bundles.js
-  '/assets/index-Bznz0BtU.css',
-  '/assets/index--704Vzg6.js',
 ];
 
-// Install event — aggressively precache everything for cold start
+// Install event — resilient precaching that won't cause white screen
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing v1.0.2 - TWA cold start optimization');
+  console.log('[SW] Installing v1.0.3 - Resilient caching');
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[SW] Precaching critical assets');
-        return cache.addAll(urlsToCache);
+        console.log('[SW] Caching critical assets');
+        
+        // Cache critical assets one by one, continue on failure
+        const cachePromises = urlsToCache.map(url => {
+          return cache.add(url).catch(error => {
+            console.warn('[SW] Failed to cache:', url, error);
+            // Don't throw, just log and continue
+            return Promise.resolve();
+          });
+        });
+        
+        // Cache optional assets without blocking
+        optionalAssets.forEach(url => {
+          cache.add(url).catch(error => {
+            console.warn('[SW] Optional asset not cached:', url);
+          });
+        });
+        
+        return Promise.all(cachePromises);
       })
       .then(() => {
-        console.log('[SW] Precache complete, activating immediately');
-        return self.skipWaiting(); // Activate immediately, no waiting
+        console.log('[SW] Install complete, activating immediately');
+        return self.skipWaiting();
       })
       .catch((error) => {
-        console.error('[SW] Precache failed:', error);
-        // Continue anyway to avoid blocking
+        console.error('[SW] Install failed:', error);
+        // Still skip waiting to avoid blocking the app
         return self.skipWaiting();
       })
   );
@@ -42,7 +61,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event — clean old caches and take control immediately
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating v1.0.2');
+  console.log('[SW] Activating v1.0.3');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -57,12 +76,17 @@ self.addEventListener('activate', (event) => {
       })
       .then(() => {
         console.log('[SW] Taking control of all pages');
-        return self.clients.claim(); // Take control of all pages immediately
+        return self.clients.claim();
+      })
+      .catch((error) => {
+        console.error('[SW] Activation error:', error);
+        // Still claim clients to avoid blocking
+        return self.clients.claim();
       })
   );
 });
 
-// Fetch event — optimized for TWA cold start
+// Fetch event — network-first strategy to avoid white screen
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
@@ -76,54 +100,41 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   
-  // Network-first for root/index.html (always get latest)
-  if (url.pathname === '/' || url.pathname === '/index.html') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Cache the new version
-          if (response && response.status === 200) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Network failed, use cache
-          console.log('[SW] Network failed for root, using cache');
-          return caches.match(event.request);
-        })
-    );
-    return;
-  }
-
-  // Cache-first for all assets (JS, CSS, images) - instant load
+  // Network-first for all requests to ensure fresh content
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          // Cache hit - return immediately for instant load
-          return cachedResponse;
+    fetch(event.request)
+      .then((response) => {
+        // Cache successful responses for offline use
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache).catch(error => {
+              console.warn('[SW] Failed to cache response:', error);
+            });
+          });
         }
-        
-        // Cache miss - fetch from network and cache
-        return fetch(event.request)
-          .then((response) => {
-            // Only cache successful responses
-            if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+        return response;
+      })
+      .catch((error) => {
+        console.warn('[SW] Network failed, trying cache:', error);
+        // Network failed, try cache
+        return caches.match(event.request)
+          .then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
             }
-            return response;
-          })
-          .catch((error) => {
-            console.error('[SW] Fetch failed:', error);
-            // Return offline page or error response
-            return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+            // No cache, return error page
+            if (url.pathname === '/' || url.pathname === '/index.html') {
+              return new Response(
+                '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1><p>Please check your internet connection.</p></body></html>',
+                { 
+                  status: 503, 
+                  statusText: 'Service Unavailable',
+                  headers: { 'Content-Type': 'text/html' }
+                }
+              );
+            }
+            throw error;
           });
       })
   );
@@ -161,4 +172,4 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-console.log('[SW] Rise Service Worker v1.0.2 loaded - TWA cold start optimized');
+console.log('[SW] Rise Service Worker v1.0.3 loaded - Resilient caching, no white screen');
