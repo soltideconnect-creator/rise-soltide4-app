@@ -121,7 +121,7 @@ function App() {
           {currentView === 'calendar' && <Calendar />}
           {currentView === 'stats' && <Stats />}
           {currentView === 'analytics' && <Analytics />}
-          {currentView === 'sleep' && <Sleep />}
+          {currentView === 'sleep' && <Sleep onNavigateToStats={() => setCurrentView('stats')} />}
           {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
           {(currentView === 'add' || currentView === 'edit') && (

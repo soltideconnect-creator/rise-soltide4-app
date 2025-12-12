@@ -23,7 +23,11 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-export default function Sleep() {
+interface SleepProps {
+  onNavigateToStats?: () => void;
+}
+
+export default function Sleep({ onNavigateToStats }: SleepProps) {
   const [isPremium, setIsPremium] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [sessions, setSessions] = useState<SleepSession[]>([]);
@@ -384,7 +388,7 @@ Then restart the app and try again.`;
                 </ul>
               </div>
               <Button
-                onClick={() => window.location.href = '#/stats'}
+                onClick={() => onNavigateToStats?.()}
                 size="lg"
                 className="w-full"
               >
