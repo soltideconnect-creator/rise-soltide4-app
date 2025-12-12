@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Toaster as Sonner, ToasterProps } from "sonner";
 import { themeService } from "@/services/themeService";
 
