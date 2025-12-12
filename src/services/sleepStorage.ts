@@ -103,14 +103,20 @@ class SleepStorage {
     const startTime = new Date(activeSession.startTime);
     const duration = Math.round((new Date(endTime).getTime() - startTime.getTime()) / 1000 / 60); // minutes
 
+    // Update the session with end time and duration
+    this.updateSession(activeSession.id, {
+      endTime,
+      duration,
+    });
+    
+    console.log('[SleepStorage] Active session force-ended successfully');
+
+    // Return the updated session
     const updatedSession: SleepSession = {
       ...activeSession,
       endTime,
       duration,
     };
-
-    this.updateSession(updatedSession);
-    console.log('[SleepStorage] Active session force-ended successfully');
 
     return updatedSession;
   }

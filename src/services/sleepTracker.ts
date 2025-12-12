@@ -345,9 +345,10 @@ class SleepTracker {
           await this.audioContext.resume();
           console.log('[SleepTracker] AudioContext resumed successfully, new state:', this.audioContext.state);
           
-          // Verify it actually resumed
-          if (this.audioContext.state !== 'running') {
-            throw new Error(`AudioContext failed to resume, state is still: ${this.audioContext.state}`);
+          // Verify it actually resumed (state should be 'running' after resume)
+          const currentState = this.audioContext.state as AudioContextState;
+          if (currentState !== 'running') {
+            throw new Error(`AudioContext failed to resume, state is still: ${currentState}`);
           }
         } catch (resumeError) {
           console.error('[SleepTracker] Failed to resume AudioContext:', resumeError);
