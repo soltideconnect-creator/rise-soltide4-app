@@ -197,6 +197,12 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
     setTimeout(() => window.location.reload(), 1000);
   };
 
+  const handleResetOnboarding = () => {
+    localStorage.removeItem('streak_onboarding_completed');
+    toast.success('Onboarding reset. Refreshing...');
+    setTimeout(() => window.location.reload(), 1000);
+  };
+
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
       <h1 className="text-3xl font-bold mb-6">Settings</h1>
@@ -384,6 +390,14 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Clear All Data
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={handleResetOnboarding}
+          >
+            <Info className="w-4 h-4 mr-2" />
+            Reset Onboarding
           </Button>
         </CardContent>
       </Card>
