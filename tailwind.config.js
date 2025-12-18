@@ -163,6 +163,11 @@ export default {
                     '.border-r-dotted': {'border-right-style': 'dotted'},
                     '.border-b-dotted': {'border-bottom-style': 'dotted'},
                     '.border-l-dotted': {'border-left-style': 'dotted'},
+                    // Safe area utilities for notch/handle compatibility
+                    '.pb-safe': {'padding-bottom': 'env(safe-area-inset-bottom, 0.5rem)'},
+                    '.pt-safe': {'padding-top': 'env(safe-area-inset-top, 0.5rem)'},
+                    '.pl-safe': {'padding-left': 'env(safe-area-inset-left, 0.5rem)'},
+                    '.pr-safe': {'padding-right': 'env(safe-area-inset-right, 0.5rem)'},
                 },
                 ['responsive']
             );
