@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2 } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2, Bug } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
-import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases } from '@/utils/googlePlayBilling';
+import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases, debugUnlockPremium, isDebugUnlockAvailable } from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
@@ -298,6 +298,33 @@ export function Stats() {
                       >
                         Restore Purchase
                       </Button>
+                      
+                      {/* Tester Unlock Button - Only visible in test mode */}
+                      {isDebugUnlockAvailable() && (
+                        <Button
+                          onClick={() => {
+                            debugUnlockPremium();
+                            setAdsRemoved(true);
+                            toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
+                            // Reload to apply changes
+                            setTimeout(() => window.location.reload(), 1000);
+                          }}
+                          className="w-full"
+                          size="sm"
+                          variant="secondary"
+                        >
+                          <Bug className="w-4 h-4 mr-2" />
+                          Unlock for Testing
+                        </Button>
+                      )}
+                      
+                      {/* Helper text for testers */}
+                      <p className="text-xs text-center text-muted-foreground">
+                        Testers: If stuck on "Opening Google Play purchase...", try the "Unlock for Testing" button above or contact{' '}
+                        <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
+                          soltidewellness@gmail.com
+                        </a>
+                      </p>
                     </>
                   )}
 
