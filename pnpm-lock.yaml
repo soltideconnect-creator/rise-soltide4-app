@@ -126,8 +126,8 @@ importers:
         specifier: 2.0.6
         version: 2.0.6(@supabase/supabase-js@2.86.0)(react-dom@18.3.1(react@18.3.1))(react-router-dom@7.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       miaoda-sc-plugin:
-        specifier: 1.0.29
-        version: 1.0.29(vite@5.4.21(@types/node@24.10.1))
+        specifier: 1.0.38
+        version: 1.0.38(vite@5.4.21(@types/node@24.10.1))
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
@@ -2598,8 +2598,8 @@ packages:
       react-dom: '*'
       react-router-dom: '*'
 
-  miaoda-sc-plugin@1.0.29:
-    resolution: {integrity: sha512-y8U9g/ATK7eEwNBG97NsmLKp3iL+igdHn+cRHxqXCCbvuBwtAMo1zPmUVDhLQhukxoxR1SOufDnEYfq1+IpIrQ==}
+  miaoda-sc-plugin@1.0.38:
+    resolution: {integrity: sha512-bctxeRI9xlyDXP5OPe83yzNyrKXMtIwUzocEoaORmfqfEvK8iMhY7SxAEoVywal7sSeUgMIv4YMDPUwcrI0GCA==}
     peerDependencies:
       vite: ^4.0.0 || ^5.0.0
 
@@ -6013,7 +6013,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-router-dom: 7.9.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  miaoda-sc-plugin@1.0.29(vite@5.4.21(@types/node@24.10.1)):
+  miaoda-sc-plugin@1.0.38(vite@5.4.21(@types/node@24.10.1)):
     dependencies:
       '@babel/parser': 7.28.5
       '@babel/traverse': 7.28.5
