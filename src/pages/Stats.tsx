@@ -328,56 +328,96 @@ export function Stats() {
                     </>
                   )}
 
-                  {/* Web - Paystack Payment */}
+                  {/* Web - Paystack Payment OR Debug Unlock for Mobile Testers */}
                   {!isTWAWithBilling() && (
                     <div className="space-y-4">
-                      {/* Email Input Section */}
-                      {!userEmail || isEditingEmail ? (
-                        <Card className="border-primary/20 bg-primary/5">
-                          <CardContent className="pt-6 space-y-4">
-                            <div className="flex items-start gap-3">
-                              <div className="p-2 bg-primary/10 rounded-lg">
-                                <Mail className="w-5 h-5 text-primary" />
+                      {/* Debug Unlock for Mobile Testers */}
+                      {isDebugUnlockAvailable() ? (
+                        <div className="space-y-4">
+                          <Card className="border-primary/20 bg-primary/5">
+                            <CardContent className="pt-6 space-y-4">
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                  <Bug className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                  <h4 className="font-semibold text-sm">Testing Mode Detected</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    You're accessing the app from a mobile browser. Use the button below to unlock premium for testing.
+                                  </p>
+                                </div>
                               </div>
-                              <div className="flex-1 space-y-1">
-                                <h4 className="font-semibold text-sm">Email Required for Receipt</h4>
-                                <p className="text-xs text-muted-foreground">
-                                  Your payment receipt will be sent to this email address
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-3">
-                              <Input
-                                type="email"
-                                placeholder="Enter your email address"
-                                value={tempEmail}
-                                onChange={(e) => setTempEmail(e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    handleSaveEmail();
-                                  }
-                                }}
-                                className="w-full"
-                                autoFocus
-                              />
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={handleSaveEmail}
-                                  className="flex-1"
-                                  size="sm"
-                                >
-                                  Save Email
-                                </Button>
-                                {isEditingEmail && (
-                                  <Button
-                                    onClick={handleCancelEdit}
-                                    variant="outline"
-                                    size="sm"
-                                  >
-                                    Cancel
-                                  </Button>
-                                )}
+                            </CardContent>
+                          </Card>
+                          
+                          <Button
+                            onClick={() => {
+                              debugUnlockPremium();
+                              setAdsRemoved(true);
+                              toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
+                              setTimeout(() => window.location.reload(), 1000);
+                            }}
+                            className="w-full"
+                            size="lg"
+                            variant="default"
+                          >
+                            <Bug className="w-4 h-4 mr-2" />
+                            Unlock Premium for Testing
+                          </Button>
+                          
+                          <p className="text-xs text-center text-muted-foreground">
+                            For production use, please download the Android app from Google Play Store
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Email Input Section */}
+                          {!userEmail || isEditingEmail ? (
+                            <Card className="border-primary/20 bg-primary/5">
+                              <CardContent className="pt-6 space-y-4">
+                                <div className="flex items-start gap-3">
+                                  <div className="p-2 bg-primary/10 rounded-lg">
+                                    <Mail className="w-5 h-5 text-primary" />
+                                  </div>
+                                  <div className="flex-1 space-y-1">
+                                    <h4 className="font-semibold text-sm">Email Required for Receipt</h4>
+                                    <p className="text-xs text-muted-foreground">
+                                      Your payment receipt will be sent to this email address
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                  <Input
+                                    type="email"
+                                    placeholder="Enter your email address"
+                                    value={tempEmail}
+                                    onChange={(e) => setTempEmail(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleSaveEmail();
+                                      }
+                                    }}
+                                    className="w-full"
+                                    autoFocus
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={handleSaveEmail}
+                                      className="flex-1"
+                                      size="sm"
+                                    >
+                                      Save Email
+                                    </Button>
+                                    {isEditingEmail && (
+                                      <Button
+                                        onClick={handleCancelEdit}
+                                        variant="outline"
+                                        size="sm"
+                                      >
+                                        Cancel
+                                      </Button>
+                                    )}
                               </div>
                             </div>
                           </CardContent>
@@ -418,6 +458,8 @@ export function Stats() {
                       <p className="text-xs text-center text-muted-foreground">
                         Secure payment via Paystack • Instant access • Lifetime premium
                       </p>
+                    </>
+                      )}
                     </div>
                   )}
                   

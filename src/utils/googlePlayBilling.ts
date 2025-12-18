@@ -18,6 +18,16 @@ const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 // Timeout for billing operations (5 seconds)
 const BILLING_TIMEOUT_MS = 5000;
 
+// Helper to detect mobile browser
+const isMobileBrowser = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  
+  // Check for mobile devices
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+};
+
 // Debug mode detection
 const isTestMode = (): boolean => {
   // Check URL parameter ?test=true
@@ -29,8 +39,12 @@ const isTestMode = (): boolean => {
   // Check if in development mode
   if (import.meta.env.DEV) return true;
   
-  // Check if AndroidBilling exists but might be in test mode
-  // (closed testing environment)
+  // Check if on mobile browser without TWA (closed testing scenario)
+  // This allows testers to use debug unlock on mobile web
+  if (isMobileBrowser() && !isTWAWithBilling()) {
+    return true;
+  }
+  
   return false;
 };
 
