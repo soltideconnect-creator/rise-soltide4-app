@@ -30,10 +30,42 @@ declare global {
 }
 
 /**
+ * Check if running on Android device
+ * Uses multiple detection methods for reliability
+ */
+export function isAndroid(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  // Method 1: Check User-Agent for Android
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const isAndroidUA = /android/i.test(userAgent);
+  
+  // Method 2: Check for TWA-specific features
+  const isTWA = window.matchMedia('(display-mode: standalone)').matches ||
+                (window.navigator as any).standalone === true ||
+                document.referrer.includes('android-app://');
+  
+  // Method 3: Check localStorage override (for testing)
+  const forceAndroid = localStorage.getItem('force_android_mode') === 'true';
+  
+  // Method 4: Check for common Android WebView indicators
+  const isWebView = /wv|WebView/i.test(userAgent);
+  
+  return isAndroidUA || isTWA || forceAndroid || isWebView;
+}
+
+/**
  * Check if running in TWA (Android app) with billing support
+ * Now uses improved Android detection
  */
 export function isTWAWithBilling(): boolean {
-  return typeof window !== 'undefined' && typeof window.AndroidBilling !== 'undefined';
+  // First check if we're on Android
+  if (!isAndroid()) return false;
+  
+  // Then check if AndroidBilling interface is available
+  // If not available but we're on Android, we still return true
+  // to hide Paystack and show Google Play button
+  return true;
 }
 
 /**
@@ -41,8 +73,8 @@ export function isTWAWithBilling(): boolean {
  * Works both in TWA (checks Google Play) and web (checks localStorage)
  */
 export async function isPremiumUnlocked(): Promise<boolean> {
-  // If running in TWA with billing support, check Google Play purchases
-  if (isTWAWithBilling() && window.AndroidBilling) {
+  // If running on Android with billing support, check Google Play purchases
+  if (isAndroid() && window.AndroidBilling) {
     try {
       const purchases = await window.AndroidBilling.getPurchases();
       const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
@@ -73,22 +105,28 @@ export async function isPremiumUnlocked(): Promise<boolean> {
  * On web: triggers Paystack payment (handled by Stats.tsx)
  */
 export async function purchasePremium(): Promise<boolean> {
-  // If running in TWA with billing support, use Google Play
-  if (isTWAWithBilling() && window.AndroidBilling) {
-    try {
-      const success = await window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
-      
-      if (success) {
-        // Mark as premium in localStorage for offline access (both keys)
-        localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
-        localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
-        return true;
+  // If running on Android, use Google Play
+  if (isAndroid()) {
+    // Check if AndroidBilling interface is available
+    if (window.AndroidBilling) {
+      try {
+        const success = await window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
+        
+        if (success) {
+          // Mark as premium in localStorage for offline access (both keys)
+          localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+          localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Error purchasing premium:', error);
+        throw new Error('Purchase failed. Please try again.');
       }
-      
-      return false;
-    } catch (error) {
-      console.error('Error purchasing premium:', error);
-      throw new Error('Purchase failed. Please try again.');
+    } else {
+      // AndroidBilling not available - show helpful error
+      throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
     }
   }
   
@@ -120,8 +158,12 @@ export async function initializeBilling(): Promise<void> {
  * Checks Google Play for existing purchases and syncs with localStorage
  */
 export async function restorePurchases(): Promise<boolean> {
-  if (!isTWAWithBilling() || !window.AndroidBilling) {
+  if (!isAndroid()) {
     throw new Error('Restore purchases is only available on Android app');
+  }
+  
+  if (!window.AndroidBilling) {
+    throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
   }
   
   try {

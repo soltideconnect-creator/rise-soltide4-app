@@ -14,6 +14,7 @@ import { notifications } from '@/services/notifications';
 import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
+import { isAndroid, restorePurchases } from '@/utils/googlePlayBilling';
 
 /**
  * ============================================================================
@@ -59,6 +60,23 @@ function App() {
   useEffect(() => {
     try {
       console.log('App initializing...');
+      
+      // ANDROID: Automatically restore purchases on app start
+      if (isAndroid()) {
+        console.log('Android detected - attempting automatic purchase restoration...');
+        restorePurchases()
+          .then((restored) => {
+            if (restored) {
+              console.log('✅ Premium automatically restored from Google Play');
+            } else {
+              console.log('ℹ️ No previous purchase found');
+            }
+          })
+          .catch((error) => {
+            console.warn('Could not restore purchases automatically:', error);
+            // Don't block app initialization if restoration fails
+          });
+      }
       
       // PRODUCTION MODE: Premium must be purchased (no test unlock)
       // Premium is only unlocked after real Paystack or Google Play purchase
