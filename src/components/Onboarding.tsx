@@ -59,6 +59,18 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   return (
     <div className="fixed inset-0 bg-background z-50 flex items-center justify-center p-4">
       <Card className="max-w-md w-full p-8 space-y-8">
+        {/* Skip button - top right */}
+        <div className="flex justify-end -mt-4 -mr-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={onComplete}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Skip
+          </Button>
+        </div>
+
         <div className="flex flex-col items-center text-center space-y-6">
           <div className={`${slide.color} bg-muted rounded-full p-6`}>
             <Icon className="w-16 h-16" />

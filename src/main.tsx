@@ -61,19 +61,20 @@ try {
 }
 
 // Register Service Worker for PWA and Offline Support
-// Re-enabled after fixing CSP issue
-// Optimized for TWA cold start - aggressive caching with skipWaiting
+// CRITICAL: Register AFTER app renders to avoid blocking initial load
+// Delayed registration improves cold start performance
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+  // Use requestIdleCallback for non-blocking registration
+  const registerSW = () => {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
         console.log('[PWA] Service Worker registered successfully:', registration.scope);
         
-        // Check for updates periodically
+        // Check for updates periodically (less aggressive)
         setInterval(() => {
           registration.update();
-        }, 60000); // Check every minute
+        }, 300000); // Check every 5 minutes instead of 1 minute
         
         // Handle updates with aggressive skipWaiting for TWA
         registration.addEventListener('updatefound', () => {
@@ -130,7 +131,15 @@ if ('serviceWorker' in navigator) {
       .catch((error) => {
         console.error('[PWA] Service Worker registration failed:', error);
       });
-  });
+  };
+  
+  // Register SW after a delay to not block initial render
+  // Use requestIdleCallback if available, otherwise setTimeout
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(registerSW);
+  } else {
+    setTimeout(registerSW, 2000); // Wait 2 seconds after page load
+  }
 }
 
 // Handle "Add to Home Screen" prompt
