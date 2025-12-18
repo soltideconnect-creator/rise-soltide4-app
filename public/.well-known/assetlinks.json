@@ -1,8 +1,15 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.soltide.rise",
-        "sha256_cert_fingerprints": ["1D:03:BB:67:E2:90:53:73:12:7B:A4:51:4B:AC:33:25:4C:F0:4E:AE:C2:2C:9E:1D:11:D0:5A:CB:86:4F:B7:D5"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.soltide.rise",
+      "sha256_cert_fingerprints": [
+        "C8:B3:1F:F1:B1:28:01:10:99:C3:65:45:01:9D:18:7D:4D:33:67:B9:12:1D:D8:59:EA:48:CF:3A:C4:5D:9D:CA"
+      ]
+    }
+  }
+]
