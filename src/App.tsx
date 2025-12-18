@@ -8,6 +8,7 @@ import Sleep from '@/pages/Sleep';
 import { Settings } from '@/pages/Settings';
 import { About } from '@/pages/About';
 import { HabitForm } from '@/pages/HabitForm';
+import { BillingTest } from '@/pages/BillingTest';
 import { BottomNav } from '@/components/BottomNav';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
@@ -49,7 +50,7 @@ import { isAndroid, restorePurchases } from '@/utils/googlePlayBilling';
  * ============================================================================
  */
 
-type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit';
+type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit' | 'billing-test';
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -144,7 +145,15 @@ function App() {
     setCurrentView('about');
   };
 
+  const handleNavigateToBillingTest = () => {
+    setCurrentView('billing-test');
+  };
+
   const handleBackFromAbout = () => {
+    setCurrentView('settings');
+  };
+
+  const handleBackFromBillingTest = () => {
     setCurrentView('settings');
   };
 
@@ -173,8 +182,9 @@ function App() {
           {currentView === 'stats' && <Stats />}
           {currentView === 'analytics' && <Analytics />}
           {currentView === 'sleep' && <Sleep onNavigateToStats={() => setCurrentView('stats')} />}
-          {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
+          {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} onNavigateToBillingTest={handleNavigateToBillingTest} />}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
+          {currentView === 'billing-test' && <BillingTest />}
           {(currentView === 'add' || currentView === 'edit') && (
             <HabitForm
               habit={editingHabit}
@@ -183,7 +193,7 @@ function App() {
             />
           )}
 
-          {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && (
+          {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && currentView !== 'billing-test' && (
             <BottomNav
               activeTab={currentView as 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings'}
               onTabChange={handleTabChange}
