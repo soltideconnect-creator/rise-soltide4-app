@@ -16,16 +16,16 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
+    <div className="fixed bottom-0 left-0 right-0 z-50 shadow-lg">
       {/* Glassmorphism background with blur and transparency */}
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-t border-border/50" />
+      <div className="absolute inset-0 bg-card/95 backdrop-blur-md border-t border-border" />
       
       {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
       
       {/* Content */}
       <div className="relative container max-w-2xl mx-auto">
-        <div className="flex items-center justify-around h-16">
+        <div className="flex items-center justify-around h-16 px-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -36,7 +36,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
                 onClick={() => onTabChange(tab.id)}
                 className={`
                   flex flex-col items-center justify-center flex-1 h-full 
-                  transition-all duration-200 active:scale-95
+                  transition-all duration-200 active:scale-95 rounded-lg
                   ${isActive 
                     ? 'text-primary' 
                     : 'text-muted-foreground hover:text-foreground'
