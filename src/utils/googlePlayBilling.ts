@@ -109,6 +109,7 @@ export function debugUnlockPremium(): void {
 
 /**
  * Check if debug unlock is available
+ * Returns true in test mode (dev, ?test=true, or mobile browser without TWA)
  */
 export function isDebugUnlockAvailable(): boolean {
   return isTestMode();
