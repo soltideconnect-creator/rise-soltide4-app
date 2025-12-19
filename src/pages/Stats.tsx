@@ -8,7 +8,14 @@ import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2, B
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
-import { isPremiumUnlocked, purchasePremium, isTWAWithBilling, restorePurchases, debugUnlockPremium, isDebugUnlockAvailable } from '@/utils/googlePlayBilling';
+import { 
+  isPremiumUnlocked, 
+  purchasePremium, 
+  isTWAWithBilling, 
+  restorePurchases, 
+  debugUnlockPremium, 
+  isDebugUnlockAvailable 
+} from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
