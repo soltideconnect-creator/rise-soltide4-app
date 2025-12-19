@@ -254,7 +254,7 @@ export function Stats() {
           </CardContent>
         </Card>
 
-        {/* Premium Upgrade Section */}
+        {/* Premium Upgrade Section - ONLY show when premium is NOT active */}
         {!adsRemoved && (
           <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-primary/20">
             {/* Decorative background elements */}
