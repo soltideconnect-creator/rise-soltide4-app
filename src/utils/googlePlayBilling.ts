@@ -15,39 +15,6 @@ export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 const PREMIUM_STORAGE_KEY = 'streak_ads_removed';
 const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 
-// Timeout for billing operations (5 seconds)
-const BILLING_TIMEOUT_MS = 5000;
-
-// Helper to detect mobile browser
-const isMobileBrowser = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  
-  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-  
-  // Check for mobile devices
-  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-};
-
-// Debug mode detection
-const isTestMode = (): boolean => {
-  // Check URL parameter ?test=true
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('test') === 'true') return true;
-  }
-  
-  // Check if in development mode
-  if (import.meta.env.DEV) return true;
-  
-  // Check if on mobile browser without TWA (closed testing scenario)
-  // This allows testers to use debug unlock on mobile web
-  if (isMobileBrowser() && !isTWAWithBilling()) {
-    return true;
-  }
-  
-  return false;
-};
-
 // Type definition for Android Billing interface injected by TWA
 interface AndroidBilling {
   getPurchases(): Promise<string[]>; // Returns array of purchased product IDs
@@ -63,23 +30,39 @@ declare global {
 }
 
 /**
- * Check if running in TWA (Android app) with billing support
+ * Check if running on Android device
+ * Uses multiple detection methods for reliability
  */
-export function isTWAWithBilling(): boolean {
-  return typeof window !== 'undefined' && typeof window.AndroidBilling !== 'undefined';
+export function isAndroid(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  // Method 1: Check User-Agent for Android
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const isAndroidUA = /android/i.test(userAgent);
+  
+  // Method 2: Check for TWA-specific features
+  const isTWA = window.matchMedia('(display-mode: standalone)').matches ||
+                (window.navigator as any).standalone === true ||
+                document.referrer.includes('android-app://');
+  
+  // Method 3: Check localStorage override (for testing)
+  const forceAndroid = localStorage.getItem('force_android_mode') === 'true';
+  
+  // Method 4: Check for common Android WebView indicators
+  const isWebView = /wv|WebView/i.test(userAgent);
+  
+  return isAndroidUA || isTWA || forceAndroid || isWebView;
 }
 
 /**
- * Helper function to add timeout to billing operations
+ * Check if running in TWA (Android app) with billing support
+ * Now uses improved Android detection
  */
-async function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  fallbackValue: T,
-  operationName: string
-): Promise<T> {
-  let timeoutId: NodeJS.Timeout;
+export function isTWAWithBilling(): boolean {
+  // First check if we're on Android
+  if (!isAndroid()) return false;
   
+HEAD
   const timeoutPromise = new Promise<T>((resolve) => {
     timeoutId = setTimeout(() => {
       console.warn(`⚠️ ${operationName} timed out after ${timeoutMs}ms - using fallback`);
@@ -113,6 +96,10 @@ export function debugUnlockPremium(): void {
  */
 export function isDebugUnlockAvailable(): boolean {
   return isTestMode();
+  // Then check if AndroidBilling interface is available
+  // If not available but we're on Android, we still return true
+  // to hide Paystack and show Google Play button
+  return true;
 }
 
 /**
@@ -120,17 +107,10 @@ export function isDebugUnlockAvailable(): boolean {
  * Works both in TWA (checks Google Play) and web (checks localStorage)
  */
 export async function isPremiumUnlocked(): Promise<boolean> {
-  // If running in TWA with billing support, check Google Play purchases
-  if (isTWAWithBilling() && window.AndroidBilling) {
+  // If running on Android with billing support, check Google Play purchases
+  if (isAndroid() && window.AndroidBilling) {
     try {
-      // Add timeout to prevent infinite hang
-      const purchases = await withTimeout(
-        window.AndroidBilling.getPurchases(),
-        BILLING_TIMEOUT_MS,
-        [] as string[],
-        'getPurchases'
-      );
-      
+      const purchases = await window.AndroidBilling.getPurchases();
       const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
       
       // Sync with localStorage for consistency (both keys)
@@ -159,43 +139,28 @@ export async function isPremiumUnlocked(): Promise<boolean> {
  * On web: triggers Paystack payment (handled by Stats.tsx)
  */
 export async function purchasePremium(): Promise<boolean> {
-  // If running in TWA with billing support, use Google Play
-  if (isTWAWithBilling() && window.AndroidBilling) {
-    try {
-      // Add timeout to prevent infinite hang
-      const success = await withTimeout(
-        window.AndroidBilling.buy(PREMIUM_PRODUCT_ID),
-        BILLING_TIMEOUT_MS,
-        false,
-        'buy'
-      );
-      
-      if (success) {
-        // Mark as premium in localStorage for offline access (both keys)
-        localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
-        localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
-        return true;
+  // If running on Android, use Google Play
+  if (isAndroid()) {
+    // Check if AndroidBilling interface is available
+    if (window.AndroidBilling) {
+      try {
+        const success = await window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
+        
+        if (success) {
+          // Mark as premium in localStorage for offline access (both keys)
+          localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+          localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Error purchasing premium:', error);
+        throw new Error('Purchase failed. Please try again.');
       }
-      
-      // If billing timed out or failed in test mode, use debug unlock
-      if (isTestMode()) {
-        console.warn('⚠️ Billing failed in test mode - activating debug unlock');
-        debugUnlockPremium();
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Error purchasing premium:', error);
-      
-      // If in test mode and billing failed, use debug unlock
-      if (isTestMode()) {
-        console.warn('⚠️ Billing error in test mode - activating debug unlock');
-        debugUnlockPremium();
-        return true;
-      }
-      
-      throw new Error('Purchase failed. Please try again.');
+    } else {
+      // AndroidBilling not available - show helpful error
+      throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
     }
   }
   
@@ -227,19 +192,16 @@ export async function initializeBilling(): Promise<void> {
  * Checks Google Play for existing purchases and syncs with localStorage
  */
 export async function restorePurchases(): Promise<boolean> {
-  if (!isTWAWithBilling() || !window.AndroidBilling) {
+  if (!isAndroid()) {
     throw new Error('Restore purchases is only available on Android app');
   }
   
+  if (!window.AndroidBilling) {
+    throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
+  }
+  
   try {
-    // Add timeout to prevent infinite hang
-    const purchases = await withTimeout(
-      window.AndroidBilling.getPurchases(),
-      BILLING_TIMEOUT_MS,
-      [] as string[],
-      'restorePurchases'
-    );
-    
+    const purchases = await window.AndroidBilling.getPurchases();
     const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
     
     if (hasPremium) {
@@ -250,24 +212,10 @@ export async function restorePurchases(): Promise<boolean> {
       return true;
     } else {
       console.log('ℹ️ No premium purchase found');
-      
-      // If in test mode and no purchase found, offer debug unlock
-      if (isTestMode()) {
-        console.warn('⚠️ No purchase found in test mode - check if debug unlock needed');
-      }
-      
       return false;
     }
   } catch (error) {
     console.error('Error restoring purchases:', error);
-    
-    // If in test mode and restore failed, use debug unlock
-    if (isTestMode()) {
-      console.warn('⚠️ Restore failed in test mode - activating debug unlock');
-      debugUnlockPremium();
-      return true;
-    }
-    
     throw new Error('Failed to restore purchases. Please try again.');
   }
 }
