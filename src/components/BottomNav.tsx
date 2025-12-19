@@ -16,49 +16,59 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 shadow-lg">
-      {/* Glassmorphism background with blur and transparency */}
-      <div className="absolute inset-0 bg-card/95 backdrop-blur-md border-t border-border" />
-      
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
-      
-      {/* Content */}
-      <div className="relative container max-w-2xl mx-auto">
-        <div className="flex items-center justify-around h-16 px-2">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
+    <div className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
+      {/* Glassmorphism container with floating effect */}
+      <div className="mx-2 mb-2 rounded-2xl overflow-hidden shadow-2xl">
+        {/* Multi-layer glassmorphism background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/70 to-background/80 backdrop-blur-2xl" />
+        
+        {/* Subtle gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-primary/5 to-transparent pointer-events-none" />
+        
+        {/* Top border glow effect */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        
+        {/* Content */}
+        <div className="relative">
+          <div className="flex items-center justify-around h-16 px-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
 
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={`
-                  flex flex-col items-center justify-center flex-1 h-full 
-                  transition-all duration-200 active:scale-95 rounded-lg
-                  ${isActive 
-                    ? 'text-primary' 
-                    : 'text-muted-foreground hover:text-foreground'
-                  }
-                `}
-                type="button"
-              >
-                <div className={`
-                  transition-all duration-200
-                  ${isActive ? 'scale-110' : 'scale-100'}
-                `}>
-                  <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} />
-                </div>
-                <span className={`
-                  text-xs mt-1 font-medium transition-all duration-200
-                  ${isActive ? 'opacity-100' : 'opacity-70'}
-                `}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  className={`
+                    flex flex-col items-center justify-center flex-1 h-full 
+                    transition-all duration-300 active:scale-90 rounded-xl
+                    ${isActive 
+                      ? 'text-primary' 
+                      : 'text-muted-foreground hover:text-foreground'
+                    }
+                  `}
+                  type="button"
+                >
+                  <div className={`
+                    transition-all duration-300 relative
+                    ${isActive ? 'scale-110' : 'scale-100'}
+                  `}>
+                    {/* Active indicator glow */}
+                    {isActive && (
+                      <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150" />
+                    )}
+                    <Icon className={`w-6 h-6 relative z-10 ${isActive ? 'fill-current drop-shadow-lg' : ''}`} />
+                  </div>
+                  <span className={`
+                    text-xs mt-1 font-medium transition-all duration-300
+                    ${isActive ? 'opacity-100 font-semibold' : 'opacity-60'}
+                  `}>
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
