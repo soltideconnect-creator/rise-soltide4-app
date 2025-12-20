@@ -287,8 +287,8 @@ export function Stats() {
                   {/* Google Play Button - Show on ALL Android devices (TWA or mobile browser) */}
                   {isAndroid() && (
                     <>
-                      {/* Only show actual Google Play button if billing is available */}
-                      {isTWAWithBilling() ? (
+                      {/* Show Google Play button if billing is available */}
+                      {isTWAWithBilling() && (
                         <>
                           <Button
                             onClick={handleRemoveAds}
@@ -310,61 +310,28 @@ export function Stats() {
                             Restore Purchase
                           </Button>
                         </>
-                      ) : (
-                        <>
-                          {/* Android mobile browser - Show message to download app */}
-                          <Card className="border-primary/20 bg-primary/5">
-                            <CardContent className="pt-6 space-y-4">
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 bg-primary/10 rounded-lg">
-                                  <X className="w-5 h-5 text-primary" />
-                                </div>
-                                <div className="flex-1 space-y-1">
-                                  <h4 className="font-semibold text-sm">Get Premium via Google Play</h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    To purchase premium, please download the Rise app from Google Play Store. This ensures secure payment through Google Play Billing.
-                                  </p>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                          
-                          <Button
-                            onClick={() => {
-                              window.open('https://play.google.com/store/apps/details?id=com.rise.habittracker', '_blank');
-                            }}
-                            className="w-full"
-                            size="lg"
-                            variant="default"
-                          >
-                            <X className="w-4 h-4 mr-2" />
-                            Download from Google Play
-                          </Button>
-                        </>
                       )}
                       
-                      {/* Tester Unlock Button - Only visible in test mode */}
-                      {isDebugUnlockAvailable() && (
-                        <Button
-                          onClick={() => {
-                            debugUnlockPremium();
-                            setAdsRemoved(true);
-                            toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
-                            // Reload to apply changes
-                            setTimeout(() => window.location.reload(), 1000);
-                          }}
-                          className="w-full"
-                          size="sm"
-                          variant="secondary"
-                        >
-                          <Bug className="w-4 h-4 mr-2" />
-                          Unlock for Testing
-                        </Button>
-                      )}
+                      {/* Tester Unlock Button - ALWAYS visible on Android for closed testers */}
+                      <Button
+                        onClick={() => {
+                          debugUnlockPremium();
+                          setAdsRemoved(true);
+                          toast.success('🔓 Premium unlocked for testing! All features are now available.');
+                          // Reload to apply changes
+                          setTimeout(() => window.location.reload(), 1000);
+                        }}
+                        className="w-full"
+                        size="lg"
+                        variant="secondary"
+                      >
+                        <Bug className="w-4 h-4 mr-2" />
+                        Unlock for Testing
+                      </Button>
                       
                       {/* Helper text for testers */}
                       <p className="text-xs text-center text-muted-foreground">
-                        Testers: If stuck on "Opening Google Play purchase...", try the "Unlock for Testing" button above or contact{' '}
+                        <strong>Closed Testers:</strong> Use "Unlock for Testing" button above to access all premium features. For issues, contact{' '}
                         <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
                           soltidewellness@gmail.com
                         </a>
