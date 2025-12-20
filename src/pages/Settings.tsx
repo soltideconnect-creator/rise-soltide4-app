@@ -36,9 +36,10 @@ import {
 
 interface SettingsProps {
   onNavigateToAbout: () => void;
+  onNavigateToBillingTest?: () => void;
 }
 
-export function Settings({ onNavigateToAbout }: SettingsProps) {
+export function Settings({ onNavigateToAbout, onNavigateToBillingTest }: SettingsProps) {
   const [isDarkMode, setIsDarkMode] = useState(themeService.isDarkMode());
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
@@ -194,6 +195,12 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
   const confirmClearData = () => {
     localStorage.clear();
     toast.success('All data cleared. Refreshing...');
+    setTimeout(() => window.location.reload(), 1000);
+  };
+
+  const handleResetOnboarding = () => {
+    localStorage.removeItem('streak_onboarding_completed');
+    toast.success('Onboarding reset. Refreshing...');
     setTimeout(() => window.location.reload(), 1000);
   };
 
@@ -385,6 +392,14 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
             <Trash2 className="w-4 h-4 mr-2" />
             Clear All Data
           </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={handleResetOnboarding}
+          >
+            <Info className="w-4 h-4 mr-2" />
+            Reset Onboarding
+          </Button>
         </CardContent>
       </Card>
 
@@ -406,6 +421,18 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
             <span>About Rise</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
+          
+          {/* Development/Testing: Billing Test Page */}
+          {onNavigateToBillingTest && (
+            <Button
+              variant="ghost"
+              className="w-full justify-between mt-2"
+              onClick={onNavigateToBillingTest}
+            >
+              <span>🧪 Billing Test (Dev)</span>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
         </CardContent>
       </Card>
 
