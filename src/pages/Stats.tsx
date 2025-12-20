@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 import { 
   isPremiumUnlocked, 
   purchasePremium, 
-  isTWAWithBilling, 
+  isTWAWithBilling,
+  isAndroid,
   restorePurchases, 
   debugUnlockPremium, 
   isDebugUnlockAvailable 
@@ -283,28 +284,64 @@ export function Stats() {
 
                 {/* Buttons - Conditional based on platform */}
                 <div className="space-y-3 max-w-sm mx-auto">
-                  {/* Google Play Button - Only show on Android TWA */}
-                  {isTWAWithBilling() && (
+                  {/* Google Play Button - Show on ALL Android devices (TWA or mobile browser) */}
+                  {isAndroid() && (
                     <>
-                      <Button
-                        onClick={handleRemoveAds}
-                        className="w-full"
-                        size="lg"
-                        variant="default"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Get Premium - $4.99 (Google Play)
-                      </Button>
-                      
-                      {/* Restore Purchase Button */}
-                      <Button
-                        onClick={handleRestorePurchases}
-                        className="w-full"
-                        size="sm"
-                        variant="outline"
-                      >
-                        Restore Purchase
-                      </Button>
+                      {/* Only show actual Google Play button if billing is available */}
+                      {isTWAWithBilling() ? (
+                        <>
+                          <Button
+                            onClick={handleRemoveAds}
+                            className="w-full"
+                            size="lg"
+                            variant="default"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Get Premium - $4.99 (Google Play)
+                          </Button>
+                          
+                          {/* Restore Purchase Button */}
+                          <Button
+                            onClick={handleRestorePurchases}
+                            className="w-full"
+                            size="sm"
+                            variant="outline"
+                          >
+                            Restore Purchase
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          {/* Android mobile browser - Show message to download app */}
+                          <Card className="border-primary/20 bg-primary/5">
+                            <CardContent className="pt-6 space-y-4">
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                  <X className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                  <h4 className="font-semibold text-sm">Get Premium via Google Play</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    To purchase premium, please download the Rise app from Google Play Store. This ensures secure payment through Google Play Billing.
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          
+                          <Button
+                            onClick={() => {
+                              window.open('https://play.google.com/store/apps/details?id=com.rise.habittracker', '_blank');
+                            }}
+                            className="w-full"
+                            size="lg"
+                            variant="default"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Download from Google Play
+                          </Button>
+                        </>
+                      )}
                       
                       {/* Tester Unlock Button - Only visible in test mode */}
                       {isDebugUnlockAvailable() && (
@@ -335,51 +372,11 @@ export function Stats() {
                     </>
                   )}
 
-                  {/* Web - Paystack Payment OR Debug Unlock for Mobile Testers */}
-                  {!isTWAWithBilling() && (
+                  {/* Web - Paystack Payment (ONLY for non-Android users) */}
+                  {!isAndroid() && (
                     <div className="space-y-4">
-                      {/* Debug Unlock for Mobile Testers */}
-                      {isDebugUnlockAvailable() ? (
-                        <div className="space-y-4">
-                          <Card className="border-primary/20 bg-primary/5">
-                            <CardContent className="pt-6 space-y-4">
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 bg-primary/10 rounded-lg">
-                                  <Bug className="w-5 h-5 text-primary" />
-                                </div>
-                                <div className="flex-1 space-y-1">
-                                  <h4 className="font-semibold text-sm">Testing Mode Detected</h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    You're accessing the app from a mobile browser. Use the button below to unlock premium for testing.
-                                  </p>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                          
-                          <Button
-                            onClick={() => {
-                              debugUnlockPremium();
-                              setAdsRemoved(true);
-                              toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
-                              setTimeout(() => window.location.reload(), 1000);
-                            }}
-                            className="w-full"
-                            size="lg"
-                            variant="default"
-                          >
-                            <Bug className="w-4 h-4 mr-2" />
-                            Unlock Premium for Testing
-                          </Button>
-                          
-                          <p className="text-xs text-center text-muted-foreground">
-                            For production use, please download the Android app from Google Play Store
-                          </p>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Email Input Section */}
-                          {!userEmail || isEditingEmail ? (
+                      {/* Email Input Section */}
+                      {!userEmail || isEditingEmail ? (
                             <Card className="border-primary/20 bg-primary/5">
                               <CardContent className="pt-6 space-y-4">
                                 <div className="flex items-start gap-3">
@@ -465,13 +462,11 @@ export function Stats() {
                       <p className="text-xs text-center text-muted-foreground">
                         Secure payment via Paystack • Instant access • Lifetime premium
                       </p>
-                    </>
-                      )}
                     </div>
                   )}
                   
                   <p className="text-xs text-muted-foreground">
-                    {isTWAWithBilling() 
+                    {isAndroid() 
                       ? 'One-time purchase • Unlock Sleep Tracker'
                       : 'Secure payment via Paystack • Instant premium access'}
                   </p>
