@@ -62,7 +62,22 @@ export function isTWAWithBilling(): boolean {
   // First check if we're on Android
   if (!isAndroid()) return false;
   
-HEAD
+  // Check if AndroidBilling interface is available
+  return typeof window !== 'undefined' && 
+         typeof (window as any).AndroidBilling !== 'undefined';
+}
+
+/**
+ * Helper function to add timeout to billing operations
+ */
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  fallbackValue: T,
+  operationName: string
+): Promise<T> {
+  let timeoutId: NodeJS.Timeout;
+  
   const timeoutPromise = new Promise<T>((resolve) => {
     timeoutId = setTimeout(() => {
       console.warn(`⚠️ ${operationName} timed out after ${timeoutMs}ms - using fallback`);
