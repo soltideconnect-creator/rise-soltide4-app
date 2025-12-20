@@ -97,6 +97,28 @@ async function withTimeout<T>(
 }
 
 /**
+ * Check if running in test mode
+ * Returns true if:
+ * - Development environment (localhost)
+ * - URL has ?test=true parameter
+ * - Mobile browser without TWA (for testing)
+ */
+function isTestMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  // Check for ?test=true URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('test') === 'true') return true;
+  
+  // Check for development environment
+  const isDev = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' ||
+                window.location.hostname.includes('192.168.');
+  
+  return isDev;
+}
+
+/**
  * Debug unlock for testers (closed testing environment)
  */
 export function debugUnlockPremium(): void {
@@ -111,10 +133,6 @@ export function debugUnlockPremium(): void {
  */
 export function isDebugUnlockAvailable(): boolean {
   return isTestMode();
-  // Then check if AndroidBilling interface is available
-  // If not available but we're on Android, we still return true
-  // to hide Paystack and show Google Play button
-  return true;
 }
 
 /**
