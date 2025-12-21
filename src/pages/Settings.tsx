@@ -36,10 +36,9 @@ import {
 
 interface SettingsProps {
   onNavigateToAbout: () => void;
-  onNavigateToBillingTest?: () => void;
 }
 
-export function Settings({ onNavigateToAbout, onNavigateToBillingTest }: SettingsProps) {
+export function Settings({ onNavigateToAbout }: SettingsProps) {
   const [isDarkMode, setIsDarkMode] = useState(themeService.isDarkMode());
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
@@ -421,18 +420,6 @@ export function Settings({ onNavigateToAbout, onNavigateToBillingTest }: Setting
             <span>About Rise</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
-          
-          {/* Development/Testing: Billing Test Page */}
-          {onNavigateToBillingTest && (
-            <Button
-              variant="ghost"
-              className="w-full justify-between mt-2"
-              onClick={onNavigateToBillingTest}
-            >
-              <span>🧪 Billing Test (Dev)</span>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          )}
         </CardContent>
       </Card>
 
