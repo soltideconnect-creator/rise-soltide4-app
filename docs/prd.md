@@ -1,4 +1,4 @@
-# Streak – Daily Habit Tracker Requirements Document (Complete with Viral Share Feature)
+# Streak – Daily Habit Tracker Requirements Document (Updated: Share Button Location Clarification)
 
 ## 1. Application Overview
 
@@ -14,7 +14,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Paystack via react-paystack (Web/PWA)
 - Platform: Android + Wear OS (premium) + PWA
 - Fonts: Poppins (headings), Inter (body text)
-- Sensors: Microphone, Accelerometer, GPS (premium)\n- PWA: Service Worker, Web App Manifest, Cache API
+- Sensors: Microphone, Accelerometer, GPS (premium)
+- PWA: Service Worker, Web App Manifest, Cache API
 - UI Components: shadcn/ui (@/components/ui/*)
 - Icons: lucide-react\n- Toasts: sonner
 - Charts: Recharts
@@ -54,8 +55,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Color picker with8 preset colors
 - Daily reminder time picker\n- Weekday selector with toggle buttons (Monday–Sunday)
 \n#### 2.3.2 Premium Fields
-- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming
-  - Health: Drink Water, Meditation, Vitamins, Sleep8 Hours, Healthy Meal
+- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming\n  - Health: Drink Water, Meditation, Vitamins, Sleep8 Hours, Healthy Meal
   - Productivity: Reading, Journaling, Learning, Deep Work, Email Zero
   - Self-care: Skincare, Gratitude, Stretching, No Social Media, Digital Detox
   - Each template includes pre-filled name, emoji, color, and suggested reminder time
@@ -186,8 +186,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
-  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
@@ -203,7 +202,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Restore Premium Access' button in Settings\n  - User enters email used for Paystack payment
   - Backend API verifies payment history via Paystack API
   - If verified, unlocks premium and stores in localStorage
-  - Shows success message: '✅ Premium restored! All features unlocked.'\n  - Fallback: User can contact support with transaction reference
+  - Shows success message: '✅ Premium restored! All features unlocked.'
+  - Fallback: User can contact support with transaction reference
 - **Cloud Sync for Premium Users**:
   - Premium status synced via Firebase Firestore
   - On new device login, checks Firestore for premium status
@@ -212,8 +212,11 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Contact Support' button with pre-filled email template
   - Includes device info, purchase platform, and transaction ID
   - Support email: support@risehabittracker.com
-\n#### 2.7.5 Viral Share Feature (NEW)
-- **Location**: Settings page and Premium screen
+\n#### 2.7.5 Viral Share Feature (UPDATED LOCATION)
+- **Location in Settings Page**: \n  - **NEW DEDICATED SECTION**: 'Share & Grow' section
+  - **Placement**: Between 'Data Management' section and 'About Rise' section\n  - **Visual Hierarchy**: Full-width card with light purple background (#F3F4F6) and rounded corners
+  - **Section Title**: 'Share & Grow' (bold, 18px, Poppins SemiBold)
+  - **Section Subtitle**: 'Help friends build better habits' (14px, gray-600)
 - **Button**: 'Share Rise with Friends' - prominent purple button
 - **Functionality**:
   - 100% offline - no internet, no servers, no tracking required
@@ -228,12 +231,21 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Fallback**: For older browsers without navigator.share, copies link to clipboard with alert message
 - **Design**:
   - Purple button with white text: 'Share Rise with Friends'
-  - Subtext: 'Spread better habits — QR code for easy install'
-  - QR code centered below button with4px margin-top
+  - Button style: Full-width, rounded-xl, py-4, px-8, bg-purple-500hover:bg-purple-600
+  - Subtext: 'Spread better habits — QR code for easy install' (centered, text-sm, text-gray-600, mt-2)
+  - QR code centered below subtext with4px margin-top
+  - Card padding: p-6\n  - Card margin: mb-6(spacing from sections above and below)
 - **Global Appeal**: No region-specific messaging, universally accessible
 - **Goal**: Target 20-30% organic download growth from word-of-mouth
 
-#### 2.7.6 Other Settings
+**UPDATED SETTINGS PAGE LAYOUT ORDER:**
+1. **Alarm Sound Selection** (existing section)
+2. **Theme Customization** (existing section)
+3. **Data Management** (existing section with Export Data, Import Data, Clear All Data, Reset Onboarding buttons)
+4. **Share & Grow** (NEW SECTION - viral share button + QR code)
+5. **Device Transfer & Purchase Restoration** (existing section with Restore Purchases button)
+6. **About Rise** (existing section at bottom)
+\n#### 2.7.6 Other Settings
 - Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)\n- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
 - About and support\n\n### 2.8 Notification System
@@ -292,7 +304,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Full-screen mode with minimal design
   - Swipe to complete habits
 - **Pomodoro Timer Integration**:
-  - Built-in 25/5 minute Pomodoro timer
+  - Built-in25/5 minute Pomodoro timer
   - Link timer to specific habits
   - Track time spent on habits
   - Pomodoro session history
@@ -350,7 +362,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Maximum 5 active habits
 - Single daily reminder per habit
 - Basic stats and 30-day chart
--8 alarm sounds
+- 8 alarm sounds
 - Banner ad at bottom of Stats screen
 - No cloud backup
 
@@ -363,14 +375,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Product Type: One-time in-app purchase (non-consumable)
 - Price: $4.99 USD
 - Payment Method: Google Play Billing Library v6+
-- Button Text: 'Unlock Premium $4.99'
-- Visibility: Only shown when window.AndroidBilling exists
+- Button Text: 'Unlock Premium $4.99'\n- Visibility: Only shown when window.AndroidBilling exists
 \n**Web/PWA Users (Paystack Direct Payment):**
 - Amount: 800000 kobo (₦8,000 NGN)
 - Payment Gateway: Paystack via react-paystack package
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
 - Default Email: customer@riseapp.com (user can modify)
-- Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
+- Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium₦8,000 (Instant • No Google Cut)'
 - Visibility: Only shown when window.AndroidBilling is NOT present
 - Payment Channels: Card, Bank, USSD, QR, Mobile Money
 - On Success:\n  - Verify payment via backend API (/api/verify-payment)
@@ -383,8 +394,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
       'features': ['sleep_tracker', 'no_ads', 'advanced_analytics'],
       'platform': 'web',
       'userEmail': user email\n    }
-    ```\n  - localStorage.setItem('streak_ads_removed', 'true')
-  - Dispatch'premiumStatusChanged' event
+    ```\n  - localStorage.setItem('streak_ads_removed', 'true')\n  - Dispatch'premiumStatusChanged' event
   - Unlock all premium features immediately
   - Show success toast: '🎉 Premium unlocked! Sleep Tracker and all premium features are now available!'
 
@@ -449,7 +459,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Sleep tracker accent: #4A90E2 (calming blue)
 - Premium badge color: #FFD700 (gold)
 - Paystack button gradient: #FFD700 to #FF9500 (gold to orange)
-- Viral share button: #8B5CF6 (purple) with hover state #7C3AED
+- Viral share button: #8B5CF6 (purple) with hover state #7C3AED\n- Share section background: #F3F4F6 (light purple/gray)
 - Success green: #34C759\n- Warning red: #FF3B30
 - Clean, minimalist aesthetic with generous whitespace
 
@@ -536,7 +546,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Seamless update without disrupting user experience
 \n#### 4.3.2 Web App Manifest
 - **Manifest Configuration**:
-  - App name: 'Streak – Daily Habit Tracker'
+  - App name:'Streak – Daily Habit Tracker'
   - Short name: 'Streak'
   - Description: 'Build lasting habits with streak tracking'
   - Theme color: #5E5CE6 (indigo)
@@ -561,8 +571,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Alarm sounds (8 free + premium if subscribed)
   - Sleep tracking data
   - Achievement badges and stats
-
-#### 4.3.4 Performance Optimization
+\n#### 4.3.4 Performance Optimization
 - **Loading Performance**:
   - First Contentful Paint (FCP) < 1.5 seconds
   - Time to Interactive (TTI) < 3 seconds
@@ -770,8 +779,7 @@ export const restorePremiumByEmail = async (email: string): Promise<{ success: b
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Premium restoration failed:', error);
-    return { success: false, message: 'Restoration failed. Please try again or contact support.' };
+    console.error('Premium restoration failed:', error);\n    return { success: false, message: 'Restoration failed. Please try again or contact support.' };
   }
 };
 \nexport const unlockPremium = (transactionId?: string, userEmail?: string): void => {
@@ -817,10 +825,8 @@ export default async function handler(\n  req: NextApiRequest,
       {\n        headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           'Content-Type': 'application/json',
-        },
-      }
-    );
-
+        },\n      }
+    );\n
     const data = await response.json();\n
     if (data.status && data.data.status === 'success') {
       return res.status(200).json({
@@ -911,12 +917,13 @@ export default async function handler(
 ```
 
 ```typescript
-// Updated /components/Settings.tsx (key sections)
+// Updated /components/Settings.tsx (key sections with UPDATED viral share location)
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';\nimport { Label } from '@/components/ui/label';
 import { restorePremiumByEmail, unlockPremium, getPremiumStatus } from '@/utils/paystack';
-import { toast } from 'sonner';\nimport { Loader2 } from 'lucide-react';\nimport QRCode from 'qrcode.react';
+import { toast } from 'sonner';\nimport { Loader2, Share } from 'lucide-react';
+import QRCode from 'qrcode.react';
 
 export function Settings() {
   const [isRestoring, setIsRestoring] = useState(false);
@@ -990,20 +997,48 @@ export function Settings() {
   };
 \n  return (
     <div className='settings-container'>
-      {/* Other settings sections */}
-\n      {/* Viral Share Feature */}
-      <div className='share-section text-center p-6'>
-        <button
-          onClick={handleShare}\n          className='bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-xl text-lg'\n        >
-          Share Rise with Friends
-        </button>
-        <p className='text-sm text-gray-600 mt-4'>Spread better habits — QR code for easy install</p>
-        <QRCode value={shareLink} size={128} className='mt-4 mx-auto' />
+      {/* Alarm Sound Selection Section */}
+      <div className='alarm-sounds-section mb-6'>
+        {/* Alarm sound selection UI */}
       </div>
 
+      {/* Theme Customization Section */}
+      <div className='theme-section mb-6'>
+        {/* Theme customization UI */}
+      </div>
+
+      {/* Data Management Section */}
+      <div className='data-management-section mb-6'>
+        <h3 className='text-lg font-semibold mb-4'>Data Management</h3>
+        <p className='text-sm text-gray-600 mb-4'>Backup and restore your habits</p>
+        <div className='space-y-3'>
+          <Button className='w-full'>Export Data</Button>
+          <Button className='w-full'>Import Data</Button>
+          <Button className='w-full' variant='destructive'>Clear All Data</Button>
+          <Button className='w-full' variant='outline'>Reset Onboarding</Button>
+        </div>
+      </div>
+
+      {/* UPDATED: Share & Grow Section (NEW LOCATION) */}
+      <div className='share-section bg-purple-50 rounded-xl p-6 mb-6'>
+        <h3 className='text-lg font-semibold mb-2'>Share & Grow</h3>
+        <p className='text-sm text-gray-600 mb-4'>Help friends build better habits</p>
+        <button\n          onClick={handleShare}
+          className='w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-xl text-lg flex items-center justify-center gap-2'
+        >
+          <Share className='h-5 w-5' />
+          Share Rise with Friends
+        </button>
+<p className='text-sm text-center text-gray-600 mt-4'>Spread better habits — QR code for easy install</p>
+        <div className='flex justify-center mt-4'>
+          <QRCode value={shareLink} size={128} />
+        </div>
+      </div>
+
+      {/* Device Transfer & Purchase Restoration Section */}
       {!isPremium && (
-        <div className='restore-section'>
-          <h3>Restore Premium Purchase</h3>
+        <div className='restore-section mb-6'>
+          <h3 className='text-lg font-semibold mb-2'>Restore Premium Purchase</h3>
           <p className='text-sm text-gray-600 mb-4'>
             Changed your device? Restore your premium access here.
           </p>
@@ -1013,7 +1048,7 @@ export function Settings() {
               disabled={isRestoring}
               className='w-full'
             >
-              {isRestoring ? (
+              {isRestoring ?(
                 <>\n                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Restoring...
                 </>\n              ) : (
@@ -1051,15 +1086,20 @@ export function Settings() {
       )}
 
       {isPremium && (
-        <div className='premium-active'>
-          <p>✅ Premium Active - All features unlocked!</p>
-</div>
+        <div className='premium-active mb-6'>
+          <p className='text-green-600 font-semibold'>✅ Premium Active - All features unlocked!</p>
+        </div>
       )}
-    </div>
-  );\n}
-```
 
-####4.4.3 Platform Detection and Button Display
+      {/* About Rise Section */}
+      <div className='about-section'>
+        <h3 className='text-lg font-semibold mb-2'>About Rise</h3>
+        {/* About content */}
+      </div>\n    </div>
+  );
+}
+```
+\n####4.4.3 Platform Detection and Button Display
 
 ```typescript
 const isTWAWithBilling = () => {
@@ -1089,14 +1129,16 @@ disabled={isProcessing}
 ) : (\n  // Android TWA - Show Google Play\n  <button onClick={handleGooglePlayPurchase}>
     Unlock Premium $4.99
   </button>
-)}\n```
+)}
+```
 
 #### 4.4.4 Premium Feature Gating
 - Check getPremiumStatus() function to unlock features
 - Ad removal, sleep tracker, analytics, and all27 premium features gated behind this check
 - Premium status persists offline via localStorage
 - On app restart, verify with AndroidBilling.getPurchases() (Android) or getPremiumStatus() (Web)
-- Event-driven updates via'premiumStatusChanged' event\n
+- Event-driven updates via'premiumStatusChanged' event
+
 #### 4.4.5 Restore Purchases
 - **Android**: 'Restore Purchases' button calls AndroidBilling.getPurchases()
 - **Web/PWA**: 'Restore Premium Access' button queries Paystack API by email
@@ -1110,14 +1152,14 @@ disabled={isProcessing}
 - CSS: background-image: url('/images/premium-bg.png')\n- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
 - Image should display sunrise/dawn theme with warm colors
 
-### 4.5 Viral Share Feature Implementation (NEW)
+### 4.5 Viral Share Feature Implementation (UPDATED LOCATION)
 
 #### 4.5.1 Package Installation
 - Install qrcode.react: `npm install qrcode.react`
 - Install types: `npm install --save-dev @types/qrcode.react`
 \n#### 4.5.2 ShareButton Component
-- **Location**: /components/ShareButton.tsx (reusable component)
-- **Import**: `import QRCode from 'qrcode.react';`
+- **Location**: Integrated directly into Settings page (not a separate component)
+- **Import**: `import QRCode from 'qrcode.react';` and `import { Share } from 'lucide-react';`
 - **Functionality**:
   - 100% offline - no internet, no servers, no tracking
   - Uses native Web Share API (navigator.share)
@@ -1126,11 +1168,15 @@ disabled={isProcessing}
   - Share content includes app title, message, and link
   - Link switches between production and test (opt-in) based on environment
 
-#### 4.5.3 Integration Points
-- **Settings Page**: Add ShareButton component in prominent position
-- **Premium Screen**: Optional placement for viral growth
-- **Button Style**: Purple background (#8B5CF6) with hover state (#7C3AED)
-- **QR Code**: 128x128px, centered below button with4px margin-top
+#### 4.5.3 Integration Points (UPDATED)\n- **Settings Page**: \n  - **NEW DEDICATED SECTION**: 'Share & Grow' section
+  - **Placement**: Between 'Data Management' section and 'Device Transfer & Purchase Restoration' section (or'About Rise' if premium is active)
+  - **Visual Design**: Full-width card with light purple background (#F3F4F6 or bg-purple-50), rounded-xl corners, p-6 padding, mb-6 margin-bottom
+  - **Section Title**: 'Share & Grow' (text-lg font-semibold mb-2)
+  - **Section Subtitle**: 'Help friends build better habits' (text-sm text-gray-600 mb-4)
+- **Premium Screen**: Optional placement for viral growth (can be added later)
+- **Button Style**: Full-width purple button (bg-purple-500 hover:bg-purple-600) with white text, rounded-xl, py-4 px-8, text-lg, flex items-center justify-center gap-2
+- **Button Icon**: Share icon from lucide-react (h-5 w-5)
+- **QR Code**: 128x128px, centered below subtext with mt-4 margin-top, wrapped in flex justify-center container
 
 #### 4.5.4 Share Content
 - **Title**: 'Rise: Habit Tracker & Smart Sleep'
@@ -1154,8 +1200,7 @@ disabled={isProcessing}
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.6.2 Optional Permissions (Premium)
-- Location permission for location-based reminders (GPS)
+\n#### 4.6.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
@@ -1237,8 +1282,13 @@ disabled={isProcessing}
   - Verify share content (title, message, link)
   - Test offline functionality (no network calls)
   - Test on multiple devices and browsers
-  - Verify link switches between production and test
-  - Test error handling and fallback mechanisms
+  - Verify link switches between production and test\n  - Test error handling and fallback mechanisms
+  - **Test share button location in Settings page**:\n    - Verify 'Share & Grow' section appears between 'Data Management' and 'Device Transfer & Purchase Restoration' (or 'About Rise' if premium)\n    - Verify section background color (light purple #F3F4F6)
+    - Verify section title and subtitle display correctly
+    - Verify button is full-width with purple background
+    - Verify Share icon displays correctly
+    - Verify QR code is centered below subtext
+    - Verify spacing and padding match design specs
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -1257,14 +1307,14 @@ disabled={isProcessing}
 - **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings\n  - Android restoration via Google Play Billing
   - Web/PWA restoration via Paystack API query by email
   - Firebase Firestore premium status sync
-  - Support contact integration\n- **Viral Share Feature**:
-  - ShareButton component with QR code\n  - Native share sheet integration
+  - Support contact integration\n- **Viral Share Feature (UPDATED LOCATION)**:
+  - Share & Grow section in Settings page (between Data Management and Device Transfer sections)
+  - Share button with QR code\n  - Native share sheet integration
   - Clipboard fallback for older browsers
   - Offline-first implementation
   - Global appeal messaging
 - Premium card background image fix(/images/premium-bg.png)
-- Wear OS companion app APK (premium)
-- **PWA Build**:
+- Wear OS companion app APK (premium)\n- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
@@ -1275,15 +1325,11 @@ disabled={isProcessing}
   - /pages/api/verify-payment.ts (backend verification endpoint)
   - /pages/api/restore-premium.ts (backend restoration endpoint)
   - Updated /components/Stats.tsx (with email input and Paystack button)
-  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature)
-- **Viral Share Files**:
-  - /components/ShareButton.tsx (reusable share component with QR code)
-  - Updated /components/Settings.tsx (with integrated share feature)
+  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature in new location)
 - .env.local.example template
 - Comprehensive code documentation
 - README with setup instructions and dual payment configuration guide
-
-### 5.2 Google Play Store Assets
+\n### 5.2 Google Play Store Assets
 - **App Title**: Streak – Daily Habit Tracker
 - **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
 - **Full Description** (4000 chars): Highlighting all27 premium features with compelling copy
@@ -1322,7 +1368,8 @@ disabled={isProcessing}
   - Paystack account setup guide and API key configuration
   - Environment variables setup guide (.env.local)\n  - Testing guide for both payment systems
   - Payment verification API documentation
-  - **Device transfer and restoration guide**:\n    - How to restore purchases on Android
+  - **Device transfer and restoration guide**:
+    - How to restore purchases on Android
     - How to restore premium on Web/PWA
     - Troubleshooting common restoration issues
     - Support contact information
@@ -1331,13 +1378,17 @@ disabled={isProcessing}
   - Email input and validation guide
   - Payment reference format documentation
   - Payment channels configuration guide
-- **Viral Share Documentation**:
-  - Implementation guide for ShareButton component
+- **Viral Share Documentation (UPDATED)**:
+  - Implementation guide for Share & Grow section in Settings
   - QR code generation documentation
   - Native share API usage guide
   - Fallback mechanism documentation
   - Testing guide for share feature
   - Link configuration (production vs test)
+  - **Settings page layout documentation**:
+    - Section order and placement
+    - Visual design specifications
+    - Spacing and padding guidelines
 - **PWA Documentation**:
   - Service Worker implementation guide
   - Offline functionality documentation
@@ -1361,11 +1412,16 @@ disabled={isProcessing}
   - Success/error messages show appropriately
   - Payment reference generation is unique\n  - All payment channels (card, bank, USSD, QR, mobile money) work\n  - Payment metadata transmitted correctly
   - premiumStatusChanged event dispatches properly
-- **Viral Share Feature Success**:
-  - Share button displays correctly in Settings and Premium screens
+- **Viral Share Feature Success (UPDATED)**:
+  - Share & Grow section displays correctly in Settings page
+  - Section appears between Data Management and Device Transfer sections
+  - Section background color is light purple (#F3F4F6)
+  - Section title and subtitle display correctly
+  - Share button is full-width with purple background and Share icon
   - Native share sheet opens on Android TWA with correct content
   - Clipboard fallback works on Web/PWA
   - QR code generates correctly and scans to Play Store
+  - QR code is centered below subtext with proper spacing
   - Share functionality works 100% offline
   - No network calls or tracking
   - Global messaging appeals to all users
@@ -1451,31 +1507,48 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 11. Screenshot_20251212-142304.png: Web app loading on appmedo.com
 12. Screenshot_20251212-151514.png: Web app loading on medo.dev
 13. Screenshot_20251212-152528.png: Premium feature unlock screen with upgrade button
-14. Screenshot_20251212-205738.png: (New reference image)\n15. Screenshot_20251212-205756.png: (New reference image)\n16. Screenshot_20251219-000013.png: (New reference image)\n17. Screenshot_20251219-002237.png: (New reference image)\n18. Screenshot_20251219-055710.png: (New reference image)\n19. Screenshot_20251220-130946.png: (New reference image)\n20. Screenshot_20251220-133408.png: (New reference image)\n21. Screenshot_20251220-155301.png: (New reference image)\n22. Screenshot_20251220-155107.png: (New reference image)\n23. Screenshot_20251221-064419.png: (New reference image)\n\n---
+14. Screenshot_20251212-205738.png: (Reference image)\n15. Screenshot_20251212-205756.png: (Reference image)
+16. Screenshot_20251219-000013.png: (Reference image)
+17. Screenshot_20251219-002237.png: (Reference image)
+18. Screenshot_20251219-055710.png: (Reference image)
+19. Screenshot_20251220-130946.png: (Reference image)
+20. Screenshot_20251220-133408.png: (Reference image)
+21. Screenshot_20251220-155301.png: (Reference image)
+22. Screenshot_20251220-155107.png: (Reference image)
+23. Screenshot_20251221-064419.png: (Reference image)
+24. Screenshot_20251221-094801.png: Settings page showing Data Management section (used to clarify share button location)
+\n---
 
 ## Implementation Checklist
 
-**Viral Share Feature (NEW URGENT IMPLEMENTATION):**
+**Viral Share Feature (UPDATED LOCATION - URGENT IMPLEMENTATION):**
 1. ✅ Install qrcode.react package: `npm install qrcode.react`
 2. ✅ Install types: `npm install --save-dev @types/qrcode.react`
-3. ✅ Create /components/ShareButton.tsx component
-4. ✅ Implement native share API (navigator.share)
-5. ✅ Add clipboard fallback for older browsers
-6. ✅ Generate QR code with qrcode.react\n7. ✅ Configure share link (production vs test)
-8. ✅ Add share button to Settings page
-9. ✅ Add share button to Premium screen (optional)
-10. ✅ Style button with purple background (#8B5CF6)
-11. ✅ Add hover state (#7C3AED)
-12. ✅ Position QR code below button (128x128px, 4px margin-top)
-13. ✅ Add subtext:'Spread better habits — QR code for easy install'
-14. ✅ Test on Android TWA (native share sheet)
-15. ✅ Test on Web/PWA (clipboard fallback)
-16. ✅ Test QR code scanning\n17. ✅ Verify offline functionality (no network calls)
-18. ✅ Test on multiple devices and browsers
-19. ✅ Verify global appeal messaging
-20. ✅ Commit message: 'Add viral share button + QR for downloads spike (offline-first)'
-21. ✅ Push to main branch for Netlify auto-deploy
-22. ✅ Confirm deployment works\n23. ✅ Regenerate .aab for Android after testing
+3. ✅ Import QRCode and Share icon in Settings.tsx
+4. ✅ Create'Share & Grow' section in Settings page
+5. ✅ Place section between 'Data Management' and 'Device Transfer & Purchase Restoration' (or 'About Rise' if premium)
+6. ✅ Add section background color (bg-purple-50 or #F3F4F6)
+7. ✅ Add section title: 'Share & Grow' (text-lg font-semibold mb-2)
+8. ✅ Add section subtitle: 'Help friends build better habits' (text-sm text-gray-600 mb-4)
+9. ✅ Implement native share API (navigator.share)
+10. ✅ Add clipboard fallback for older browsers
+11. ✅ Generate QR code with qrcode.react
+12. ✅ Configure share link (production vs test)
+13. ✅ Style button: full-width, bg-purple-500hover:bg-purple-600, text-white, font-bold, py-4 px-8, rounded-xl, text-lg, flex items-center justify-center gap-2
+14. ✅ Add Share icon (h-5 w-5) to button
+15. ✅ Add button text: 'Share Rise with Friends'
+16. ✅ Add subtext below button: 'Spread better habits — QR code for easy install' (text-sm text-center text-gray-600 mt-4)
+17. ✅ Position QR code below subtext (flex justify-center mt-4, size 128x128px)
+18. ✅ Add section padding (p-6) and margin (mb-6)
+19. ✅ Add rounded corners (rounded-xl)\n20. ✅ Test on Android TWA (native share sheet)
+21. ✅ Test on Web/PWA (clipboard fallback)
+22. ✅ Test QR code scanning\n23. ✅ Verify offline functionality (no network calls)
+24. ✅ Test on multiple devices and browsers
+25. ✅ Verify section placement in Settings page
+26. ✅ Verify visual design matches specifications
+27. ✅ Verify global appeal messaging
+28. ✅ Commit message: 'Update viral share button location to dedicated Share & Grow section in Settings'\n29. ✅ Push to main branch for Netlify auto-deploy
+30. ✅ Confirm deployment works\n31. ✅ Regenerate .aab for Android after testing
 \n**Device Transfer & Purchase Restoration (Existing Implementation):**
 1. ✅ Add 'Restore Purchases' button to Settings page
 2. ✅ Implement restoreAndroidPurchases() function for Android
@@ -1491,7 +1564,8 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 12. ✅ Show error message if no purchase found
 13. ✅ Add support contact information with pre-filled email template
 14. ✅ Test Android restoration on new device
-15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync\n17. ✅ Test offline restoration (localStorage persistence)
+15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync
+17. ✅ Test offline restoration (localStorage persistence)
 18. ✅ Update documentation with restoration guide
 19. ✅ Add FAQ section for device transfer
 20. ✅ Commit message: 'Implement device transfer and purchase restoration system'
@@ -1529,8 +1603,7 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 4. Verify purchase restoration works\n5. Confirm premium features unlock correctly
 6. Test offline premium access
 \n**Environment Variables Setup:**
-1. Copy .env.local.example to .env.local
-2. Add Paystack secret key to .env.local
+1. Copy .env.local.example to .env.local\n2. Add Paystack secret key to .env.local
 3. Verify NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is set
 4. Ensure .env.local is in .gitignore
 5. Document environment setup in README
@@ -1554,8 +1627,7 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 17. Test premiumStatusChanged event\n18. Test premium status persistence across page reloads
 19. Test device transfer scenarios
 20. Test restore purchases on Android
-21. Test email-based restoration on Web/PWA
-22. Test Firebase premium status sync
+21. Test email-based restoration on Web/PWA\n22. Test Firebase premium status sync
 23. Test offline restoration\n24. Test support contact integration
 25. **Test viral share feature on Android TWA**
 26. **Test viral share feature on Web/PWA**
@@ -1565,6 +1637,13 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 30. **Test clipboard fallback**
 31. **Test on multiple devices and browsers**
 32. **Verify global appeal messaging**
+33. **Test Share & Grow section placement in Settings page**
+34. **Verify section appears between Data Management and Device Transfer sections**
+35. **Verify section background color (light purple #F3F4F6)**\n36. **Verify section title and subtitle display correctly**
+37. **Verify share button is full-width with purple background**
+38. **Verify Share icon displays correctly**
+39. **Verify QR code is centered below subtext with proper spacing**
+40. **Verify section padding and margin match design specs**
 \n---
 
-**This updated requirements document now includes a comprehensive viral share feature with QR code for organic download growth. The feature is designed to be 100% offline, uses native share APIs, and targets 20-30% organic download growth from word-of-mouth. Implementation is urgent for tester viral growth.**\n
+**This updated requirements document now clarifies the exact location of the viral share button in the Settings page. The share button is now placed in a dedicated 'Share & Grow' section between the 'Data Management' section and the 'Device Transfer & Purchase Restoration' section (or 'About Rise' section if premium is active). The section has a light purple background (#F3F4F6), rounded corners, and includes a section title, subtitle, full-width purple share button with Share icon, subtext, and centered QR code below. This placement ensures high visibility and accessibility for users to easily share the app with friends.**
