@@ -1,22 +1,24 @@
-# Streak – Daily Habit Tracker Requirements Document (Complete with Device Transfer & Purchase Restoration)
-\n## 1. Application Overview
+# Streak – Daily Habit Tracker Requirements Document (Complete with Viral Share Feature)
+
+## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
 \n### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality and 27 premium features designed to outperform competitors. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). **Includes robust device transfer and purchase restoration system for seamless premium access across devices.**
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality,27 premium features designed to outperform competitors, and a viral share feature for organic growth. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). Includes robust device transfer and purchase restoration system for seamless premium access across devices.
 
 ### 1.3 Technical Stack
 - Framework: Flutter (Android) + Next.js with TypeScript (Web/PWA)
 - Design System: Material 3 (Material You)\n- Database: Hive (offline storage)
 - Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - Google Play Billing Library v6+ (Android native)
   - Paystack via react-paystack (Web/PWA)
-- Platform: Android + Wear OS (premium) + PWA\n- Fonts: Poppins (headings), Inter (body text)
-- Sensors: Microphone, Accelerometer, GPS (premium)
-- PWA: Service Worker, Web App Manifest, Cache API
+- Platform: Android + Wear OS (premium) + PWA
+- Fonts: Poppins (headings), Inter (body text)
+- Sensors: Microphone, Accelerometer, GPS (premium)\n- PWA: Service Worker, Web App Manifest, Cache API
 - UI Components: shadcn/ui (@/components/ui/*)
 - Icons: lucide-react\n- Toasts: sonner
 - Charts: Recharts
+- QR Code: qrcode.react (for viral share feature)
 
 ## 2. Core Features
 
@@ -52,7 +54,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Color picker with8 preset colors
 - Daily reminder time picker\n- Weekday selector with toggle buttons (Monday–Sunday)
 \n#### 2.3.2 Premium Fields
-- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming\n  - Health: Drink Water, Meditation, Vitamins, Sleep8 Hours, Healthy Meal
+- **Habit Templates**: Browse and select from 50+ pre-built templates:\n  - Fitness: Workout, Yoga, Running, Cycling, Swimming
+  - Health: Drink Water, Meditation, Vitamins, Sleep8 Hours, Healthy Meal
   - Productivity: Reading, Journaling, Learning, Deep Work, Email Zero
   - Self-care: Skincare, Gratitude, Stretching, No Social Media, Digital Detox
   - Each template includes pre-filled name, emoji, color, and suggested reminder time
@@ -84,7 +87,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Frozen Days Indicator**: Visual marker (snowflake icon) on days with streak freeze applied
 \n### 2.5 Stats Tab
 
-#### 2.5.1 Free Version\n- Current streak counter
+#### 2.5.1 Free Version
+- Current streak counter
 - Longest streak record
 - Total completions count
 - Bar chart showing last 30 days activity
@@ -182,13 +186,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
+  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
     - Export habits with notes and photos as ZIP archive
-  - **Import Options**: Import data from CSV/JSON\n
-#### 2.7.4 Device Transfer & Purchase Restoration
+  - **Import Options**: Import data from CSV/JSON\n\n#### 2.7.4 Device Transfer & Purchase Restoration
 - **Restore Purchases Button**: Prominently displayed in Settings page
 - **Android Device Transfer**:
   - 'Restore Purchases' button calls AndroidBilling.getPurchases()
@@ -199,8 +203,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Restore Premium Access' button in Settings\n  - User enters email used for Paystack payment
   - Backend API verifies payment history via Paystack API
   - If verified, unlocks premium and stores in localStorage
-  - Shows success message: '✅ Premium restored! All features unlocked.'
-  - Fallback: User can contact support with transaction reference
+  - Shows success message: '✅ Premium restored! All features unlocked.'\n  - Fallback: User can contact support with transaction reference
 - **Cloud Sync for Premium Users**:
   - Premium status synced via Firebase Firestore
   - On new device login, checks Firestore for premium status
@@ -209,12 +212,31 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Contact Support' button with pre-filled email template
   - Includes device info, purchase platform, and transaction ID
   - Support email: support@risehabittracker.com
-\n#### 2.7.5 Other Settings
-- Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)
-- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
+\n#### 2.7.5 Viral Share Feature (NEW)
+- **Location**: Settings page and Premium screen
+- **Button**: 'Share Rise with Friends' - prominent purple button
+- **Functionality**:
+  - 100% offline - no internet, no servers, no tracking required
+  - On tap: Opens device native share sheet (SMS, email, Bluetooth, WhatsApp, etc.)
+  - Share content includes:
+    - App title:'Rise: Habit Tracker & Smart Sleep'\n    - Message: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
+    - Link: https://play.google.com/store/apps/details?id=com.soltide.rise (production) or https://play.google.com/apps/testing/com.soltide.rise (closed test)
+- **QR Code**:
+  - Displays QR code below share button
+  - QR code links to Play Store listing (opt-in link for testing, public link for production)
+  - Size: 128x128px\n  - Scannable for easy install
+- **Fallback**: For older browsers without navigator.share, copies link to clipboard with alert message
+- **Design**:
+  - Purple button with white text: 'Share Rise with Friends'
+  - Subtext: 'Spread better habits — QR code for easy install'
+  - QR code centered below button with4px margin-top
+- **Global Appeal**: No region-specific messaging, universally accessible
+- **Goal**: Target 20-30% organic download growth from word-of-mouth
+
+#### 2.7.6 Other Settings
+- Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)\n- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
-- About and support\n
-### 2.8 Notification System
+- About and support\n\n### 2.8 Notification System
 
 #### 2.8.1 Free Version
 - Single daily reminder per habit at user-chosen time
@@ -248,8 +270,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Confetti explosion animation when streak reaches 7, 30, or 100 days
 - Haptic feedback for milestone achievements
 - 50built-in motivational quotes displayed randomly after completing a habit
-\n#### 2.10.2 Premium Version
-- **200+ Motivational Quotes**: Expanded library with category-specific quotes
+
+#### 2.10.2 Premium Version\n- **200+ Motivational Quotes**: Expanded library with category-specific quotes
 - **Custom Milestones**: Set personal streak goals (e.g., 14 days, 50 days, 365 days)
 - **Achievement Badges System**:
   - 30+ unlockable badges (Early Bird, Night Owl, Perfect Week, Century Club, etc.)
@@ -270,7 +292,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Full-screen mode with minimal design
   - Swipe to complete habits
 - **Pomodoro Timer Integration**:
-  - Built-in25/5 minute Pomodoro timer
+  - Built-in 25/5 minute Pomodoro timer
   - Link timer to specific habits
   - Track time spent on habits
   - Pomodoro session history
@@ -328,9 +350,10 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Maximum 5 active habits
 - Single daily reminder per habit
 - Basic stats and 30-day chart
-- 8 alarm sounds
+-8 alarm sounds
 - Banner ad at bottom of Stats screen
-- No cloud backup\n
+- No cloud backup
+
 #### 2.12.2 Premium Pricing
 - **Android (Google Play)**: $4.99 USD one-time purchase
 - **Web/PWA (Paystack)**: ₦8,000 NGN one-time payment
@@ -340,7 +363,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Product Type: One-time in-app purchase (non-consumable)
 - Price: $4.99 USD
 - Payment Method: Google Play Billing Library v6+
-- Button Text: 'Unlock Premium $4.99'\n- Visibility: Only shown when window.AndroidBilling exists
+- Button Text: 'Unlock Premium $4.99'
+- Visibility: Only shown when window.AndroidBilling exists
 \n**Web/PWA Users (Paystack Direct Payment):**
 - Amount: 800000 kobo (₦8,000 NGN)
 - Payment Gateway: Paystack via react-paystack package
@@ -392,7 +416,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 25. ✅ Wear OS smartwatch support
 26. ✅ Streak freeze feature (2 per month)
 27. ✅ Priority customer support
-28. ✅ **Device transfer and purchase restoration**
+28. ✅ Device transfer and purchase restoration
+29. ✅ Viral share feature with QR code
 \n#### 2.12.5 Premium Unlock UI
 \n**Location**: Stats Tab and Premium/Settings Page
 
@@ -424,6 +449,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Sleep tracker accent: #4A90E2 (calming blue)
 - Premium badge color: #FFD700 (gold)
 - Paystack button gradient: #FFD700 to #FF9500 (gold to orange)
+- Viral share button: #8B5CF6 (purple) with hover state #7C3AED
 - Success green: #34C759\n- Warning red: #FF3B30
 - Clean, minimalist aesthetic with generous whitespace
 
@@ -443,12 +469,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 ### 3.4 Iconography
 - Material Design Icons for system functions
 - Custom emoji picker with high-quality emoji set
-- Premium badge: Gold crown icon
-- Streak freeze: Snowflake icon
+- Premium badge: Gold crown icon\n- Streak freeze: Snowflake icon
 - Achievement badges: Custom illustrated icons
 - Paystack button: Lightning bolt (Zap) icon from lucide-react
+- Share button: Share icon from lucide-react
 - lucide-react icons for web/PWA interface
-\n## 4. Technical Requirements
+
+## 4. Technical Requirements
 
 ### 4.1 Performance
 - All animations must run at 60 fps
@@ -520,7 +547,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Orientation: portrait
 - **Install Prompt**:
   - Custom install banner with app benefits
-  - Defer prompt until user engagement (after 3 habit completions)
+  - Defer prompt until user engagement (after3 habit completions)
   - Track install acceptance rate
 \n#### 4.3.3 Offline Capabilities
 - **Offline-First Architecture**:
@@ -534,7 +561,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Alarm sounds (8 free + premium if subscribed)
   - Sleep tracking data
   - Achievement badges and stats
-\n#### 4.3.4 Performance Optimization
+
+#### 4.3.4 Performance Optimization
 - **Loading Performance**:
   - First Contentful Paint (FCP) < 1.5 seconds
   - Time to Interactive (TTI) < 3 seconds
@@ -601,8 +629,7 @@ function restoreAndroidPurchases() {
         showErrorMessage('No premium purchase found. Please contact support if you believe this is an error.');
       }
     }).catch(err => {
-      console.error('Restore failed:', err);
-      showErrorMessage('Restore failed. Please try again or contact support.');
+      console.error('Restore failed:', err);\n      showErrorMessage('Restore failed. Please try again or contact support.');
     });\n  }
 }
 ```
@@ -613,13 +640,14 @@ function restoreAndroidPurchases() {
 - Amount: 800000 kobo (₦8,000 NGN)
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315\n- Default Email: customer@riseapp.com (user can modify)
 - Reference Format: RISE_{timestamp}_{random}
-- Currency: NGN\n- Payment Channels: Card, Bank, USSD, QR, Mobile Money\n\n**File Structure:**
+- Currency: NGN\n- Payment Channels: Card, Bank, USSD, QR, Mobile Money\n
+**File Structure:**
 1. /components/PaystackButton.tsx - Reusable Paystack button component
 2. /utils/paystack.ts - Utility functions for payment handling
 3. /pages/api/verify-payment.ts - Backend API for payment verification
 4. /pages/api/restore-premium.ts - Backend API for premium restoration
 5. /components/Stats.tsx - Updated Stats component with Paystack integration
-6. /components/Settings.tsx - Settings page with restore purchases button
+6. /components/Settings.tsx - Settings page with restore purchases button and viral share feature
 7. .env.local - Environment variables configuration
 
 **Core Payment Logic:**
@@ -776,13 +804,12 @@ export const restorePremiumByEmail = async (email: string): Promise<{ success: b
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(\n  req: NextApiRequest,
-  res: NextApiResponse
-) {
+  res: NextApiResponse\n) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });\n  }
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
-  const { reference } = req.body;
-\n  if (!reference) {\n    return res.status(400).json({ message: 'Reference is required' });
+  const { reference } = req.body;\n\n  if (!reference) {\n    return res.status(400).json({ message: 'Reference is required' });
   }
 
   try {\n    // In production, verify with Paystack
@@ -876,10 +903,10 @@ export default async function handler(
     }
   } catch (error) {
     console.error('Premium restoration error:', error);
-    return res.status(500).json({\n      success: false,
+    return res.status(500).json({
+      success: false,
       message: 'Internal server error',
-    });
-  }
+    });\n  }
 }
 ```
 
@@ -887,15 +914,16 @@ export default async function handler(
 // Updated /components/Settings.tsx (key sections)
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';\nimport { Label } from '@/components/ui/label';
 import { restorePremiumByEmail, unlockPremium, getPremiumStatus } from '@/utils/paystack';
-import { toast } from 'sonner';\nimport { Loader2 } from 'lucide-react';\n
+import { toast } from 'sonner';\nimport { Loader2 } from 'lucide-react';\nimport QRCode from 'qrcode.react';
+
 export function Settings() {
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreEmail, setRestoreEmail] = useState('');
   const isPremium = getPremiumStatus();
-const isTWAWithBilling = () => {
+
+  const isTWAWithBilling = () => {
     return typeof window !== 'undefined' && !!(window as any).AndroidBilling;\n  };
 
   const handleRestoreAndroid = async () => {
@@ -906,11 +934,10 @@ const isTWAWithBilling = () => {
         const hasPremium = purchases.some(\n          (p: any) => p.productId === 'premium_unlock' && p.purchaseState === 1
         );
         if (hasPremium) {\n          unlockPremium('google_play_restored');
-          toast.success('✅ Premium restored! All features unlocked.');\n        } else {
-          toast.error('No premium purchase found. Please contact support if you believe this is an error.');
-        }
-      }
-    } catch (error) {
+          toast.success('✅ Premium restored! All features unlocked.');
+        } else {
+          toast.error('No premium purchase found. Please contact support if you believe this is an error.');\n        }
+      }\n    } catch (error) {
       console.error('Restore failed:', error);
       toast.error('Restore failed. Please try again or contact support.');
     } finally {
@@ -940,10 +967,41 @@ const isTWAWithBilling = () => {
     }
   };
 
-  return (
+  // Viral Share Feature
+  const shareLink = 'https://play.google.com/store/apps/details?id=com.soltide.rise'; // Switch to opt-in link in test:'https://play.google.com/apps/testing/com.soltide.rise'
+  const shareMessage = 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: ' + shareLink;
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Rise: Habit Tracker & Smart Sleep',
+          text: shareMessage,
+          url: shareLink,
+        });
+      } else {
+        // Fallback for older browsers — copy to clipboard
+        navigator.clipboard.writeText(shareMessage);
+        alert('Link copied! Paste to share.');
+      }
+    } catch (err) {
+      console.error('Share error:', err);
+    }
+  };
+\n  return (
     <div className='settings-container'>
       {/* Other settings sections */}
-\n      {!isPremium && (
+\n      {/* Viral Share Feature */}
+      <div className='share-section text-center p-6'>
+        <button
+          onClick={handleShare}\n          className='bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-xl text-lg'\n        >
+          Share Rise with Friends
+        </button>
+        <p className='text-sm text-gray-600 mt-4'>Spread better habits — QR code for easy install</p>
+        <QRCode value={shareLink} size={128} className='mt-4 mx-auto' />
+      </div>
+
+      {!isPremium && (
         <div className='restore-section'>
           <h3>Restore Premium Purchase</h3>
           <p className='text-sm text-gray-600 mb-4'>
@@ -1022,7 +1080,7 @@ const isTWAWithBilling = () => {
       onSuccess={handlePaystackSuccess}
       onClose={handlePaystackClose}
 disabled={isProcessing}
-      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'
+      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600text-white font-semibold py-6 text-lg'
     />
 <p className='text-sm text-center text-gray-600'>
       Secure payment via Paystack • Instant access • Lifetime premium
@@ -1052,33 +1110,73 @@ disabled={isProcessing}
 - CSS: background-image: url('/images/premium-bg.png')\n- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
 - Image should display sunrise/dawn theme with warm colors
 
-### 4.5 Permissions\n
-#### 4.5.1 Required Permissions
+### 4.5 Viral Share Feature Implementation (NEW)
+
+#### 4.5.1 Package Installation
+- Install qrcode.react: `npm install qrcode.react`
+- Install types: `npm install --save-dev @types/qrcode.react`
+\n#### 4.5.2 ShareButton Component
+- **Location**: /components/ShareButton.tsx (reusable component)
+- **Import**: `import QRCode from 'qrcode.react';`
+- **Functionality**:
+  - 100% offline - no internet, no servers, no tracking
+  - Uses native Web Share API (navigator.share)
+  - Fallback to clipboard copy for older browsers
+  - Generates QR code for Play Store link
+  - Share content includes app title, message, and link
+  - Link switches between production and test (opt-in) based on environment
+
+#### 4.5.3 Integration Points
+- **Settings Page**: Add ShareButton component in prominent position
+- **Premium Screen**: Optional placement for viral growth
+- **Button Style**: Purple background (#8B5CF6) with hover state (#7C3AED)
+- **QR Code**: 128x128px, centered below button with4px margin-top
+
+#### 4.5.4 Share Content
+- **Title**: 'Rise: Habit Tracker & Smart Sleep'
+- **Message**: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
+- **Link (Production)**: https://play.google.com/store/apps/details?id=com.soltide.rise
+- **Link (Testing)**: https://play.google.com/apps/testing/com.soltide.rise
+- **Global Appeal**: No region-specific messaging
+
+#### 4.5.5 Error Handling
+- Try-catch block for share API\n- Fallback to clipboard copy if navigator.share not available
+- Alert message: 'Link copied! Paste to share.'\n- Console error logging for debugging
+
+#### 4.5.6 Testing Requirements
+- Test on Android TWA (share sheet should pop with message + link)
+- Test on PWA browser (clipboard copy fallback)
+- Test QR code scanning (should open Play Store listing)
+- Verify offline functionality (no network calls)
+- Test on multiple devices and browsers
+
+### 4.6 Permissions\n\n#### 4.6.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.5.2 Optional Permissions (Premium)
+\n#### 4.6.2 Optional Permissions (Premium)
 - Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
 
-### 4.6 Compatibility
+### 4.7 Compatibility
 - Android platform (minimum Android 8.0 / API 26)
 - Target Android 14 (API 34)
 - Material3 design system compliance
 - Wear OS 3.0+ for smartwatch companion app (premium)\n- Tablet optimization with responsive layouts
-- **PWA Compatibility**:\n  - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
+- **PWA Compatibility**:
+  - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
   - Mobile browsers: Chrome Mobile, Safari iOS14+\n  - Desktop platforms: Windows, macOS, Linux, Chrome OS
 
-### 4.7 Audio Assets
+### 4.8 Audio Assets
 - **Free Version**: 8 alarm sound files (MP3 format, 128kbps, 30-60 seconds each)
 - **Premium Version**: 20+ additional alarm sounds\n- **Sleep Sounds**: 20+ ambient sound files (OGG format, loopable, 3-5 minutes each)
 - Total audio assets size: ~50MB (optimized compression)
 - All sounds stored in app's assets folder for offline access
 - Service Worker caches alarm sounds for offline playback
 
-### 4.8 Security and Privacy
+### 4.9 Security and Privacy
 - All user data stored locally by default
 - Premium cloud backup uses AES-256 encryption
 - No personal data shared with third parties
@@ -1095,13 +1193,15 @@ disabled={isProcessing}
   - Payment reference format includes timestamp and random string for uniqueness
   - Email stored securely for purchase restoration
 
-### 4.9 Third-Party Integrations
+### 4.10 Third-Party Integrations
 - Google Play Billing Library v6+ for Android in-app purchases
 - Paystack (react-paystack) for Web/PWA payments
 - Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
-\n### 4.10 Testing Requirements
+- qrcode.react for QR code generation (viral share feature)
+
+### 4.11 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
 - Performance testing for 60fps animations
@@ -1130,6 +1230,15 @@ disabled={isProcessing}
     - Test email-based restoration on Web/PWA
     - Verify premium status syncs via Firebase
     - Test offline restoration (localStorage persistence)
+- **Viral Share Feature Testing**:
+  - Test share button on Android TWA (native share sheet)
+  - Test share button on Web/PWA (clipboard fallback)
+  - Test QR code generation and scanning
+  - Verify share content (title, message, link)
+  - Test offline functionality (no network calls)
+  - Test on multiple devices and browsers
+  - Verify link switches between production and test
+  - Test error handling and fallback mechanisms
 - **PWA Testing**:
   - Service Worker functionality testing
   - Offline mode testing
@@ -1143,15 +1252,19 @@ disabled={isProcessing}
 - Complete Flutter project that compiles and runs successfully on first attempt
 - Ready-to-upload AAB (Android App Bundle) with Google Play Billing integration
 - All27 premium features fully implemented with purchase gating
-- Dual payment system:\n  - Google Play Billing v6+ integration (Android)
-  - Paystack integration via react-paystack (Web/PWA)
+- Dual payment system:\n  - Google Play Billing v6+ integration (Android)\n  - Paystack integration via react-paystack (Web/PWA)
 - Platform detection logic to show appropriate payment button
-- **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings
-  - Android restoration via Google Play Billing
+- **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings\n  - Android restoration via Google Play Billing
   - Web/PWA restoration via Paystack API query by email
   - Firebase Firestore premium status sync
-  - Support contact integration\n- Premium card background image fix(/images/premium-bg.png)
-- Wear OS companion app APK (premium)\n- **PWA Build**:
+  - Support contact integration\n- **Viral Share Feature**:
+  - ShareButton component with QR code\n  - Native share sheet integration
+  - Clipboard fallback for older browsers
+  - Offline-first implementation
+  - Global appeal messaging
+- Premium card background image fix(/images/premium-bg.png)
+- Wear OS companion app APK (premium)
+- **PWA Build**:
   - Service Worker implementation (sw.js)
   - Web App Manifest (manifest.json)
   - PWA-optimized build for web deployment
@@ -1162,7 +1275,10 @@ disabled={isProcessing}
   - /pages/api/verify-payment.ts (backend verification endpoint)
   - /pages/api/restore-premium.ts (backend restoration endpoint)
   - Updated /components/Stats.tsx (with email input and Paystack button)
-  - Updated /components/Settings.tsx (with restore purchases functionality)
+  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature)
+- **Viral Share Files**:
+  - /components/ShareButton.tsx (reusable share component with QR code)
+  - Updated /components/Settings.tsx (with integrated share feature)
 - .env.local.example template
 - Comprehensive code documentation
 - README with setup instructions and dual payment configuration guide
@@ -1180,7 +1296,8 @@ disabled={isProcessing}
   6. Wear OS support for on-the-go tracking
   7. One-time $4.99 purchase unlocks all premium features forever
   8. PWA support for cross-platform access
-  9. **Seamless device transfer - restore premium on new devices**
+  9. Seamless device transfer - restore premium on new devices
+  10. Viral share feature - spread better habits with friends
 - **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
   2. Calendar heatmap (Screenshot_20251125-170720.png)
   3. Stats dashboard (Screenshot_20251125-170733.png)
@@ -1190,8 +1307,7 @@ disabled={isProcessing}
 - **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon (Rise - Habit tracker and smart sleep Icon.png)
 - **Promotional Video**: 30-second video showcasing key features (optional)
 - **In-App Products Configuration**:
-  - Product ID: premium_unlock
-  - Product Type: One-time purchase (non-consumable)
+  - Product ID: premium_unlock\n  - Product Type: One-time purchase (non-consumable)
   - Price: $4.99 USD
   - Title: Premium Unlock
   - Description: Unlock all premium features forever
@@ -1215,6 +1331,13 @@ disabled={isProcessing}
   - Email input and validation guide
   - Payment reference format documentation
   - Payment channels configuration guide
+- **Viral Share Documentation**:
+  - Implementation guide for ShareButton component
+  - QR code generation documentation
+  - Native share API usage guide
+  - Fallback mechanism documentation
+  - Testing guide for share feature
+  - Link configuration (production vs test)
 - **PWA Documentation**:
   - Service Worker implementation guide
   - Offline functionality documentation
@@ -1223,8 +1346,7 @@ disabled={isProcessing}
 \n## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
-- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden
-  - **Web/PWA**: Paystack button appears, Google Play hidden
+- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden\n  - **Web/PWA**: Paystack button appears, Google Play hidden
   - Purchase flow completes successfully on both platforms
   - Payment verification API works correctly
   - Premium features unlock immediately after payment
@@ -1239,10 +1361,20 @@ disabled={isProcessing}
   - Success/error messages show appropriately
   - Payment reference generation is unique\n  - All payment channels (card, bank, USSD, QR, mobile money) work\n  - Payment metadata transmitted correctly
   - premiumStatusChanged event dispatches properly
+- **Viral Share Feature Success**:
+  - Share button displays correctly in Settings and Premium screens
+  - Native share sheet opens on Android TWA with correct content
+  - Clipboard fallback works on Web/PWA
+  - QR code generates correctly and scans to Play Store
+  - Share functionality works 100% offline
+  - No network calls or tracking
+  - Global messaging appeals to all users
+  - Target: 20-30% organic download growth from word-of-mouth
 - Premium card background image visible after deployment
 - Smooth performance (consistent 60 fps)
 - Production-ready quality code
-- Competitive with top20Productivity apps on Google Play\n- Sleep tracking accuracy >90%
+- Competitive with top20Productivity apps on Google Play
+- Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
 - All alarm sounds accessible offline without internet connection
 - Clear value differentiation between free and premium tiers
@@ -1250,6 +1382,7 @@ disabled={isProcessing}
 - User retention rate >40% after 30 days (industry benchmark)
 - Premium conversion rate target: 5-8% of active users
 - **Device transfer success rate >95%**
+- **Viral share adoption rate >15% of active users**
 - **Netlify Deployment**: Existing build settings and online deployment remain unaffected
 - **PWA Success Metrics**:
   - Lighthouse PWA score >90\n  - Service Worker successfully caches all critical assets
@@ -1258,8 +1391,7 @@ disabled={isProcessing}
   - PWA load time <2 seconds on3G connection
 \n## 7. Competitive Advantages
 
-This app is designed to outperform competitors through:
-\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
+This app is designed to outperform competitors through:\n\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
 3. **Smart Alarm Technology**: Light-phase wake-up for better mornings
 4. **AI-Powered Insights**: Predictive analytics and personalized recommendations
 5. **Social Accountability**: Built-in community and challenge features
@@ -1282,19 +1414,27 @@ This app is designed to outperform competitors through:
 22. **Event-Driven Architecture**: Real-time premium status updates across components
 23. **Seamless Device Transfer**: Easy premium restoration on new devices
 24. **Cross-Platform Premium**: Premium status syncs via cloud (Firebase)
-\n## 8. Post-Launch Roadmap (Future Enhancements)
+25. **Viral Share Feature**: Built-in word-of-mouth growth mechanism with QR code
+26. **Offline Sharing**: Share functionality works without internet connection
+27. **Global Appeal**: Universal messaging for worldwide user base
+
+## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
 - Apple Watch companion app
 - Web dashboard for desktop access
 - Team/family plans for shared habits
-- Integration with fitness trackers (Fitbit, Garmin)\n- Siri/Google Assistant voice commands
+- Integration with fitness trackers (Fitbit, Garmin)
+- Siri/Google Assistant voice commands
 - Habit coaching AI chatbot
 - Gamification with XP and levels
 - Marketplace for community-created habit templates
 - API for third-party integrations
 - Additional payment gateways (Stripe, Flutterwave) for global reach
 - Enhanced device transfer with QR code pairing
+- Referral program with rewards for viral sharing
+- Social media integration for achievement sharing
+- Advanced analytics dashboard for web users
 \n---
 
 ## Reference Images
@@ -1311,11 +1451,32 @@ This app is designed to outperform competitors through:
 11. Screenshot_20251212-142304.png: Web app loading on appmedo.com
 12. Screenshot_20251212-151514.png: Web app loading on medo.dev
 13. Screenshot_20251212-152528.png: Premium feature unlock screen with upgrade button
-\n---
+14. Screenshot_20251212-205738.png: (New reference image)\n15. Screenshot_20251212-205756.png: (New reference image)\n16. Screenshot_20251219-000013.png: (New reference image)\n17. Screenshot_20251219-002237.png: (New reference image)\n18. Screenshot_20251219-055710.png: (New reference image)\n19. Screenshot_20251220-130946.png: (New reference image)\n20. Screenshot_20251220-133408.png: (New reference image)\n21. Screenshot_20251220-155301.png: (New reference image)\n22. Screenshot_20251220-155107.png: (New reference image)\n23. Screenshot_20251221-064419.png: (New reference image)\n\n---
 
 ## Implementation Checklist
 
-**Device Transfer & Purchase Restoration (New Implementation):**
+**Viral Share Feature (NEW URGENT IMPLEMENTATION):**
+1. ✅ Install qrcode.react package: `npm install qrcode.react`
+2. ✅ Install types: `npm install --save-dev @types/qrcode.react`
+3. ✅ Create /components/ShareButton.tsx component
+4. ✅ Implement native share API (navigator.share)
+5. ✅ Add clipboard fallback for older browsers
+6. ✅ Generate QR code with qrcode.react\n7. ✅ Configure share link (production vs test)
+8. ✅ Add share button to Settings page
+9. ✅ Add share button to Premium screen (optional)
+10. ✅ Style button with purple background (#8B5CF6)
+11. ✅ Add hover state (#7C3AED)
+12. ✅ Position QR code below button (128x128px, 4px margin-top)
+13. ✅ Add subtext:'Spread better habits — QR code for easy install'
+14. ✅ Test on Android TWA (native share sheet)
+15. ✅ Test on Web/PWA (clipboard fallback)
+16. ✅ Test QR code scanning\n17. ✅ Verify offline functionality (no network calls)
+18. ✅ Test on multiple devices and browsers
+19. ✅ Verify global appeal messaging
+20. ✅ Commit message: 'Add viral share button + QR for downloads spike (offline-first)'
+21. ✅ Push to main branch for Netlify auto-deploy
+22. ✅ Confirm deployment works\n23. ✅ Regenerate .aab for Android after testing
+\n**Device Transfer & Purchase Restoration (Existing Implementation):**
 1. ✅ Add 'Restore Purchases' button to Settings page
 2. ✅ Implement restoreAndroidPurchases() function for Android
 3. ✅ Implement restorePremiumByEmail() function for Web/PWA
@@ -1330,15 +1491,13 @@ This app is designed to outperform competitors through:
 12. ✅ Show error message if no purchase found
 13. ✅ Add support contact information with pre-filled email template
 14. ✅ Test Android restoration on new device
-15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync
-17. ✅ Test offline restoration (localStorage persistence)
+15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync\n17. ✅ Test offline restoration (localStorage persistence)
 18. ✅ Update documentation with restoration guide
 19. ✅ Add FAQ section for device transfer
 20. ✅ Commit message: 'Implement device transfer and purchase restoration system'
 21. ✅ Push to main branch for Netlify auto-deploy
-
-**Paystack Integration (Complete Implementation):**
-1. ✅ Install react-paystack package: npm install react-paystack
+\n**Paystack Integration (Complete Implementation):**
+1. ✅ Install react-paystack package: `npm install react-paystack`
 2. ✅ Create /components/PaystackButton.tsx with complete TypeScript implementation
 3. ✅ Create /utils/paystack.ts with utility functions
 4. ✅ Create /pages/api/verify-payment.ts for backend verification
@@ -1358,7 +1517,8 @@ This app is designed to outperform competitors through:
 19. ✅ Configure payment channels\n20. ✅ Add payment metadata with app name\n21. ✅ Implement premiumStatusChanged event dispatch
 22. ✅ Add event listener for premium status changes
 23. ✅ Test on desktop browser
-24. ✅ Test payment verification API\n25. ✅ Verify premium features unlock after payment
+24. ✅ Test payment verification API
+25. ✅ Verify premium features unlock after payment
 26. ✅ Test offline premium access
 27. ✅ Test email input and storage
 28. ✅ Test loading states and toast notifications
@@ -1383,7 +1543,8 @@ This app is designed to outperform competitors through:
 5. Test email storage and retrieval
 6. Test loading states during payment
 7. Verify success/error toast messages
-8. Test platform detection (Android vs Web)\n9. Verify correct button display on each platform
+8. Test platform detection (Android vs Web)
+9. Verify correct button display on each platform
 10. Test offline premium feature access
 11. Test payment with different email addresses
 12. Verify premium data structure in localStorage
@@ -1391,11 +1552,19 @@ This app is designed to outperform competitors through:
 14. Test payment reference uniqueness
 15. Test all payment channels\n16. Test payment metadata transmission
 17. Test premiumStatusChanged event\n18. Test premium status persistence across page reloads
-19. **Test device transfer scenarios**\n20. **Test restore purchases on Android**
-21. **Test email-based restoration on Web/PWA**
-22. **Test Firebase premium status sync**
-23. **Test offline restoration**
-24. **Test support contact integration**
+19. Test device transfer scenarios
+20. Test restore purchases on Android
+21. Test email-based restoration on Web/PWA
+22. Test Firebase premium status sync
+23. Test offline restoration\n24. Test support contact integration
+25. **Test viral share feature on Android TWA**
+26. **Test viral share feature on Web/PWA**
+27. **Test QR code generation and scanning**
+28. **Test share content (title, message, link)**
+29. **Test offline share functionality**
+30. **Test clipboard fallback**
+31. **Test on multiple devices and browsers**
+32. **Verify global appeal messaging**
 \n---
 
-**This updated requirements document now includes a comprehensive device transfer and purchase restoration system, ensuring users who change devices can seamlessly restore their premium access on both Android (via Google Play Billing) and Web/PWA (via email-based Paystack query). The system includes proper error handling, user feedback, and support contact integration for edge cases.**
+**This updated requirements document now includes a comprehensive viral share feature with QR code for organic download growth. The feature is designed to be 100% offline, uses native share APIs, and targets 20-30% organic download growth from word-of-mouth. Implementation is urgent for tester viral growth.**\n
