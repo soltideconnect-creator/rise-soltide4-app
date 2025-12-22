@@ -453,3 +453,4 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
     </div>
   );
 }
+

@@ -78,7 +78,6 @@ function App() {
           });
       }
       
-      // PRODUCTION MODE: Premium must be purchased (no test unlock)
       // Premium is only unlocked after real Paystack or Google Play purchase
       console.log('Premium status:', localStorage.getItem('streak_ads_removed') === 'true' ? 'Unlocked' : 'Locked');
       
@@ -197,4 +196,5 @@ function App() {
   );
 }
 
-export default App
+export default App;
+

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2, Bug } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
@@ -13,9 +13,7 @@ import {
   purchasePremium, 
   isTWAWithBilling,
   isAndroid,
-  restorePurchases, 
-  debugUnlockPremium, 
-  isDebugUnlockAvailable 
+  restorePurchases
 } from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
@@ -284,63 +282,68 @@ export function Stats() {
 
                 {/* Buttons - Conditional based on platform */}
                 <div className="space-y-3 max-w-sm mx-auto">
-                  {/* Google Play Button - Show on ALL Android devices (TWA or mobile browser) */}
-                  {isAndroid() && (
+                  {/* Google Play Button - Show ONLY if TWA with billing */}
+                  {isTWAWithBilling() && (
                     <>
-                      {/* Show Google Play button if billing is available */}
-                      {isTWAWithBilling() && (
-                        <>
-                          <Button
-                            onClick={handleRemoveAds}
-                            className="w-full"
-                            size="lg"
-                            variant="default"
-                          >
-                            <X className="w-4 h-4 mr-2" />
-                            Get Premium - $4.99 (Google Play)
-                          </Button>
-                          
-                          {/* Restore Purchase Button */}
-                          <Button
-                            onClick={handleRestorePurchases}
-                            className="w-full"
-                            size="sm"
-                            variant="outline"
-                          >
-                            Restore Purchase
-                          </Button>
-                        </>
-                      )}
-                      
-                      {/* Tester Unlock Button - ALWAYS visible on Android for closed testers */}
                       <Button
-                        onClick={() => {
-                          debugUnlockPremium();
-                          setAdsRemoved(true);
-                          toast.success('🔓 Premium unlocked for testing! All features are now available.');
-                          // Reload to apply changes
-                          setTimeout(() => window.location.reload(), 1000);
-                        }}
+                        onClick={handleRemoveAds}
                         className="w-full"
                         size="lg"
-                        variant="secondary"
+                        variant="default"
                       >
-                        <Bug className="w-4 h-4 mr-2" />
-                        Unlock for Testing
+                        <X className="w-4 h-4 mr-2" />
+                        Get Premium - $4.99 (Google Play)
                       </Button>
                       
-                      {/* Helper text for testers */}
-                      <p className="text-xs text-center text-muted-foreground">
-                        <strong>Closed Testers:</strong> Use "Unlock for Testing" button above to access all premium features. For issues, contact{' '}
-                        <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
-                          soltidewellness@gmail.com
-                        </a>
-                      </p>
+                      {/* Restore Purchase Button */}
+                      <Button
+                        onClick={handleRestorePurchases}
+                        className="w-full"
+                        size="sm"
+                        variant="outline"
+                      >
+                        Restore Purchase
+                      </Button>
                     </>
                   )}
 
-                  {/* Web - Paystack Payment (ONLY for non-Android users) */}
-                  {!isAndroid() && (
+                  {/* Android Mobile Browser - Redirect to Play Store */}
+                  {!isTWAWithBilling() && isAndroid() && (
+                    <div className="space-y-4">
+                      <Card className="border-primary/20 bg-primary/5">
+                        <CardContent className="pt-6 space-y-4">
+                          <div className="text-center space-y-3">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
+                              <Trophy className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold">Install from Google Play</h4>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                To purchase premium, please install Rise from Google Play Store
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <Button
+                            onClick={() => {
+                              window.open('https://play.google.com/store/apps/details?id=com.soltide.rise', '_blank');
+                            }}
+                            className="w-full"
+                            size="lg"
+                          >
+                            Open Google Play Store
+                          </Button>
+                          
+                          <p className="text-xs text-center text-muted-foreground">
+                            Premium purchases must be made through the installed app
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+
+                  {/* Paystack Payment - Show ONLY for non-Android users (web/desktop/iOS) */}
+                  {!isTWAWithBilling() && !isAndroid() && (
                     <div className="space-y-4">
                       {/* Email Input Section */}
                       {!userEmail || isEditingEmail ? (
@@ -432,11 +435,24 @@ export function Stats() {
                     </div>
                   )}
                   
-                  <p className="text-xs text-muted-foreground">
-                    {isAndroid() 
-                      ? 'One-time purchase • Unlock Sleep Tracker'
-                      : 'Secure payment via Paystack • Instant premium access'}
-                  </p>
+                  {/* Footer text - conditional based on platform */}
+                  {isTWAWithBilling() && (
+                    <p className="text-xs text-muted-foreground">
+                      One-time purchase • Unlock Sleep Tracker
+                    </p>
+                  )}
+                  
+                  {!isTWAWithBilling() && isAndroid() && (
+                    <p className="text-xs text-muted-foreground">
+                      Install the app to unlock premium features
+                    </p>
+                  )}
+                  
+                  {!isTWAWithBilling() && !isAndroid() && (
+                    <p className="text-xs text-muted-foreground">
+                      Secure payment via Paystack • Instant premium access
+                    </p>
+                  )}
                 </div>
 
                 {/* Features list */}
