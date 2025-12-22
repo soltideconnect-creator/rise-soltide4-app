@@ -261,4 +261,3 @@ export function getPremiumStatusSync(): boolean {
   return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true' || 
          localStorage.getItem(PREMIUM_STORAGE_KEY_ALT) === 'true';
 }
-
