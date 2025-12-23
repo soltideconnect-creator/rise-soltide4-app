@@ -43,26 +43,23 @@ export default function Sleep({ onNavigateToStats }: SleepProps) {
 
   useEffect(() => {
     // Check premium status using billing API
-    isPremiumUnlocked().then(premium => {
-      setIsPremium(premium);
+    const premium = isPremiumUnlocked();
+    setIsPremium(premium);
 
-      if (premium) {
-        // Clean up stale sessions (older than 24 hours)
-        sleepStorage.cleanupStaleSessions();
+    if (premium) {
+      // Clean up stale sessions (older than 24 hours)
+      sleepStorage.cleanupStaleSessions();
 
-        // Load sessions
-        loadSessions();
-        
-        // Load alarm settings
-        const settings = sleepStorage.getAlarmSettings();
-        setAlarmSettings(settings);
+      // Load sessions
+      loadSessions();
+      
+      // Load alarm settings
+      const settings = sleepStorage.getAlarmSettings();
+      setAlarmSettings(settings);
 
-        // Check if currently recording
-        setIsRecording(sleepTracker.isCurrentlyRecording());
-      }
-    }).catch(error => {
-      console.error('Error checking premium status:', error);
-    });
+      // Check if currently recording
+      setIsRecording(sleepTracker.isCurrentlyRecording());
+    }
   }, []);
 
   const loadSessions = () => {

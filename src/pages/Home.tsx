@@ -47,11 +47,8 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
   useEffect(() => {
     loadData();
     // Check premium status using billing API
-    isPremiumUnlocked().then(hasPremium => {
-      setIsPremium(hasPremium);
-    }).catch(error => {
-      console.error('Error checking premium status:', error);
-    });
+    const hasPremium = isPremiumUnlocked();
+    setIsPremium(hasPremium);
   }, []);
 
   const handleToggle = (habitId: string) => {

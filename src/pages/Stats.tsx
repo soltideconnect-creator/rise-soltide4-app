@@ -50,11 +50,8 @@ export function Stats() {
     setChartData(data);
 
     // Check premium status (works for both TWA and web)
-    isPremiumUnlocked().then(hasPremium => {
-      setAdsRemoved(hasPremium);
-    }).catch(error => {
-      console.error('Error checking premium status:', error);
-    });
+    const hasPremium = isPremiumUnlocked();
+    setAdsRemoved(hasPremium);
 
     // Load user email from localStorage
     const storedEmail = getUserEmail();
