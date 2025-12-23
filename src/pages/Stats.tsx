@@ -359,13 +359,15 @@ export function Stats() {
                         </Button>
                       )}
                       
-                      {/* Helper text for testers */}
-                      <p className="text-xs text-center text-muted-foreground">
-                        Testers: If stuck on "Opening Google Play purchase...", try the "Unlock for Testing" button above or contact{' '}
-                        <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
-                          soltidewellness@gmail.com
-                        </a>
-                      </p>
+                      {/* Support contact - Only show if debug mode is active */}
+                      {isDebugUnlockAvailable() && (
+                        <p className="text-xs text-center text-muted-foreground">
+                          Need help? Contact{' '}
+                          <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
+                            soltidewellness@gmail.com
+                          </a>
+                        </p>
+                      )}
                     </>
                   )}
 

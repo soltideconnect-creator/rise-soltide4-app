@@ -197,9 +197,20 @@ export async function purchasePremium(): Promise<boolean> {
       }
     );
     
-    // Show payment UI (in-app billing overlay)
+    // Show payment UI (in-app billing overlay) with timeout
     console.log('🎨 Showing in-app billing overlay...');
-    const paymentResponse = await paymentRequest.show();
+    
+    // Add 15-second timeout to prevent infinite "Opening Google Play purchase..."
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('PURCHASE_TIMEOUT'));
+      }, 15000); // 15 seconds
+    });
+    
+    const paymentResponse = await Promise.race([
+      paymentRequest.show(),
+      timeoutPromise
+    ]);
     
     // Complete the purchase
     console.log('✅ Purchase successful, completing transaction...');
@@ -223,6 +234,11 @@ export async function purchasePremium(): Promise<boolean> {
     return true;
   } catch (error: any) {
     console.error('❌ Purchase failed:', error);
+    
+    // Purchase timeout
+    if (error.message === 'PURCHASE_TIMEOUT') {
+      throw new Error('Purchase timed out. The Google Play billing dialog may not have opened. Please try again or contact support at soltidewellness@gmail.com');
+    }
     
     // User cancelled
     if (error.name === 'AbortError' || error.message?.includes('cancel')) {
