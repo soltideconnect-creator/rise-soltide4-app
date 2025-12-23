@@ -4,8 +4,9 @@
  * Product ID: "premium_unlock"
  * Price: $4.99 one-time purchase
  * 
- * This module provides a simple interface to Google Play Billing API v6+
- * injected by the TWA wrapper when running as an installed Android app.
+ * This module supports BOTH:
+ * 1. PWABuilder's Digital Goods API (automatic, no native code needed)
+ * 2. Custom AndroidBilling interface (for custom TWA wrappers)
  */
 
 // Product ID for premium unlock
@@ -15,17 +16,53 @@ export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 const PREMIUM_STORAGE_KEY = 'streak_ads_removed';
 const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 
-// Type definition for Android Billing interface injected by TWA
+// Type definition for Digital Goods API (PWABuilder standard)
+interface DigitalGoodsService {
+  getDetails(itemIds: string[]): Promise<ItemDetails[]>;
+  listPurchases(): Promise<PurchaseDetails[]>;
+  consume(purchaseToken: string): Promise<void>;
+}
+
+interface ItemDetails {
+  itemId: string;
+  title: string;
+  price: {
+    currency: string;
+    value: string;
+  };
+  description: string;
+}
+
+interface PurchaseDetails {
+  itemId: string;
+  purchaseToken: string;
+}
+
+interface PaymentRequest {
+  new(methodData: any[], details: any): PaymentRequest;
+  show(): Promise<PaymentResponse>;
+}
+
+interface PaymentResponse {
+  complete(result: string): Promise<void>;
+  details: {
+    token: string;
+  };
+}
+
+// Type definition for Android Billing interface (custom TWA)
 interface AndroidBilling {
   getPurchases(): Promise<string[]>; // Returns array of purchased product IDs
   buy(productId: string): Promise<boolean>; // Returns true if purchase successful
   consume(productId: string): Promise<boolean>; // For consumable products (not used here)
 }
 
-// Extend Window interface to include AndroidBilling
+// Extend Window interface to include both APIs
 declare global {
   interface Window {
     AndroidBilling?: AndroidBilling;
+    getDigitalGoodsService?: (serviceProvider: string) => Promise<DigitalGoodsService>;
+    PaymentRequest?: any;
   }
 }
 
@@ -167,36 +204,85 @@ export async function isPremiumUnlocked(): Promise<boolean> {
 }
 
 /**
- * Purchase premium unlock with timeout fallback
- * In TWA: triggers Google Play billing flow (should show in-app overlay)
- * On web: triggers Paystack payment (handled by Stats.tsx)
- * 
- * IMPORTANT: If billing overlay doesn't appear within 5 seconds,
- * this indicates a TWA wrapper configuration issue that needs fixing
- * in the native Android code (see GOOGLE_PLAY_BILLING_FIX_GUIDE.md)
+ * Purchase premium unlock with multiple fallback methods
+ * Priority order:
+ * 1. Digital Goods API (PWABuilder standard - RECOMMENDED)
+ * 2. Custom AndroidBilling interface (for custom TWA wrappers)
+ * 3. Paystack (web fallback)
  */
 export async function purchasePremium(): Promise<boolean> {
-  // If running on Android, use Google Play
+  console.log('🚀 Starting premium purchase flow...');
+  
+  // If running on Android, try Google Play Billing
   if (isAndroid()) {
-    // Check if AndroidBilling interface is available
+    console.log('📱 Android detected, attempting Google Play Billing...');
+    
+    // METHOD 1: Try Digital Goods API (PWABuilder standard)
+    if (window.getDigitalGoodsService && window.PaymentRequest) {
+      try {
+        console.log('💳 Attempting Digital Goods API (PWABuilder)...');
+        const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+        
+        if (service) {
+          console.log('✅ Digital Goods Service available');
+          
+          // Get product details
+          const details = await service.getDetails([PREMIUM_PRODUCT_ID]);
+          
+          if (details && details.length > 0) {
+            console.log('📦 Product details:', details[0]);
+            
+            // Create payment request
+            const paymentRequest = new window.PaymentRequest(
+              [{
+                supportedMethods: 'https://play.google.com/billing',
+                data: {
+                  sku: PREMIUM_PRODUCT_ID,
+                }
+              }],
+              {
+                total: {
+                  label: 'Premium Unlock',
+                  amount: {
+                    currency: details[0].price.currency,
+                    value: details[0].price.value,
+                  }
+                }
+              }
+            );
+            
+            // Show payment UI
+            console.log('🎨 Showing payment UI...');
+            const paymentResponse = await paymentRequest.show();
+            
+            // Complete the purchase
+            await paymentResponse.complete('success');
+            console.log('✅ Purchase successful via Digital Goods API!');
+            
+            // Mark as premium
+            localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+            localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+            
+            return true;
+          } else {
+            console.warn('⚠️ Product not found in Digital Goods API');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Digital Goods API error:', error);
+        // Continue to fallback method
+      }
+    }
+    
+    // METHOD 2: Try custom AndroidBilling interface
     if (window.AndroidBilling) {
       try {
-        console.log('🚀 Initiating Google Play Billing flow...');
-        console.log('⏱️ Waiting for in-app billing overlay (5s timeout)...');
+        console.log('🔧 Attempting custom AndroidBilling interface...');
         
-        // Add 5-second timeout as requested
-        const purchasePromise = window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
-        const timeoutPromise = new Promise<boolean>((_, reject) => {
-          setTimeout(() => {
-            reject(new Error('TIMEOUT'));
-          }, 5000);
-        });
-        
-        const success = await Promise.race([purchasePromise, timeoutPromise]);
+        const success = await window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
         
         if (success) {
-          console.log('✅ Purchase successful!');
-          // Mark as premium in localStorage for offline access (both keys)
+          console.log('✅ Purchase successful via AndroidBilling!');
           localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
           localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
           return true;
@@ -205,28 +291,17 @@ export async function purchasePremium(): Promise<boolean> {
         console.log('❌ Purchase cancelled or failed');
         return false;
       } catch (error) {
-        console.error('❌ Google Play Billing error:', error);
-        
-        // Check if timeout error
-        if (error instanceof Error && error.message === 'TIMEOUT') {
-          console.error('⚠️ BILLING OVERLAY TIMEOUT - TWA wrapper issue detected');
-          throw new Error(
-            'Billing overlay did not appear. This indicates a TWA configuration issue. ' +
-            'Please contact support at soltidewellness@gmail.com or try again later.'
-          );
-        }
-        
-        // Other errors
+        console.error('❌ AndroidBilling error:', error);
         throw new Error('Purchase failed. Please try again or contact soltidewellness@gmail.com');
       }
-    } else {
-      // AndroidBilling not available - show helpful error
-      console.error('❌ AndroidBilling interface not found');
-      throw new Error(
-        'Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store. ' +
-        'If the issue persists, contact soltidewellness@gmail.com'
-      );
     }
+    
+    // No billing method available
+    console.error('❌ No billing method available');
+    throw new Error(
+      'Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store. ' +
+      'If the issue persists, contact soltidewellness@gmail.com'
+    );
   }
   
   // PRODUCTION MODE: Web version must use Paystack (no test unlock)
@@ -255,34 +330,62 @@ export async function initializeBilling(): Promise<void> {
 /**
  * Restore purchases (for Android TWA)
  * Checks Google Play for existing purchases and syncs with localStorage
+ * Supports both Digital Goods API and custom AndroidBilling interface
  */
 export async function restorePurchases(): Promise<boolean> {
   if (!isAndroid()) {
     throw new Error('Restore purchases is only available on Android app');
   }
   
-  if (!window.AndroidBilling) {
-    throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
+  console.log('🔄 Restoring purchases...');
+  
+  // METHOD 1: Try Digital Goods API (PWABuilder standard)
+  if (window.getDigitalGoodsService) {
+    try {
+      console.log('💳 Checking Digital Goods API for purchases...');
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      
+      if (service) {
+        const purchases = await service.listPurchases();
+        const hasPremium = purchases.some(p => p.itemId === PREMIUM_PRODUCT_ID);
+        
+        if (hasPremium) {
+          localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+          localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+          console.log('✅ Premium restored from Digital Goods API');
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error('❌ Digital Goods API restore error:', error);
+      // Continue to fallback method
+    }
   }
   
-  try {
-    const purchases = await window.AndroidBilling.getPurchases();
-    const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
-    
-    if (hasPremium) {
-      // Restore premium status in localStorage
-      localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
-      localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
-      console.log('✅ Premium restored from Google Play');
-      return true;
-    } else {
-      console.log('ℹ️ No premium purchase found');
-      return false;
+  // METHOD 2: Try custom AndroidBilling interface
+  if (window.AndroidBilling) {
+    try {
+      console.log('🔧 Checking AndroidBilling for purchases...');
+      const purchases = await window.AndroidBilling.getPurchases();
+      const hasPremium = purchases.includes(PREMIUM_PRODUCT_ID);
+      
+      if (hasPremium) {
+        localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
+        localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
+        console.log('✅ Premium restored from AndroidBilling');
+        return true;
+      } else {
+        console.log('ℹ️ No premium purchase found');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ AndroidBilling restore error:', error);
+      throw new Error('Failed to restore purchases. Please try again.');
     }
-  } catch (error) {
-    console.error('Error restoring purchases:', error);
-    throw new Error('Failed to restore purchases. Please try again.');
   }
+  
+  // No billing method available
+  throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
 }
 
 /**
