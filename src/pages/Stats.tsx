@@ -113,9 +113,9 @@ export function Stats() {
     } catch (error) {
       console.error('Purchase error:', error);
       
-      // Handle billing not configured error
+      // Handle billing not configured error - COMPLIANT with Google Play policies
       if (error instanceof Error && error.message === 'BILLING_NOT_CONFIGURED') {
-        toast.error('Google Play billing is not available. Please use Paystack payment below.', {
+        toast.error('Unable to connect to Google Play billing. Please try again later or contact support at soltidewellness@gmail.com', {
           duration: 6000,
         });
       } else {
