@@ -167,9 +167,13 @@ export async function isPremiumUnlocked(): Promise<boolean> {
 }
 
 /**
- * Purchase premium unlock
- * In TWA: triggers Google Play billing flow
+ * Purchase premium unlock with timeout fallback
+ * In TWA: triggers Google Play billing flow (should show in-app overlay)
  * On web: triggers Paystack payment (handled by Stats.tsx)
+ * 
+ * IMPORTANT: If billing overlay doesn't appear within 5 seconds,
+ * this indicates a TWA wrapper configuration issue that needs fixing
+ * in the native Android code (see GOOGLE_PLAY_BILLING_FIX_GUIDE.md)
  */
 export async function purchasePremium(): Promise<boolean> {
   // If running on Android, use Google Play
@@ -177,23 +181,51 @@ export async function purchasePremium(): Promise<boolean> {
     // Check if AndroidBilling interface is available
     if (window.AndroidBilling) {
       try {
-        const success = await window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
+        console.log('🚀 Initiating Google Play Billing flow...');
+        console.log('⏱️ Waiting for in-app billing overlay (5s timeout)...');
+        
+        // Add 5-second timeout as requested
+        const purchasePromise = window.AndroidBilling.buy(PREMIUM_PRODUCT_ID);
+        const timeoutPromise = new Promise<boolean>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('TIMEOUT'));
+          }, 5000);
+        });
+        
+        const success = await Promise.race([purchasePromise, timeoutPromise]);
         
         if (success) {
+          console.log('✅ Purchase successful!');
           // Mark as premium in localStorage for offline access (both keys)
           localStorage.setItem(PREMIUM_STORAGE_KEY, 'true');
           localStorage.setItem(PREMIUM_STORAGE_KEY_ALT, 'true');
           return true;
         }
         
+        console.log('❌ Purchase cancelled or failed');
         return false;
       } catch (error) {
-        console.error('Error purchasing premium:', error);
-        throw new Error('Purchase failed. Please try again.');
+        console.error('❌ Google Play Billing error:', error);
+        
+        // Check if timeout error
+        if (error instanceof Error && error.message === 'TIMEOUT') {
+          console.error('⚠️ BILLING OVERLAY TIMEOUT - TWA wrapper issue detected');
+          throw new Error(
+            'Billing overlay did not appear. This indicates a TWA configuration issue. ' +
+            'Please contact support at soltidewellness@gmail.com or try again later.'
+          );
+        }
+        
+        // Other errors
+        throw new Error('Purchase failed. Please try again or contact soltidewellness@gmail.com');
       }
     } else {
       // AndroidBilling not available - show helpful error
-      throw new Error('Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store.');
+      console.error('❌ AndroidBilling interface not found');
+      throw new Error(
+        'Google Play Billing is not available. Please make sure you downloaded the app from Google Play Store. ' +
+        'If the issue persists, contact soltidewellness@gmail.com'
+      );
     }
   }
   
