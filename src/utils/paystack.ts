@@ -1,5 +1,21 @@
 // Paystack utility functions for Rise app
 
+// Debug mode flag (set to false for production)
+const DEBUG_MODE = import.meta.env.DEV || false;
+
+// Debug logger (only logs in development mode)
+const debugLog = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    debugLog(...args);
+  }
+};
+
+const debugError = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    debugError(...args);
+  }
+};
+
 /**
  * Creates a unique payment reference
  */
@@ -24,7 +40,7 @@ export const unlockPremium = (transactionId?: string): void => {
   localStorage.setItem('rise_premium', JSON.stringify(premiumData));
   localStorage.setItem('streak_ads_removed', 'true');
   
-  console.log('✅ Premium unlocked:', premiumData);
+  debugLog('✅ Premium unlocked:', premiumData);
   
   // Dispatch event for other components to update
   window.dispatchEvent(new Event('premiumStatusChanged'));
@@ -66,7 +82,7 @@ export const clearPremium = (): void => {
   localStorage.removeItem('rise_premium');
   localStorage.removeItem('streak_ads_removed');
   window.dispatchEvent(new Event('premiumStatusChanged'));
-  console.log('🔄 Premium status cleared');
+  debugLog('🔄 Premium status cleared');
 };
 
 /**
@@ -94,8 +110,8 @@ export const getUserEmail = (): string => {
 export const setUserEmail = (email: string): void => {
   if (isValidEmail(email)) {
     localStorage.setItem('rise_user_email', email);
-    console.log('✅ Email saved:', email);
+    debugLog('✅ Email saved:', email);
   } else {
-    console.error('❌ Invalid email format:', email);
+    debugError('❌ Invalid email format:', email);
   }
 };

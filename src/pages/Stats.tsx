@@ -21,6 +21,11 @@ import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
 
+// Debug mode flag (only logs in development)
+const DEBUG_MODE = import.meta.env.DEV || false;
+const debugLog = (...args: any[]) => DEBUG_MODE && debugLog(...args);
+const debugError = (...args: any[]) => DEBUG_MODE && debugError(...args);
+
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
     currentStreak: 0,
@@ -62,7 +67,7 @@ export function Stats() {
 
   // Paystack payment success handler
   const handlePaystackSuccess = (transaction: any) => {
-    console.log('✅ Payment successful:', transaction);
+    debugLog('✅ Payment successful:', transaction);
     
     // Unlock premium with transaction details
     unlockPremium(transaction.reference);
@@ -73,7 +78,7 @@ export function Stats() {
       duration: 5000,
     });
     
-    console.log('Transaction details:', {
+    debugLog('Transaction details:', {
       reference: transaction.reference,
       amount: formatAmount(800000),
       email: userEmail,
@@ -83,7 +88,7 @@ export function Stats() {
 
   // Paystack payment close handler
   const handlePaystackClose = () => {
-    console.log('🔒 Payment popup closed');
+    debugLog('🔒 Payment popup closed');
     toast.info('Payment cancelled. You can try again anytime.');
   };
 
@@ -111,7 +116,7 @@ export function Stats() {
         toast.error('Purchase cancelled or failed. Please try again.');
       }
     } catch (error) {
-      console.error('Purchase error:', error);
+      debugError('Purchase error:', error);
       
       // Handle billing not configured error - COMPLIANT with Google Play policies
       if (error instanceof Error && error.message === 'BILLING_NOT_CONFIGURED') {
@@ -142,7 +147,7 @@ export function Stats() {
         toast.info('No premium purchase found. Please purchase premium first.');
       }
     } catch (error) {
-      console.error('Restore error:', error);
+      debugError('Restore error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to restore purchases.');
     }
   };

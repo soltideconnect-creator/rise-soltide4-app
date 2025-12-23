@@ -18,6 +18,28 @@ export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 const PREMIUM_STORAGE_KEY = 'streak_ads_removed';
 const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 
+// Debug mode flag (set to false for production)
+const DEBUG_MODE = import.meta.env.DEV || false;
+
+// Debug logger (only logs in development mode)
+const debugLog = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    debugLog(...args);
+  }
+};
+
+const debugError = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    debugError(...args);
+  }
+};
+
+const debugWarn = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    debugWarn(...args);
+  }
+};
+
 // Type definitions for Digital Goods API (PWABuilder standard)
 interface DigitalGoodsService {
   getDetails(itemIds: string[]): Promise<ItemDetails[]>;
@@ -67,7 +89,7 @@ export function isAndroid(): boolean {
   const ua = navigator.userAgent.toLowerCase();
   const isAndroidDevice = /android/.test(ua);
   
-  console.log('🔍 Device detection:', {
+  debugLog('🔍 Device detection:', {
     userAgent: ua,
     isAndroid: isAndroidDevice,
     hasDigitalGoods: !!window.getDigitalGoodsService,
@@ -82,17 +104,17 @@ export function isAndroid(): boolean {
  */
 export async function isDigitalGoodsAvailable(): Promise<boolean> {
   if (!window.getDigitalGoodsService) {
-    console.log('❌ Digital Goods API not available');
+    debugLog('❌ Digital Goods API not available');
     return false;
   }
   
   try {
     const service = await window.getDigitalGoodsService('https://play.google.com/billing');
     const available = !!service;
-    console.log(available ? '✅ Digital Goods Service available' : '❌ Digital Goods Service not available');
+    debugLog(available ? '✅ Digital Goods Service available' : '❌ Digital Goods Service not available');
     return available;
   } catch (error) {
-    console.error('❌ Error checking Digital Goods API:', error);
+    debugError('❌ Error checking Digital Goods API:', error);
     return false;
   }
 }
@@ -138,31 +160,31 @@ export function isPremiumUnlocked(): boolean {
  * @returns Promise<boolean> - true if purchase successful
  */
 export async function purchasePremium(): Promise<boolean> {
-  console.log('🚀 Starting premium purchase flow...');
+  debugLog('🚀 Starting premium purchase flow...');
   
   // Check if running on Android with Digital Goods API
   if (!isAndroid()) {
-    console.log('ℹ️ Not on Android, use Paystack fallback');
+    debugLog('ℹ️ Not on Android, use Paystack fallback');
     throw new Error('PAYSTACK_FALLBACK');
   }
   
   if (!window.getDigitalGoodsService || !window.PaymentRequest) {
-    console.error('❌ Digital Goods API not available');
+    debugError('❌ Digital Goods API not available');
     throw new Error('Digital Goods API not available. Please make sure you downloaded the app from Google Play Store.');
   }
   
   try {
-    console.log('💳 Getting Digital Goods Service...');
+    debugLog('💳 Getting Digital Goods Service...');
     const service = await window.getDigitalGoodsService('https://play.google.com/billing');
     
     if (!service) {
       throw new Error('Digital Goods Service not available');
     }
     
-    console.log('✅ Digital Goods Service available');
+    debugLog('✅ Digital Goods Service available');
     
     // Get product details
-    console.log('📦 Fetching product details for:', PREMIUM_PRODUCT_ID);
+    debugLog('📦 Fetching product details for:', PREMIUM_PRODUCT_ID);
     const details = await service.getDetails([PREMIUM_PRODUCT_ID]);
     
     if (!details || details.length === 0) {
@@ -170,7 +192,7 @@ export async function purchasePremium(): Promise<boolean> {
     }
     
     const product = details[0];
-    console.log('📦 Product details:', {
+    debugLog('📦 Product details:', {
       itemId: product.itemId,
       title: product.title,
       price: `${product.price.currency} ${product.price.value}`,
@@ -178,7 +200,7 @@ export async function purchasePremium(): Promise<boolean> {
     });
     
     // Create payment request
-    console.log('💳 Creating payment request...');
+    debugLog('💳 Creating payment request...');
     const paymentRequest = new window.PaymentRequest(
       [{
         supportedMethods: 'https://play.google.com/billing',
@@ -198,7 +220,7 @@ export async function purchasePremium(): Promise<boolean> {
     );
     
     // Show payment UI (in-app billing overlay) with timeout
-    console.log('🎨 Showing in-app billing overlay...');
+    debugLog('🎨 Showing in-app billing overlay...');
     
     // Add 15-second timeout to prevent infinite "Opening Google Play purchase..."
     const timeoutPromise = new Promise<never>((_, reject) => {
@@ -213,7 +235,7 @@ export async function purchasePremium(): Promise<boolean> {
     ]);
     
     // Complete the purchase
-    console.log('✅ Purchase successful, completing transaction...');
+    debugLog('✅ Purchase successful, completing transaction...');
     await paymentResponse.complete('success');
     
     // Mark as premium in localStorage
@@ -226,14 +248,14 @@ export async function purchasePremium(): Promise<boolean> {
       platform: 'android'
     }));
     
-    console.log('✅ Premium unlocked successfully!');
+    debugLog('✅ Premium unlocked successfully!');
     
     // Notify app of premium status change
     window.dispatchEvent(new Event('premiumStatusChanged'));
     
     return true;
   } catch (error: any) {
-    console.error('❌ Purchase failed:', error);
+    debugError('❌ Purchase failed:', error);
     
     // Payment permissions policy error (PWABuilder TWA configuration issue)
     if (error.message?.includes('permissions policy') || error.message?.includes('not granted')) {
@@ -271,20 +293,20 @@ export async function restorePurchases(): Promise<boolean> {
     throw new Error('Digital Goods API not available. Please make sure you downloaded the app from Google Play Store.');
   }
   
-  console.log('🔄 Restoring purchases...');
+  debugLog('🔄 Restoring purchases...');
   
   try {
-    console.log('💳 Getting Digital Goods Service...');
+    debugLog('💳 Getting Digital Goods Service...');
     const service = await window.getDigitalGoodsService('https://play.google.com/billing');
     
     if (!service) {
       throw new Error('Digital Goods Service not available');
     }
     
-    console.log('📦 Checking for existing purchases...');
+    debugLog('📦 Checking for existing purchases...');
     const purchases = await service.listPurchases();
     
-    console.log(`📦 Found ${purchases.length} purchase(s)`);
+    debugLog(`📦 Found ${purchases.length} purchase(s)`);
     
     const hasPremium = purchases.some(p => p.itemId === PREMIUM_PRODUCT_ID);
     
@@ -299,18 +321,18 @@ export async function restorePurchases(): Promise<boolean> {
         platform: 'android'
       }));
       
-      console.log('✅ Premium restored successfully!');
+      debugLog('✅ Premium restored successfully!');
       
       // Notify app of premium status change
       window.dispatchEvent(new Event('premiumStatusChanged'));
       
       return true;
     } else {
-      console.log('ℹ️ No premium purchase found');
+      debugLog('ℹ️ No premium purchase found');
       return false;
     }
   } catch (error) {
-    console.error('❌ Restore failed:', error);
+    debugError('❌ Restore failed:', error);
     throw new Error('Failed to restore purchases. Please try again.');
   }
 }
@@ -320,15 +342,15 @@ export async function restorePurchases(): Promise<boolean> {
  */
 export async function initializeBilling(): Promise<void> {
   if (!isTWAWithBilling()) {
-    console.log('ℹ️ Not in TWA with billing, skipping initialization');
+    debugLog('ℹ️ Not in TWA with billing, skipping initialization');
     return;
   }
   
   try {
-    console.log('🔄 Initializing billing...');
+    debugLog('🔄 Initializing billing...');
     await restorePurchases();
   } catch (error) {
-    console.error('⚠️ Billing initialization failed:', error);
+    debugError('⚠️ Billing initialization failed:', error);
     // Don't throw, just log - app should still work
   }
 }
@@ -355,7 +377,7 @@ export function isTestMode(): boolean {
  */
 export function debugUnlockPremium(): void {
   if (!isTestMode()) {
-    console.warn('⚠️ Debug unlock only available in test mode');
+    debugWarn('⚠️ Debug unlock only available in test mode');
     return;
   }
   
@@ -368,7 +390,7 @@ export function debugUnlockPremium(): void {
     platform: 'debug'
   }));
   
-  console.log('🔓 Debug: Premium unlocked');
+  debugLog('🔓 Debug: Premium unlocked');
   window.dispatchEvent(new Event('premiumStatusChanged'));
 }
 
