@@ -24,19 +24,19 @@ const DEBUG_MODE = import.meta.env.DEV || false;
 // Debug logger (only logs in development mode)
 const debugLog = (...args: any[]) => {
   if (DEBUG_MODE) {
-    debugLog(...args);
+    console.log(...args);
   }
 };
 
 const debugError = (...args: any[]) => {
   if (DEBUG_MODE) {
-    debugError(...args);
+    console.error(...args);
   }
 };
 
 const debugWarn = (...args: any[]) => {
   if (DEBUG_MODE) {
-    debugWarn(...args);
+    console.warn(...args);
   }
 };
 
