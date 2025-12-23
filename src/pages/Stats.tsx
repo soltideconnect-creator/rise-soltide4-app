@@ -112,7 +112,15 @@ export function Stats() {
       }
     } catch (error) {
       console.error('Purchase error:', error);
-      toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      
+      // Handle billing not configured error
+      if (error instanceof Error && error.message === 'BILLING_NOT_CONFIGURED') {
+        toast.error('Google Play billing is not available. Please use Paystack payment below.', {
+          duration: 6000,
+        });
+      } else {
+        toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      }
     }
   };
 

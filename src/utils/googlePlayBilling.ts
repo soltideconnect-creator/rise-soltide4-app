@@ -235,9 +235,14 @@ export async function purchasePremium(): Promise<boolean> {
   } catch (error: any) {
     console.error('❌ Purchase failed:', error);
     
+    // Payment permissions policy error (PWABuilder TWA configuration issue)
+    if (error.message?.includes('permissions policy') || error.message?.includes('not granted')) {
+      throw new Error('BILLING_NOT_CONFIGURED');
+    }
+    
     // Purchase timeout
     if (error.message === 'PURCHASE_TIMEOUT') {
-      throw new Error('Purchase timed out. The Google Play billing dialog may not have opened. Please try again or contact support at soltidewellness@gmail.com');
+      throw new Error('BILLING_NOT_CONFIGURED');
     }
     
     // User cancelled
