@@ -3,8 +3,6 @@
  * Provides comprehensive error handling and recovery mechanisms
  */
 
-import React from 'react';
-
 interface ErrorLog {
   type: string;
   message: string;
@@ -169,11 +167,6 @@ export function checkAppHealth(): {
       localStorage.removeItem('health_check');
     } catch (e) {
       issues.push('localStorage not available');
-    }
-
-    // Check if React is loaded
-    if (typeof React === 'undefined') {
-      issues.push('React not loaded');
     }
 
     // Check for recent errors
