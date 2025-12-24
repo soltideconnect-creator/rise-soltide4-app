@@ -18,4 +18,4 @@ export const debugError = (...args: any[]) => {
   if (DEBUG_MODE) {
     console.error(...args);
   }
-};
+}
