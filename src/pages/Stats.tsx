@@ -23,8 +23,8 @@ import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
 
 // Debug mode flag (only logs in development)
 const DEBUG_MODE = import.meta.env.DEV || false;
-const debugLog = (...args: any[]) => DEBUG_MODE && debugLog(...args);
-const debugError = (...args: any[]) => DEBUG_MODE && debugError(...args);
+const debugLog = (...args: any[]) => DEBUG_MODE && console.log(...args);
+const debugError = (...args: any[]) => DEBUG_MODE && console.error(...args);
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
