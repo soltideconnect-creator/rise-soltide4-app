@@ -15,6 +15,7 @@ import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 import { isAndroid, restorePurchases } from '@/utils/googlePlayBilling';
+import { errorRecovery } from '@/utils/errorRecovery';
 
 /**
  * ============================================================================
@@ -63,6 +64,15 @@ function App() {
       try {
         console.log('App initializing...');
         
+        // Initialize error recovery system
+        errorRecovery.initializeErrorRecovery();
+        
+        // Check app health
+        const health = errorRecovery.checkAppHealth();
+        if (!health.healthy) {
+          console.warn('⚠️ App health issues detected:', health.issues);
+        }
+        
         // ANDROID: Automatically restore purchases on app start
         if (isAndroid()) {
           console.log('Android detected - attempting automatic purchase restoration...');
@@ -75,6 +85,7 @@ function App() {
             }
           } catch (error) {
             console.warn('Could not restore purchases automatically:', error);
+            errorRecovery.logError(error as Error, 'purchase_restoration');
             // Don't block app initialization if restoration fails
           }
         }
@@ -103,6 +114,7 @@ function App() {
         console.log('App initialized successfully');
       } catch (error) {
         console.error('Error during app initialization:', error);
+        errorRecovery.logError(error as Error, 'app_initialization');
         setIsInitialized(true); // Still set to true to show error state
       }
     };

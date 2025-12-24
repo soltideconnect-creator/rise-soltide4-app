@@ -49,16 +49,169 @@ console.log('✅ Promise API validated successfully');
 // To test if basic React works, uncomment the line below and comment out the App import
 // const App = TestApp;
 
-// Add global error handler to catch any errors
+// ============================================================================
+// GLOBAL ERROR HANDLERS - Catch all uncaught errors
+// ============================================================================
+
+// Track error count to prevent infinite error loops
+let globalErrorCount = 0;
+const MAX_ERRORS_BEFORE_RESET = 5;
+const ERROR_RESET_TIMEOUT = 10000; // Reset counter after 10 seconds
+
+// Reset error counter periodically
+setInterval(() => {
+  if (globalErrorCount > 0) {
+    console.log(`[Error Handler] Resetting error count from ${globalErrorCount} to 0`);
+    globalErrorCount = 0;
+  }
+}, ERROR_RESET_TIMEOUT);
+
+// Catch synchronous errors
 window.addEventListener('error', (event) => {
-  console.error('[Global Error]', event.error);
-  console.error('[Error Message]', event.message);
-  console.error('[Error Stack]', event.error?.stack);
+  globalErrorCount++;
+  
+  console.error('🚨 [Global Error Handler]', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    error: event.error,
+    stack: event.error?.stack,
+    timestamp: new Date().toISOString()
+  });
+
+  // Log to localStorage for debugging
+  try {
+    const errorLog = {
+      type: 'error',
+      message: event.message,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+      stack: event.error?.stack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent
+    };
+    
+    const existingLogs = localStorage.getItem('global_error_logs');
+    const logs = existingLogs ? JSON.parse(existingLogs) : [];
+    logs.push(errorLog);
+    
+    // Keep only last 20 errors
+    if (logs.length > 20) {
+      logs.shift();
+    }
+    
+    localStorage.setItem('global_error_logs', JSON.stringify(logs));
+  } catch (e) {
+    console.error('Failed to log error to localStorage:', e);
+  }
+
+  // Auto-recovery if too many errors
+  if (globalErrorCount >= MAX_ERRORS_BEFORE_RESET) {
+    console.error('⚠️ Too many errors detected. Initiating emergency recovery...');
+    
+    // Show recovery UI
+    document.body.innerHTML = `
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5;">
+        <div style="max-width: 400px; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+            <h1 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0; color: #dc2626;">Critical Error Detected</h1>
+            <p style="font-size: 14px; color: #666; margin: 0;">The app encountered multiple errors and needs to reset.</p>
+          </div>
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+            <p style="font-size: 13px; color: #991b1b; margin: 0;">
+              <strong>Error Count:</strong> ${globalErrorCount} errors in ${ERROR_RESET_TIMEOUT / 1000} seconds
+            </p>
+          </div>
+          <button onclick="localStorage.clear(); sessionStorage.clear(); window.location.href = window.location.origin;" 
+                  style="width: 100%; padding: 12px; background: #dc2626; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; margin-bottom: 8px;">
+            Clear Data & Restart
+          </button>
+          <button onclick="window.location.reload();" 
+                  style="width: 100%; padding: 12px; background: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
+            Try Reload
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Prevent default error handling
+    event.preventDefault();
+    return false;
+  }
 });
 
+// Catch asynchronous errors (Promise rejections)
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('[Unhandled Promise Rejection]', event.reason);
+  globalErrorCount++;
+  
+  console.error('🚨 [Unhandled Promise Rejection]', {
+    reason: event.reason,
+    promise: event.promise,
+    timestamp: new Date().toISOString()
+  });
+
+  // Log to localStorage
+  try {
+    const errorLog = {
+      type: 'unhandledrejection',
+      reason: event.reason?.toString() || 'Unknown rejection',
+      stack: event.reason?.stack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent
+    };
+    
+    const existingLogs = localStorage.getItem('global_error_logs');
+    const logs = existingLogs ? JSON.parse(existingLogs) : [];
+    logs.push(errorLog);
+    
+    if (logs.length > 20) {
+      logs.shift();
+    }
+    
+    localStorage.setItem('global_error_logs', JSON.stringify(logs));
+  } catch (e) {
+    console.error('Failed to log rejection to localStorage:', e);
+  }
+
+  // Prevent default handling
+  event.preventDefault();
 });
+
+// Catch console errors (optional, for debugging)
+const originalConsoleError = console.error;
+console.error = (...args: any[]) => {
+  // Call original console.error
+  originalConsoleError.apply(console, args);
+  
+  // Log to localStorage for debugging
+  try {
+    const errorLog = {
+      type: 'console.error',
+      message: args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+      ).join(' '),
+      timestamp: new Date().toISOString()
+    };
+    
+    const existingLogs = localStorage.getItem('console_error_logs');
+    const logs = existingLogs ? JSON.parse(existingLogs) : [];
+    logs.push(errorLog);
+    
+    if (logs.length > 50) {
+      logs.shift();
+    }
+    
+    localStorage.setItem('console_error_logs', JSON.stringify(logs));
+  } catch (e) {
+    // Silently fail to avoid infinite loops
+  }
+};
+
+console.log('✅ Global error handlers initialized');
+// ============================================================================
 
 console.log('[App] Starting Rise app...');
 console.log('[App] Environment:', import.meta.env.MODE);
