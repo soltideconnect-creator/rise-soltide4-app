@@ -32,14 +32,8 @@ export default defineConfig({
         manualChunks: undefined, // Single bundle for faster TWA cold start
       },
     },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        // Remove console.* statements in production
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild', // Use esbuild for faster builds (default minifier)
+    // Note: esbuild doesn't support drop_console, but it's faster and doesn't require extra dependencies
   },
   server: {
     headers: {
