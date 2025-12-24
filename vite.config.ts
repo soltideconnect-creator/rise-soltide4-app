@@ -14,6 +14,12 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    // Force single React instance to prevent "Cannot read properties of null" errors
+    dedupe: ['react', 'react-dom'],
+  },
+  optimizeDeps: {
+    // Force React to be included in optimization to prevent multiple instances
+    include: ['react', 'react-dom', 'react/jsx-runtime'],
   },
   build: {
     rollupOptions: {
