@@ -58,52 +58,57 @@ function App() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    try {
-      console.log('App initializing...');
-      
-      // ANDROID: Automatically restore purchases on app start
-      if (isAndroid()) {
-        console.log('Android detected - attempting automatic purchase restoration...');
-        restorePurchases()
-          .then((restored) => {
+    // Async initialization function
+    const initializeApp = async () => {
+      try {
+        console.log('App initializing...');
+        
+        // ANDROID: Automatically restore purchases on app start
+        if (isAndroid()) {
+          console.log('Android detected - attempting automatic purchase restoration...');
+          try {
+            const restored = await restorePurchases();
             if (restored) {
               console.log('✅ Premium automatically restored from Google Play');
             } else {
               console.log('ℹ️ No previous purchase found');
             }
-          })
-          .catch((error) => {
+          } catch (error) {
             console.warn('Could not restore purchases automatically:', error);
             // Don't block app initialization if restoration fails
-          });
+          }
+        }
+      
+        // PRODUCTION MODE: Premium must be purchased (no test unlock)
+        // Premium is only unlocked after real Paystack or Google Play purchase
+        console.log('Premium status:', localStorage.getItem('streak_ads_removed') === 'true' ? 'Unlocked' : 'Locked');
+        
+        // Initialize theme
+        themeService.initializeTheme();
+        console.log('Theme initialized');
+        
+        // Check onboarding status
+        const onboardingCompleted = habitStorage.isOnboardingCompleted();
+        console.log('Onboarding completed:', onboardingCompleted);
+        
+        if (!onboardingCompleted) {
+          setShowOnboarding(true);
+        } else {
+          const habits = habitStorage.getHabits();
+          console.log('Loaded habits:', habits.length);
+          notifications.scheduleAllHabits(habits);
+        }
+        
+        setIsInitialized(true);
+        console.log('App initialized successfully');
+      } catch (error) {
+        console.error('Error during app initialization:', error);
+        setIsInitialized(true); // Still set to true to show error state
       }
-      
-      // PRODUCTION MODE: Premium must be purchased (no test unlock)
-      // Premium is only unlocked after real Paystack or Google Play purchase
-      console.log('Premium status:', localStorage.getItem('streak_ads_removed') === 'true' ? 'Unlocked' : 'Locked');
-      
-      // Initialize theme
-      themeService.initializeTheme();
-      console.log('Theme initialized');
-      
-      // Check onboarding status
-      const onboardingCompleted = habitStorage.isOnboardingCompleted();
-      console.log('Onboarding completed:', onboardingCompleted);
-      
-      if (!onboardingCompleted) {
-        setShowOnboarding(true);
-      } else {
-        const habits = habitStorage.getHabits();
-        console.log('Loaded habits:', habits.length);
-        notifications.scheduleAllHabits(habits);
-      }
-      
-      setIsInitialized(true);
-      console.log('App initialized successfully');
-    } catch (error) {
-      console.error('Error during app initialization:', error);
-      setIsInitialized(true); // Still set to true to show error state
-    }
+    };
+    
+    // Call the async initialization function
+    initializeApp();
   }, []);
 
   const handleOnboardingComplete = () => {

@@ -7,6 +7,45 @@ import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
 import { initializeBilling } from "./utils/googlePlayBilling";
 
+// ============================================================================
+// PROMISE API VALIDATION - Critical for production builds
+// ============================================================================
+// Validate that Promise API is available before app starts
+// This prevents "so(...).then is not a function" errors in minified builds
+if (typeof Promise !== 'function') {
+  console.error('❌ CRITICAL: Promise API not available in this environment');
+  document.body.innerHTML = `
+    <div style="padding: 20px; font-family: sans-serif; text-align: center;">
+      <h1 style="color: red;">⚠️ Browser Not Supported</h1>
+      <p>Your browser does not support modern JavaScript features required by this app.</p>
+      <p>Please update your browser or WebView to the latest version.</p>
+      <p style="margin-top: 20px; font-size: 12px; color: #666;">
+        Technical: Promise API not available
+      </p>
+    </div>
+  `;
+  throw new Error('Promise API required. Please update your browser or WebView.');
+}
+
+// Validate Promise.prototype.then exists
+if (typeof Promise.prototype.then !== 'function') {
+  console.error('❌ CRITICAL: Promise.prototype.then not available');
+  document.body.innerHTML = `
+    <div style="padding: 20px; font-family: sans-serif; text-align: center;">
+      <h1 style="color: red;">⚠️ Browser Not Supported</h1>
+      <p>Your browser does not support modern JavaScript features required by this app.</p>
+      <p>Please update your browser or WebView to the latest version.</p>
+      <p style="margin-top: 20px; font-size: 12px; color: #666;">
+        Technical: Promise.then() not available
+      </p>
+    </div>
+  `;
+  throw new Error('Promise.then() required. Please update your browser or WebView.');
+}
+
+console.log('✅ Promise API validated successfully');
+// ============================================================================
+
 // To test if basic React works, uncomment the line below and comment out the App import
 // const App = TestApp;
 
@@ -164,7 +203,7 @@ window.addEventListener('appinstalled', () => {
 });
 
 // Log PWA display mode
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   const displayMode = window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser';
   console.log('[PWA] Display mode:', displayMode);
   
@@ -174,7 +213,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   
   // Initialize Google Play Billing (checks for existing purchases)
-  initializeBilling().catch(error => {
+  try {
+    await initializeBilling();
+  } catch (error) {
     console.error('[Billing] Initialization failed:', error);
-  });
+  }
 });
