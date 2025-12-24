@@ -171,7 +171,7 @@ function App() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">🔥</div>
-          <div className="text-lg font-medium">Loading Streak...</div>
+          <div className="text-lg font-medium">Loading Rise...</div>
         </div>
       </div>
     );

@@ -11,7 +11,7 @@ export function TestApp() {
       fontFamily: 'system-ui, sans-serif'
     }}>
       <div style={{ fontSize: '4rem' }}>🔥</div>
-      <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Streak App Test</h1>
+      <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Rise App Test</h1>
       <p style={{ color: '#666' }}>If you see this, React is working!</p>
       <button 
         onClick={() => alert('Button works!')}
