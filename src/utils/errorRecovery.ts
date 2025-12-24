@@ -3,6 +3,8 @@
  * Provides comprehensive error handling and recovery mechanisms
  */
 
+import React from 'react';
+
 interface ErrorLog {
   type: string;
   message: string;
