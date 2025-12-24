@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Onboarding } from '@/components/Onboarding';
 import { Home } from '@/pages/Home';
 import { Calendar } from '@/pages/Calendar';

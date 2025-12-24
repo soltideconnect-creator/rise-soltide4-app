@@ -18,7 +18,7 @@
  * </Map>
  */
 
-import React, {
+import {
     createContext,
     useCallback,
     useContext,

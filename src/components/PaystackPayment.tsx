@@ -5,7 +5,7 @@
  * Documentation: https://paystack.com/docs/payments/accept-payments/#embed-paystack-inline
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
