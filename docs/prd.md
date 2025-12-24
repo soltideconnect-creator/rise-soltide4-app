@@ -1,18 +1,17 @@
-# Streak – Daily Habit Tracker Requirements Document (Updated: Debug Component Integration)
-
+# Streak – Daily Habit Tracker Requirements Document (Updated: Offline-First Google Play Billing)\n
 ## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
 \n### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality,27 premium features designed to outperform competitors, and a viral share feature for organic growth. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). Includes robust device transfer and purchase restoration system for seamless premium access across devices. **NEW: Integrated Debug Center for advanced troubleshooting and diagnostics.**
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality,27 premium features designed to outperform competitors, and a viral share feature for organic growth. **Fully offline-first with local data storage** and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and **simplified offline-first payment system (Google Play Billing for Android + Paystack for Web/PWA)**. Includes robust device transfer and purchase restoration system for seamless premium access across devices. Integrated Debug Center for advanced troubleshooting and diagnostics.
 
 ### 1.3 Technical Stack
 - Framework: Flutter (Android) + Next.js with TypeScript (Web/PWA)
-- Design System: Material 3 (Material You)\n- Database: Hive (offline storage)
-- Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - Google Play Billing Library v6+ (Android native)
-  - Paystack via react-paystack (Web/PWA)
-- Platform: Android + Wear OS (premium) + PWA
+- Design System: Material 3 (Material You)
+- Database: Hive (offline storage)
+- Cloud Sync: Firebase Firestore (premium)\n- Payment: \n  - **Google Play Billing via Digital Goods API + Payment Request API (Android TWA) -100% Offline-First, No Backend Verification**
+  - Paystack via react-paystack (Web/PWA)\n- Platform: Android + Wear OS (premium) + PWA
 - Fonts: Poppins (headings), Inter (body text)
 - Sensors: Microphone, Accelerometer, GPS (premium)
 - PWA: Service Worker, Web App Manifest, Cache API
@@ -22,7 +21,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - QR Code: qrcode.react (for viral share feature)
 
 ## 2. Core Features
-\n### 2.1 Onboarding Flow
+
+### 2.1 Onboarding Flow
 - 3 full-screen slides explaining streak concept and app features
 - Highlight premium features with gold accents
 - Request notification permission during onboarding
@@ -31,8 +31,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - PWA install prompt for web users
 
 ### 2.2 Main Home Screen
-\n#### 2.2.1 Free Version
-- Large circular progress ring displaying today's completion percentage
+\n#### 2.2.1 Free Version\n- Large circular progress ring displaying today's completion percentage
 - Scrollable list of up to 5 habits with:\n  - Emoji icon for each habit
   - Habit name
   - Current streak count with🔥 emoji
@@ -185,29 +184,34 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
-  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
     - Export habits with notes and photos as ZIP archive
-  - **Import Options**: Import data from CSV/JSON\n\n#### 2.7.4 Device Transfer & Purchase Restoration
+  - **Import Options**: Import data from CSV/JSON\n
+#### 2.7.4 Device Transfer & Purchase Restoration
 - **Restore Purchases Button**: Prominently displayed in Settings page
-- **Android Device Transfer**:
-  - 'Restore Purchases' button calls AndroidBilling.getPurchases()
-  - Verifies premium_unlock purchase with Google Play\n  - Automatically unlocks premium features if purchase found
+- **Android Device Transfer (Offline-First)**:
+  - 'Restore Purchases' button callsOfflineBilling.restore()
+  - **First checks localStorage for existing premium status (works offline)**
+  - If online, queries Digital Goods API via getDigitalGoodsService().listPurchases()
+  - Verifies premium_unlock purchase exists in Google Play purchase history
+  - Automatically unlocks premium features if purchase found
+  - Stores premium status in localStorage for offline access
   - Shows success message: '✅ Premium restored! All features unlocked.'
   - Shows error message if no purchase found:'No premium purchase found. Please contact support if you believe this is an error.'
+  - **Fallback**: If offline, uses cached localStorage premium status
 - **Web/PWA Device Transfer**:
-  - 'Restore Premium Access' button in Settings\n  - User enters email used for Paystack payment
+  - 'Restore Premium Access' button in Settings
+  - User enters email used for Paystack payment
   - Backend API verifies payment history via Paystack API
   - If verified, unlocks premium and stores in localStorage
   - Shows success message: '✅ Premium restored! All features unlocked.'\n  - Fallback: User can contact support with transaction reference
 - **Cloud Sync for Premium Users**:
   - Premium status synced via Firebase Firestore
   - On new device login, checks Firestore for premium status
-  - Automatically unlocks if premium found in cloud
-- **Support Contact**:
+  - Automatically unlocks if premium found in cloud\n- **Support Contact**:
   - 'Contact Support' button with pre-filled email template
   - Includes device info, purchase platform, and transaction ID
   - Support email: support@risehabittracker.com
@@ -216,21 +220,23 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - **Placement**: Between 'Data Management' section and 'Device Transfer & Purchase Restoration' section
   - **Visual Hierarchy**: Full-width card with light purple background (#F3F4F6) and rounded corners
   - **Section Title**: 'Share & Grow' (bold, 18px, Poppins SemiBold)
-  - **Section Subtitle**: 'Help friends build better habits' (14px, gray-600)\n- **Button**: 'Share Rise with Friends' - prominent purple button
+  - **Section Subtitle**: 'Help friends build better habits' (14px, gray-600)
+- **Button**: 'Share Rise with Friends' - prominent purple button
 - **Functionality**:
   - 100% offline - no internet, no servers, no tracking required
   - On tap: Opens device native share sheet (SMS, email, Bluetooth, WhatsApp, etc.)
   - Share content includes:
-    - App title:'Rise: Habit Tracker & Smart Sleep'\n    - Message: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
+    - App title: 'Rise: Habit Tracker & Smart Sleep'\n    - Message: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
     - Link: https://play.google.com/store/apps/details?id=com.soltide.rise (production) or https://play.google.com/apps/testing/com.soltide.rise (closed test)
 - **QR Code**:
   - Displays QR code below share button
   - QR code links to Play Store listing (opt-in link for testing, public link for production)
-  - Size: 128x128px\n  - Scannable for easy install
+  - Size: 128x128px
+  - Scannable for easy install
 - **Fallback**: For older browsers without navigator.share, copies link to clipboard with alert message
 - **Design**:
   - Purple button with white text: 'Share Rise with Friends'
-  - Button style: Full-width, rounded-xl, py-4, px-8, bg-purple-500 hover:bg-purple-600
+  - Button style: Full-width, rounded-xl, py-4, px-8, bg-purple-500hover:bg-purple-600
   - Subtext: 'Spread better habits — QR code for easy install' (centered, text-sm, text-gray-600, mt-2)
   - QR code centered below subtext with4px margin-top
   - Card padding: p-6\n  - Card margin: mb-6(spacing from sections above and below)
@@ -238,9 +244,11 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Goal**: Target 20-30% organic download growth from word-of-mouth
 
 #### 2.7.6 Other Settings
-- Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)\n- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
+- Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)
+- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
-- About and support\n\n#### 2.7.7 Debug Center (NEW)
+- About and support\n
+#### 2.7.7 Debug Center
 - **Access**: Hidden menu accessible via Settings page (long-press on app version number or dedicated 'Debug' button for developers)
 - **Purpose**: Advanced troubleshooting and diagnostics for developers and power users
 - **Features**:\n  - **Environment Checks**: Display comprehensive system information
@@ -282,8 +290,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 2. **Theme Customization**
 3. **Data Management**
 4. **Share & Grow** (viral share button + QR code)
-5. **Device Transfer & Purchase Restoration**
-6. **About Rise**
+5. **Device Transfer & Purchase Restoration**\n6. **About Rise**
 7. **Debug Center** (hidden/developer-only access)
 \n### 2.8 Notification System
 
@@ -301,8 +308,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Reminder Snooze**: Snooze for 15/30/60 minutes with custom intervals
 \n### 2.9 Home Screen Widgets
 
-#### 2.9.1 Free Version
-- **1×1 Widget**: Displays today's completion percentage in circular progress ring
+#### 2.9.1 Free Version\n- **1×1 Widget**: Displays today's completion percentage in circular progress ring
 - **4×2 Widget**: Lists today's habits (up to 5) with interactive checkboxes
 \n#### 2.9.2 Premium Version
 - **2×2 Widget**: Mini calendar view showing current week's heatmap
@@ -391,7 +397,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Professional formatting
 - **Photo Archive**: Export all attached photos as ZIP file
 
-### 2.12 Monetization (Dual Payment System)
+### 2.12 Monetization (Dual Payment System - Offline-First)
 
 #### 2.12.1 Free Version Limitations
 - Maximum 5 active habits
@@ -404,22 +410,174 @@ A production-ready Android habit tracking application built with Flutter and Mat
 #### 2.12.2 Premium Pricing
 - **Android (Google Play)**: $4.99 USD one-time purchase
 - **Web/PWA (Paystack)**: ₦8,000 NGN one-time payment
-\n#### 2.12.3 Payment Implementation
-\n**Android Users (Google Play Billing):**
+\n#### 2.12.3 Payment Implementation (Offline-First)
+\n**Android Users (Google Play Billing -100% Offline-First, No Backend):**
 - Product ID: premium_unlock
 - Product Type: One-time in-app purchase (non-consumable)
 - Price: $4.99 USD
-- Payment Method: Google Play Billing Library v6+
-- Button Text: 'Unlock Premium $4.99'\n- Visibility: Only shown when window.AndroidBilling exists
-\n**Web/PWA Users (Paystack Direct Payment):**
+- Payment Method: **Digital Goods API + Payment Request API (no backend verification)**
+- Button Text: 'Unlock Premium $4.99'\n- Visibility: Only shown when window.getDigitalGoodsService exists
+\n**Core Offline-First Billing Logic:**
+\n```typescript
+// utils/billing-offline.ts
+import { toast } from 'sonner';
+
+export const PREMIUM_PRODUCT_ID = 'premium_unlock';
+
+/**
+ * 100% Offline-first Google Play Billing\n * No backend needed - verification handled by Google Play
+ */
+export class OfflineBilling {
+  // Check if premium is unlocked (works offline)
+  static isPremiumUnlocked(): boolean {
+    const premiumData = localStorage.getItem('rise_premium');
+    if (!premiumData) return false;
+    
+    try {
+      const data = JSON.parse(premiumData);
+      // Check if premium is valid (not expired)
+      if (data.valid && data.platform === 'google-play') {
+        return true;
+      }
+    } catch {
+      return false;
+    }
+    return false;
+  }
+
+  // Purchase premium (needs internet for this step only)
+  static async purchase(): Promise<boolean> {
+    if (!window.getDigitalGoodsService) {
+      throw new Error('Google Play Billing not available');
+    }
+\n    try {
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      const details = await service.getDetails([PREMIUM_PRODUCT_ID]);
+      
+      const paymentRequest = new PaymentRequest([{
+        supportedMethods:'https://play.google.com/billing',
+        data: {sku: PREMIUM_PRODUCT_ID }
+      }], {
+        total: {
+          label: 'Premium Unlock',
+          amount: { currency: 'USD', value: '4.99' }
+        }
+      });
+
+      const paymentResponse = await paymentRequest.show();
+      await paymentResponse.complete('success');
+      
+      // Store premium status OFFLINE
+      this.savePremium({\n        valid: true,
+        purchaseToken: paymentResponse.details.token,
+        purchasedAt: new Date().toISOString(),
+        platform: 'google-play',
+        features: ['sleep_tracker', 'no_ads', 'themes', 'analytics']
+      });
+      
+      toast.success('Premium unlocked! 🎉');
+      return true;
+      
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        toast.info('Purchase cancelled');
+      } else {
+        toast.error('Purchase failed: ' + error.message);
+      }
+      return false;
+    }
+  }
+
+  // Restore purchases (checks Google Play when online)
+  static async restore(): Promise<boolean> {
+    if (!window.getDigitalGoodsService) {
+      return this.isPremiumUnlocked(); // Fallback to offline check
+    }
+
+    try {
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      const purchases = await service.listPurchases();
+      \n      const premiumPurchase = purchases.find(p => p.itemId === PREMIUM_PRODUCT_ID);
+      \n      if (premiumPurchase) {
+        this.savePremium({\n          valid: true,
+          purchaseToken: premiumPurchase.purchaseToken,\n          restoredAt: new Date().toISOString(),
+          platform: 'google-play',\n          features: ['sleep_tracker', 'no_ads', 'themes', 'analytics']\n        });
+        
+        toast.success('Purchase restored! ✨');
+        return true;
+      }
+      
+      return false;
+      
+    } catch (error) {
+      // If offline, check local storage
+      return this.isPremiumUnlocked();
+    }
+  }
+
+  // Save premium status for offline use
+  private static savePremium(data: any): void {
+    localStorage.setItem('rise_premium', JSON.stringify(data));
+    
+    // Also set the simple flag for compatibility
+    localStorage.setItem('streak_ads_removed', 'true');
+    \n    // Notify app\n    window.dispatchEvent(new CustomEvent('premiumChanged'));
+  }
+}
+```
+
+**Stats Page Integration (Offline-First):**
+
+```typescript
+// Stats.tsx - Simplified offline version
+import { OfflineBilling } from '@/utils/billing-offline';\n
+export function Stats() {
+  const [isPremium, setIsPremium] = useState(OfflineBilling.isPremiumUnlocked());
+\n  const handlePurchase = async () => {
+    const success = await OfflineBilling.purchase();
+    if (success) {
+      setIsPremium(true);
+    }
+  };
+
+  const handleRestore = async () => {
+    const restored = await OfflineBilling.restore();
+    if (restored) {
+      setIsPremium(true);
+    } else {
+      toast.info('No purchase found. Purchase premium first.');
+    }
+  };
+
+  // Listen for premium changes (from other tabs/devices)
+  useEffect(() => {
+    const handlePremiumChange = () => {
+      setIsPremium(OfflineBilling.isPremiumUnlocked());
+    };\n    window.addEventListener('premiumChanged', handlePremiumChange);
+    return () => window.removeEventListener('premiumChanged', handlePremiumChange);
+  }, []);
+
+  return (
+    <div>\n      {/* Your stats */}
+      {!isPremium && (
+        <PremiumCard\n          onPurchase={handlePurchase}
+          onRestore={handleRestore}
+        />
+      )}
+    </div>
+  );
+}
+```
+
+**Web/PWA Users (Paystack Direct Payment - Unchanged):**
 - Amount: 800000 kobo (₦8,000 NGN)
 - Payment Gateway: Paystack via react-paystack package
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
 - Default Email: customer@riseapp.com (user can modify)
 - Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
-- Visibility: Only shown when window.AndroidBilling is NOT present
+- Visibility: Only shown when window.getDigitalGoodsService is NOT present
 - Payment Channels: Card, Bank, USSD, QR, Mobile Money
-- On Success:\n  - Verify payment via backend API (/api/verify-payment)
+- On Success:\n  - Verify payment via backend API(/api/verify-payment)
   - Store premium data in localStorage with structure:
     ```json
     {
@@ -435,8 +593,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Show success toast: '🎉 Premium unlocked! Sleep Tracker and all premium features are now available!'
 
 #### 2.12.4 Premium Benefits Summary
-1. ✅ Unlimited habits
-2. ✅ Ad-free experience
+1. ✅ Unlimited habits\n2. ✅ Ad-free experience
 3. ✅ Advanced analytics and AI predictions
 4. ✅50+ habit templates
 5. ✅ Custom categories and tags
@@ -465,11 +622,13 @@ A production-ready Android habit tracking application built with Flutter and Mat
 28. ✅ Device transfer and purchase restoration
 29. ✅ Viral share feature with QR code
 30. ✅ Debug Center for advanced troubleshooting
-\n#### 2.12.5 Premium Unlock UI
+
+#### 2.12.5 Premium Unlock UI
 \n**Location**: Stats Tab and Premium/Settings Page
 
 **Android Display**:
-- Show only Google Play button\n- Hide Paystack button completely
+- Show only Google Play button
+- Hide Paystack button completely
 - Button style: Material3 elevated button with indigo background
 - Icon: Google Play logo
 \n**Web/PWA Display**:
@@ -488,7 +647,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Ensure image is visible after deployment
 - Image should show sunrise/dawn theme matching app branding
 
-## 3. Design Specifications
+##3. Design Specifications
 
 ### 3.1 Color Scheme
 - Primary color: #5E5CE6 (indigo)
@@ -520,8 +679,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 ### 3.4 Iconography
 - Material Design Icons for system functions
 - Custom emoji picker with high-quality emoji set
-- Premium badge: Gold crown icon\n- Streak freeze: Snowflake icon
-- Achievement badges: Custom illustrated icons
+- Premium badge: Gold crown icon\n- Streak freeze: Snowflake icon\n- Achievement badges: Custom illustrated icons
 - Paystack button: Lightning bolt (Zap) icon from lucide-react
 - Share button: Share icon from lucide-react
 - lucide-react icons for web/PWA interface
@@ -553,24 +711,25 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - 30-day backup history
 - **Premium Status Sync**: Store premium purchase info in Firestore for cross-device access
 
-#### 4.2.3 Premium Status Storage
+#### 4.2.3 Premium Status Storage (Offline-First)
 - localStorage key: 'rise_premium'\n- Value: JSON object with structure:
   ```json
   {
-    'unlocked': true,
-    'unlockedAt': '2025-12-01T20:06:32Z',
-    'transactionId': 'RISE_1733079992_abc123xyz',
-    'features': ['sleep_tracker', 'no_ads', 'advanced_analytics'],
-    'platform': 'web',
-    'userEmail': 'user@example.com'
+    'valid': true,
+    'purchaseToken': 'google_play_token_or_paystack_reference',
+    'purchasedAt': '2025-12-24T19:46:22Z',
+    'platform': 'google-play',
+    'features': ['sleep_tracker', 'no_ads', 'advanced_analytics']
   }
   ```
 - Additional key: 'streak_ads_removed' = 'true'
-- User email key: 'rise_user_email' (for payment receipts and restoration)
+- User email key: 'rise_user_email' (for Paystack payment receipts and restoration)
 - Persists across sessions and offline usage
 - Checked on app initialization
 - Synced with cloud for cross-device access (premium users only)
-- Event-driven updates via'premiumStatusChanged' event\n
+- Event-driven updates via'premiumChanged' event
+- **No backend verification required for Google Play purchases - Digital Goods API handles verification**
+
 ### 4.3 Progressive Web App (PWA) Implementation
 
 #### 4.3.1 Service Worker
@@ -590,7 +749,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Seamless update without disrupting user experience
 \n#### 4.3.2 Web App Manifest
 - **Manifest Configuration**:
-  - App name:'Streak – Daily Habit Tracker'
+  - App name: 'Streak – Daily Habit Tracker'
   - Short name: 'Streak'
   - Description: 'Build lasting habits with streak tracking'
   - Theme color: #5E5CE6 (indigo)
@@ -601,9 +760,9 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Orientation: portrait
 - **Install Prompt**:
   - Custom install banner with app benefits
-  - Defer prompt until user engagement (after3 habit completions)
+  - Defer prompt until user engagement (after 3 habit completions)
   - Track install acceptance rate
-\n#### 4.3.3Offline Capabilities
+\n#### 4.3.3 Offline Capabilities
 - **Offline-First Architecture**:
   - All core features work without internet connection
   - Queue actions when offline (habit completions, edits)\n  - Sync queued actions when connection restored
@@ -618,92 +777,132 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 4.3.4 Performance Optimization
 - **Loading Performance**:
   - First Contentful Paint (FCP) < 1.5 seconds
-  - Time to Interactive (TTI) < 3 seconds
+  - Time to Interactive (TTI) < 3seconds
   - Largest Contentful Paint (LCP) < 2.5 seconds
 - **Runtime Performance**:
   - Smooth60fps animations
   - Lazy loading for images and heavy components
   - Code splitting for faster initial load
   - Minified and compressed assets
-\n### 4.4 Payment Integration (Dual System)
+\n### 4.4 Payment Integration (Offline-First Dual System)
 
-#### 4.4.1 Google Play Billing (Android)
+#### 4.4.1 Google Play Billing (Android -100% Offline-First)
 \n**Implementation Requirements:**
-- Billing Library: Google Play Billing Library v6+ (native JavaScript integration via TWA)
-- Product ID: premium_unlock
-- Product Type: One-time in-app purchase (non-consumable)
-- Price: $4.99 USD\n\n**Core Billing Logic:**
-\n```javascript
-// On App Initialization (Android only)
-if (window.AndroidBilling) {
-  window.AndroidBilling.getPurchases().then(purchases => {
-    const hasPremium = purchases.some(p => p.productId === 'premium_unlock' && p.purchaseState === 1);
-    if (hasPremium) {
-      unlockPremiumFeatures();
-      localStorage.setItem('rise_premium', JSON.stringify({\n        unlocked: true,\n        unlockedAt: new Date().toISOString(),\n        transactionId: 'google_play_purchase',
-        features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n        platform: 'android'\n      }));
+- Billing Library: **Digital Goods API + Payment Request API (no backend verification)**
+- Product ID: premium_unlock\n- Product Type: One-time in-app purchase (non-consumable)
+- Price: $4.99 USD
+\n**Key Offline-First Principles:**
+1. ✅ **No Internet Required After Purchase**: Premium status stored in localStorage, works offline forever
+2. ✅ **No Backend Verification**: Digital Goods API handles all verification through Google Play\n3. ✅ **Instant Unlock**: Premium features unlock immediately after purchase without server calls
+4. ✅ **Offline Restore**: Restore purchases checks localStorage first, only queries Google Play if online
+5. ✅ **Cross-Device Sync**: Optional Firebase sync for premium status (requires internet once)
+
+**Core Billing Logic (Simplified):**
+\n```typescript
+// utils/billing-offline.ts
+export class OfflineBilling {
+  // Check premium status (works offline)
+  static isPremiumUnlocked(): boolean {
+    const premiumData = localStorage.getItem('rise_premium');
+    if (!premiumData) return false;
+    try {
+      const data = JSON.parse(premiumData);
+      return data.valid && data.platform === 'google-play';\n    } catch {
+      return false;
     }
-  }).catch(err => console.error('Billing check failed:', err));
-}
-\n// On 'Go Premium' Button Click (Android)
-function handleGooglePlayPurchase() {
-  if (window.AndroidBilling) {
-    window.AndroidBilling.buy('premium_unlock').then(result => {
-      if (result.purchaseState === 1) {
-        unlockPremiumFeatures();
-        localStorage.setItem('rise_premium', JSON.stringify({
-          unlocked: true,
-          unlockedAt: new Date().toISOString(),
-          transactionId: result.purchaseToken,
-          features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],
-          platform: 'android'
-        }));
-showSuccessMessage('Premium unlocked forever!');
-      }
-    }).catch(err => {
-      console.error('Purchase failed:', err);
-      showErrorMessage('Purchase failed. Please try again.');
-    });
   }
-}
-\n// Restore Purchases (Android)
-function restoreAndroidPurchases() {
-  if (window.AndroidBilling) {
-    window.AndroidBilling.getPurchases().then(purchases => {
-      const hasPremium = purchases.some(p => p.productId === 'premium_unlock' && p.purchaseState === 1);
-      if (hasPremium) {\n        unlockPremiumFeatures();
-        localStorage.setItem('rise_premium', JSON.stringify({
-          unlocked: true,
-          unlockedAt: new Date().toISOString(),
-          transactionId: 'google_play_restored',
-          features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n          platform: 'android'\n        }));
-        showSuccessMessage('✅ Premium restored! All features unlocked.');
-      } else {
-        showErrorMessage('No premium purchase found. Please contact support if you believe this is an error.');
+
+  // Purchase premium (needs internet for this step only)
+  static async purchase(): Promise<boolean> {
+    if (!window.getDigitalGoodsService) {
+      throw new Error('Google Play Billing not available');
+    }
+    try {
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      const paymentRequest = new PaymentRequest([{
+        supportedMethods: 'https://play.google.com/billing',
+        data: {sku: PREMIUM_PRODUCT_ID }
+      }], {
+        total: { label: 'Premium Unlock', amount: { currency: 'USD', value: '4.99' } }
+      });
+      const paymentResponse = await paymentRequest.show();
+      await paymentResponse.complete('success');
+      \n      // Store premium status OFFLINE (no backend call)
+      this.savePremium({\n        valid: true,
+        purchaseToken: paymentResponse.details.token,
+        purchasedAt: new Date().toISOString(),
+        platform: 'google-play',
+        features: ['sleep_tracker', 'no_ads', 'themes', 'analytics']
+      });
+      
+      toast.success('Premium unlocked! 🎉');
+      return true;
+    } catch (error: any) {
+      toast.error('Purchase failed: ' + error.message);
+      return false;
+    }\n  }
+
+  // Restore purchases (checks Google Play when online, falls back to localStorage)
+  static async restore(): Promise<boolean> {
+    // First check offline storage
+    if (this.isPremiumUnlocked()) {
+      toast.success('Premium already unlocked! ✨');
+      return true;
+    }
+    
+    // If online, query Google Play\n    if (!window.getDigitalGoodsService) {
+      return false;
+    }
+    try {
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      const purchases = await service.listPurchases();
+      const premiumPurchase = purchases.find(p => p.itemId === PREMIUM_PRODUCT_ID);
+      
+      if (premiumPurchase) {
+        this.savePremium({\n          valid: true,
+          purchaseToken: premiumPurchase.purchaseToken,\n          restoredAt: new Date().toISOString(),
+          platform: 'google-play',\n          features: ['sleep_tracker', 'no_ads', 'themes', 'analytics']\n        });
+        toast.success('Purchase restored! ✨');
+        return true;
       }
-    }).catch(err => {
-      console.error('Restore failed:', err);\n      showErrorMessage('Restore failed. Please try again or contact support.');
-    });\n  }
+      return false;
+    } catch (error) {
+      // If offline, check local storage
+      return this.isPremiumUnlocked();
+    }
+  }
+
+  // Save premium status for offline use
+  private static savePremium(data: any): void {
+    localStorage.setItem('rise_premium', JSON.stringify(data));
+    localStorage.setItem('streak_ads_removed', 'true');
+window.dispatchEvent(new CustomEvent('premiumChanged'));
+  }
 }
 ```
 
-#### 4.4.2 Paystack Payment (Web/PWA)
-\n**Implementation Requirements:**
+#### 4.4.2 Paystack Payment (Web/PWA - Unchanged)
+
+**Implementation Requirements:**
 - Package: react-paystack (install via npm install react-paystack)
 - Amount: 800000 kobo (₦8,000 NGN)
-- Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315\n- Default Email: customer@riseapp.com (user can modify)
-- Reference Format: RISE_{timestamp}_{random}
-- Currency: NGN\n- Payment Channels: Card, Bank, USSD, QR, Mobile Money\n\n**File Structure:**
+- Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
+- Default Email: customer@riseapp.com (user can modify)
+- Reference Format: RISE_{timestamp}_{random}\n- Currency: NGN
+- Payment Channels: Card, Bank, USSD, QR, Mobile Money
+
+**File Structure:**
 1. /components/PaystackButton.tsx - Reusable Paystack button component
 2. /utils/paystack.ts - Utility functions for payment handling
 3. /pages/api/verify-payment.ts - Backend API for payment verification
 4. /pages/api/restore-premium.ts - Backend API for premium restoration
 5. /components/Stats.tsx - Updated Stats component with Paystack integration
 6. /components/Settings.tsx - Settings page with restore purchases button and viral share feature
-7. /components/DebugPage.tsx - NEW: Debug Center component for diagnostics
-8. .env.local - Environment variables configuration
+7. /components/DebugPage.tsx - Debug Center component for diagnostics
+8. /utils/billing-offline.ts - NEW: Offline-first Google Play Billing utility
+9. .env.local - Environment variables configuration
 
-**Core Payment Logic:**
+**Core Payment Logic (Unchanged):**
 
 ```typescript
 // /components/PaystackButton.tsx\nimport React, { useState } from 'react';
@@ -754,8 +953,8 @@ export function PaystackButton({
   const initializePayment = usePaystackPayment(config);
 \n  const handlePayment = () => {
     setIsLoading(true);
-    \n    initializePayment({
-      onSuccess: (reference) => {\n        setIsLoading(false);
+    \n    initializePayment({\n      onSuccess: (reference) => {
+        setIsLoading(false);
         onSuccess(reference);
       },
       onClose: () => {
@@ -784,20 +983,18 @@ export function PaystackButton({
 
 ```typescript
 // /utils/paystack.ts
-
-export const createPaymentReference = (): string => {
+\nexport const createPaymentReference = (): string => {
   return `RISE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
 export const verifyPayment = async (reference: string): Promise<boolean> => {
   try {
-    const response = await fetch('/api/verify-payment', {
-      method: 'POST',
-      headers: {\n        'Content-Type': 'application/json',
+    const response = await fetch('/api/verify-payment', {\n      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ reference }),
-    });
-\n    if (!response.ok) {
+    });\n\n    if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
@@ -807,8 +1004,7 @@ export const verifyPayment = async (reference: string): Promise<boolean> => {
     console.error('Payment verification failed:', error);
     return false;
   }
-};
-
+};\n
 export const restorePremiumByEmail = async (email: string): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await fetch('/api/restore-premium', {
@@ -824,7 +1020,8 @@ export const restorePremiumByEmail = async (email: string): Promise<{ success: b
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Premium restoration failed:', error);\n    return { success: false, message: 'Restoration failed. Please try again or contact support.' };
+    console.error('Premium restoration failed:', error);
+    return { success: false, message: 'Restoration failed. Please try again or contact support.' };
   }
 };
 \nexport const unlockPremium = (transactionId?: string, userEmail?: string): void => {
@@ -832,7 +1029,8 @@ export const restorePremiumByEmail = async (email: string): Promise<{ success: b
     unlocked: true,
     unlockedAt: new Date().toISOString(),
     transactionId: transactionId || createPaymentReference(),
-    features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],\n    platform: 'web',
+    features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],
+    platform: 'web',
     userEmail: userEmail || localStorage.getItem('rise_user_email') || 'customer@riseapp.com'
   };
 
@@ -879,7 +1077,8 @@ export default async function handler(\n  req: NextApiRequest,
         status: 'success',
         data: {
           amount: data.data.amount / 100,
-          currency: data.data.currency,\n          customer: data.data.customer,\n          paidAt: data.data.paid_at,
+          currency: data.data.currency,
+          customer: data.data.customer,\n          paidAt: data.data.paid_at,
         },
       });
     } else {
@@ -906,16 +1105,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  if (req.method !== 'POST') {\n    return res.status(405).json({ message: 'Method not allowed' });
   }
-\n  const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
+  const { email } = req.body;
+\n  if (!email) {\n    return res.status(400).json({ message: 'Email is required' });
   }
-\n  try {
-    // Query Paystack for transactions by customer email
+
+  try {\n    // Query Paystack for transactions by customer email
     const response = await fetch(
       `https://api.paystack.co/transaction?customer=${encodeURIComponent(email)}&status=success`,
       {
@@ -935,8 +1132,7 @@ export default async function handler(
         return res.status(200).json({
           success: true,
           message: 'Premium purchase found',
-          data: {
-            transactionId: premiumPurchase.reference,
+          data: {\n            transactionId: premiumPurchase.reference,
             paidAt: premiumPurchase.paid_at,
             email: email,
           },
@@ -954,7 +1150,8 @@ export default async function handler(
     }
   } catch (error) {
     console.error('Premium restoration error:', error);
-    return res.status(500).json({\n      success: false,
+    return res.status(500).json({
+      success: false,
       message: 'Internal server error',
     });
   }
@@ -965,20 +1162,19 @@ export default async function handler(
 
 ```typescript
 const isTWAWithBilling = () => {
-  return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
-};
-
+  return typeof window !== 'undefined' && !!(window as any).getDigitalGoodsService;
+};\n
 // In Premium/Stats Page JSX:\n{!isTWAWithBilling() ? (
   // Web/PWA - Show Paystack\n  <div className='space-y-4'>
-    {!userEmail.includes('@riseapp.com') && (
-      <Button onClick={handleEmailInput} variant='outline' className='w-full'>
+    {!userEmail.includes('@riseapp.com') && (\n      <Button onClick={handleEmailInput} variant='outline' className='w-full'>
         ✏️ Enter Email for Receipt
       </Button>
     )}
     <PaystackButton\n      email={userEmail}
       amount={800000}
       publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
-      text='Unlock Premium ₦8,000'\n      onSuccess={handlePaystackSuccess}
+      text='Unlock Premium ₦8,000'
+      onSuccess={handlePaystackSuccess}
       onClose={handlePaystackClose}
       disabled={isProcessing}
       className='w-full bg-gradient-to-r from-yellow-400 to-orange-500hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'
@@ -987,18 +1183,23 @@ const isTWAWithBilling = () => {
       Secure payment via Paystack • Instant access • Lifetime premium
     </p>
   </div>
-) : (\n  // Android TWA - Show Google Play\n  <button onClick={handleGooglePlayPurchase}>
+) : (\n  // Android TWA - Show Google Play (Offline-First)
+  <button onClick={handleGooglePlayPurchase}>
     Unlock Premium $4.99
   </button>
 )}\n```
 
 #### 4.4.4 Premium Feature Gating
-- Check getPremiumStatus() function to unlock features
+- CheckOfflineBilling.isPremiumUnlocked() function to unlock features (Android)\n- Check getPremiumStatus() function for Web/PWA
 - Ad removal, sleep tracker, analytics, and all27 premium features gated behind this check
 - Premium status persists offline via localStorage
-- On app restart, verify with AndroidBilling.getPurchases() (Android) or getPremiumStatus() (Web)\n- Event-driven updates via'premiumStatusChanged' event\n
-#### 4.4.5 Restore Purchases
-- **Android**: 'Restore Purchases' button calls AndroidBilling.getPurchases()
+- On app restart, verify withOfflineBilling.restore() (Android) or getPremiumStatus() (Web)\n- Event-driven updates via'premiumChanged' event
+
+#### 4.4.5 Restore Purchases (Offline-First)
+- **Android**: 'Restore Purchases' button calls OfflineBilling.restore()
+  - First checks localStorage for existing premium status (works offline)
+  - If online, queries Digital Goods API via getDigitalGoodsService().listPurchases()
+  - No backend verification required
 - **Web/PWA**: 'Restore Premium Access' button queries Paystack API by email
 - Updates localStorage and unlocks features if purchase found
 - Shows success/error messages accordingly
@@ -1015,14 +1216,12 @@ const isTWAWithBilling = () => {
 #### 4.5.1 Package Installation
 - Install qrcode.react: `npm install qrcode.react`
 - Install types: `npm install --save-dev @types/qrcode.react`
-
-#### 4.5.2 ShareButton Component
+\n#### 4.5.2 ShareButton Component
 - **Location**: Integrated directly into Settings page (not a separate component)
 - **Import**: `import QRCode from 'qrcode.react';` and `import { Share } from 'lucide-react';`
 - **Functionality**:
   - 100% offline - no internet, no servers, no tracking
-  - Uses native Web Share API (navigator.share)
-  - Fallback to clipboard copy for older browsers
+  - Uses native Web Share API (navigator.share)\n  - Fallback to clipboard copy for older browsers
   - Generates QR code for Play Store link
   - Share content includes app title, message, and link
   - Link switches between production and test (opt-in) based on environment
@@ -1055,7 +1254,7 @@ const isTWAWithBilling = () => {
 - Verify offline functionality (no network calls)
 - Test on multiple devices and browsers
 
-### 4.6 Debug Center Implementation (NEW)
+### 4.6 Debug Center Implementation
 
 #### 4.6.1 Component Structure
 - **File Location**: /components/DebugPage.tsx
@@ -1150,9 +1349,8 @@ export const isAndroid = (): boolean => {
   return typeof window !== 'undefined' && /Android/i.test(navigator.userAgent);
 };
 \nexport const isTWAWithBilling = (): boolean => {
-  return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
-};
-\nexport const isDigitalGoodsAvailable = async (): Promise<boolean> => {
+  return typeof window !== 'undefined' && !!(window as any).getDigitalGoodsService;
+};\n\nexport const isDigitalGoodsAvailable = async (): Promise<boolean> => {
   try {
     if (typeof window.getDigitalGoodsService === 'function') {
       const service = await window.getDigitalGoodsService('https://play.google.com/billing');
@@ -1164,7 +1362,7 @@ export const isAndroid = (): boolean => {
   }
 };
 ```\n
-**File Location**: /utils/googlePlayBilling.ts (or create new /utils/platform.ts)
+**File Location**: /utils/platform.ts (or integrate into /utils/billing-offline.ts)
 
 #### 4.6.5 Security Considerations
 - Debug Center only accessible in development builds or with special developer flag
@@ -1221,19 +1419,19 @@ export const isAndroid = (): boolean => {
 - Data deletion option (right to be forgotten)
 - Secure HTTPS connection for all network requests
 - Content Security Policy (CSP) headers
-- **Payment Security**: \n  - Google Play Billing: Purchase verification handled by Google\n  - Paystack: PCI-DSS compliant payment processing
-  - Backend payment verification via secure API route
+- **Payment Security**: \n  - **Google Play Billing**: Purchase verification handled by Google Play via Digital Goods API (no backend required)
+  - **Paystack**: PCI-DSS compliant payment processing
+  - Backend payment verification via secure API route (Paystack only)
   - No credit card data stored locally
   - Paystack secret key stored in environment variables only
   - Payment reference format includes timestamp and random string for uniqueness
-  - Email stored securely for purchase restoration
+  - Email stored securely for purchase restoration (Paystack only)
 - **Debug Center Security**:
   - Only accessible in development builds or with developer flag
   - No sensitive data (API keys, tokens) displayed
   - User confirmation required for destructive actions
   - Error messages sanitized\n\n### 4.11 Third-Party Integrations
-- Google Play Billing Library v6+ for Android in-app purchases
-- Paystack (react-paystack) for Web/PWA payments
+- **Google Play Billing via Digital Goods API + Payment Request API** for Android in-app purchases (no backend verification)\n- Paystack (react-paystack) for Web/PWA payments
 - Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
 - Weather API for weather-based reminders (premium)
 - Google Maps API for location-based reminders (premium)
@@ -1246,21 +1444,35 @@ export const isAndroid = (): boolean => {
 - Battery drain testing for sleep tracker
 - Cross-device sync testing for premium features
 - **Payment Testing**:
-  - Google Play: Test with Google Play test accounts
-  - Paystack: Test with Paystack test mode and test cards
-  - Test payment verification API endpoint
-  - Verify purchase restoration works across devices
-  - Test offline premium feature access
-  - Validate purchase state persistence
-  - Test platform detection (Android vs Web)\n  - Verify correct button display on each platform
-  - Test email input validation and storage
-  - Test loading states during payment processing
-  - Verify success/error toast messages
-  - Test payment reference generation uniqueness
-  - Test payment channels (card, bank, USSD, QR, mobile money)
-  - Test payment metadata transmission
-  - Test premiumStatusChanged event dispatch
-  - **Test device transfer scenarios**:\n    - Android to Android (same Google account)
+  - **Google Play (Offline-First)**:
+    - Test with Google Play test accounts
+    - Test purchase flow with Digital Goods API
+    - Test Payment Request API integration
+    - Verify premium status stored in localStorage
+    - Test offline premium feature access
+    - Test restore purchases with localStorage fallback
+    - Test restore purchases with Google Play query (online)
+    - Verify no backend calls during purchase or restore
+    - Test platform detection (window.getDigitalGoodsService)
+    - Test loading states during payment processing
+    - Verify success/error toast messages
+    - Test premiumChanged event dispatch
+  - **Paystack (Web/PWA)**:
+    - Test with Paystack test mode and test cards
+    - Test payment verification API endpoint
+    - Verify purchase restoration works across devices
+    - Test offline premium feature access
+    - Validate purchase state persistence
+    - Test platform detection (no window.getDigitalGoodsService)
+    - Verify correct button display on each platform
+    - Test email input validation and storage
+    - Test loading states during payment processing
+    - Verify success/error toast messages\n    - Test payment reference generation uniqueness
+    - Test payment channels (card, bank, USSD, QR, mobile money)
+    - Test payment metadata transmission
+    - Test premiumStatusChanged event dispatch
+  - **Test device transfer scenarios**:
+    - Android to Android (same Google account)
     - Web to Web (same email)
     - Android to Web (not supported, separate purchases)
     - Test restore purchases button on new device
@@ -1271,8 +1483,7 @@ export const isAndroid = (): boolean => {
   - Test share button on Android TWA (native share sheet)
   - Test share button on Web/PWA (clipboard fallback)
   - Test QR code generation and scanning
-  - Verify share content (title, message, link)
-  - Test offline functionality (no network calls)
+  - Verify share content (title, message, link)\n  - Test offline functionality (no network calls)
   - Test on multiple devices and browsers
   - Verify link switches between production and test\n  - Test error handling and fallback mechanisms
   - **Test share button location in Settings page**:\n    - Verify 'Share & Grow' section appears between 'Data Management' and 'Device Transfer & Purchase Restoration' (or 'About Rise' if premium)\n    - Verify section background color (light purple #F3F4F6)
@@ -1288,7 +1499,7 @@ export const isAndroid = (): boolean => {
   - Install prompt testing
   - Push notification testing
   - Lighthouse PWA audit (score 90+)
-- **Debug Center Testing** (NEW):
+- **Debug Center Testing**:
   - Test all environment checks display correctly
   - Test storage status updates in real-time
   - Test error logging captures window errors and promise rejections
@@ -1311,18 +1522,21 @@ export const isAndroid = (): boolean => {
 - Complete Flutter project that compiles and runs successfully on first attempt
 - Ready-to-upload AAB (Android App Bundle) with Google Play Billing integration
 - All27 premium features fully implemented with purchase gating
-- Dual payment system:\n  - Google Play Billing v6+ integration (Android)\n  - Paystack integration via react-paystack (Web/PWA)
-- Platform detection logic to show appropriate payment button
-- **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings\n  - Android restoration via Google Play Billing
+- **Offline-first dual payment system**:
+  - **Google Play Billing via Digital Goods API + Payment Request API (Android TWA) -100% Offline-First, No Backend Verification**
+  - Paystack integration via react-paystack (Web/PWA)\n- Platform detection logic to show appropriate payment button
+- **Device transfer and purchase restoration system**:
+  - Restore Purchases button in Settings\n  - Android restoration via Digital Goods API (offline-first with localStorage fallback)
   - Web/PWA restoration via Paystack API query by email
   - Firebase Firestore premium status sync
   - Support contact integration\n- **Viral Share Feature**:
   - Share & Grow section in Settings page (between Data Management and Device Transfer sections)
-  - Share button with QR code\n  - Native share sheet integration
+  - Share button with QR code
+  - Native share sheet integration
   - Clipboard fallback for older browsers
   - Offline-first implementation
   - Global appeal messaging
-- **Debug Center Component** (NEW):
+- **Debug Center Component**:
   - /components/DebugPage.tsx with full implementation
   - Environment checks display\n  - Storage status monitoring
   - Error logging system
@@ -1334,16 +1548,17 @@ export const isAndroid = (): boolean => {
   - Service Worker implementation (sw.js) with cache clearing support
   - Web App Manifest (manifest.json)\n  - PWA-optimized build for web deployment
   - Offline fallback page
-- **Paystack Integration Files**:
+- **Offline-First Billing Files**:
+  - /utils/billing-offline.ts (NEW: Offline-first Google Play Billing utility)
+  - Updated /components/Stats.tsx (with offline-first billing integration)
+  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature)
+- **Paystack Integration Files** (Unchanged):
   - /components/PaystackButton.tsx (complete TypeScript implementation)
   - /utils/paystack.ts (utility functions with proper types)
   - /pages/api/verify-payment.ts (backend verification endpoint)
   - /pages/api/restore-premium.ts (backend restoration endpoint)
-  - Updated /components/Stats.tsx (with email input and Paystack button)
-  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature)
-- .env.local.example template
-- Comprehensive code documentation
-- README with setup instructions and dual payment configuration guide
+- .env.local.example template\n- Comprehensive code documentation
+- README with setup instructions and offline-first payment configuration guide
 \n### 5.2 Google Play Store Assets
 - **App Title**: Streak – Daily Habit Tracker
 - **Short Description** (80 chars): Build lasting habits with streak tracking, sleep monitor & smart reminders
@@ -1356,11 +1571,12 @@ export const isAndroid = (): boolean => {
   5. Social challenges and accountability partners
   6. Wear OS support for on-the-go tracking
   7. One-time $4.99 purchase unlocks all premium features forever
-  8. PWA support for cross-platform access
-  9. Seamless device transfer - restore premium on new devices
-  10. Viral share feature - spread better habits with friends
-  11. Debug Center for advanced troubleshooting (developer feature)
-- **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
+  8. **100% offline-first - works without internet after purchase**
+  9. PWA support for cross-platform access
+  10. Seamless device transfer - restore premium on new devices
+  11. Viral share feature - spread better habits with friends
+  12. Debug Center for advanced troubleshooting (developer feature)
+- **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA, offline-first\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
   2. Calendar heatmap (Screenshot_20251125-170720.png)
   3. Stats dashboard (Screenshot_20251125-170733.png)
   4. Sleep tracker (Screenshot_20251125-170740.png)
@@ -1381,19 +1597,24 @@ export const isAndroid = (): boolean => {
 - Subscription terms and conditions (updated for one-time purchase)
 - FAQdocument
 - **Payment Documentation**:
-  - Google Play Console setup guide for product ID 'premium_unlock'
+  - **Google Play Console setup guide for product ID 'premium_unlock'**
+  - **Offline-first billing implementation guide**:\n    - Digital Goods API integration
+    - Payment Request API integration
+    - localStorage premium status structure
+    - No backend verification required
+    - Offline restore purchases flow
   - Paystack account setup guide and API key configuration
   - Environment variables setup guide (.env.local)\n  - Testing guide for both payment systems
-  - Payment verification API documentation
-  - **Device transfer and restoration guide**:\n    - How to restore purchases on Android
-    - How to restore premium on Web/PWA
-    - Troubleshooting common restoration issues
+  - Payment verification API documentation (Paystack only)
+  - **Device transfer and restoration guide**:
+    - How to restore purchases on Android (offline-first)
+    - How to restore premium on Web/PWA\n    - Troubleshooting common restoration issues
     - Support contact information
   - Troubleshooting guide for purchase issues
   - Platform detection logic explanation
-  - Email input and validation guide
-  - Payment reference format documentation
-  - Payment channels configuration guide
+  - Email input and validation guide (Paystack only)
+  - Payment reference format documentation (Paystack only)
+  - Payment channels configuration guide (Paystack only)
 - **Viral Share Documentation**:
   - Implementation guide for Share & Grow section in Settings
   - QR code generation documentation
@@ -1401,11 +1622,10 @@ export const isAndroid = (): boolean => {
   - Fallback mechanism documentation
   - Testing guide for share feature
   - Link configuration (production vs test)
-  - **Settings page layout documentation**:
-    - Section order and placement
+  - **Settings page layout documentation**:\n    - Section order and placement
     - Visual design specifications
     - Spacing and padding guidelines
-- **Debug Center Documentation** (NEW):
+- **Debug Center Documentation**:
   - Access instructions for developers
   - Feature overview and usage guide
   - Environment checks explanation
@@ -1413,8 +1633,7 @@ export const isAndroid = (): boolean => {
   - Error logging system documentation
   - Quick actions usage guide
   - Export diagnostics format specification
-  - Security considerations and access control
-  - Testing guide for Debug Center
+  - Security considerations and access control\n  - Testing guide for Debug Center
   - Troubleshooting common issues
 - **PWA Documentation**:
   - Service Worker implementation guide
@@ -1424,22 +1643,34 @@ export const isAndroid = (): boolean => {
 \n## 6. Success Criteria
 - App compiles without errors on first build
 - All 27 premium features fully functional and tested
-- Dual payment system working seamlessly:\n  - **Android**: Google Play button appears, Paystack hidden\n  - **Web/PWA**: Paystack button appears, Google Play hidden
-  - Purchase flow completes successfully on both platforms
-  - Payment verification API works correctly
-  - Premium features unlock immediately after payment
-  - Purchase persists offline via localStorage
-  - **Restore purchases works across devices**:\n    - Android: Restore via Google Play Billing
-    - Web/PWA: Restore via email-based Paystack query
+- **Offline-first payment system working seamlessly**:\n  - **Android**: Google Play button appears, Paystack hidden\n  - **Web/PWA**: Paystack button appears, Google Play hidden
+  - **Android purchase flow**:
+    - Digital Goods API + Payment Request API integration works
+    - Purchase completes successfully without backend calls
+    - Premium status stored in localStorage immediately
+    - Premium features unlock instantly after payment
+    - Purchase persists offline via localStorage
+  - **Android restore flow**:
+    - Restore checks localStorage first (works offline)
+    - If online, queries Digital Goods API via listPurchases()
+    - No backend verification required
+    - Success/error messages display correctly
+  - **Web/PWA payment flow** (unchanged):
+    - Paystack payment completes successfully
+    - Backend verification works correctly
+    - Premium features unlock immediately after payment
+    - Purchase persists offline via localStorage
+  - **Web/PWA restore flow** (unchanged):
+    - Email-based restoration via Paystack API query
     - Firebase Firestore syncs premium status
     - Success/error messages display correctly
-  - Email input validation works properly
-  - Email storage and retrieval functions correctly
-  - Loading states display correctly during payment
-  - Success/error messages show appropriately
-  - Payment reference generation is unique\n  - All payment channels (card, bank, USSD, QR, mobile money) work\n  - Payment metadata transmitted correctly
-  - premiumStatusChanged event dispatches properly
-- **Viral Share Feature Success**:
+  - Email input validation works properly (Paystack only)
+  - Email storage and retrieval functions correctly (Paystack only)
+  - Loading states display correctly during payment\n  - Success/error messages show appropriately
+  - Payment reference generation is unique (Paystack only)
+  - All payment channels (card, bank, USSD, QR, mobile money) work (Paystack only)
+  - Payment metadata transmitted correctly (Paystack only)
+  - premiumChanged event dispatches properly\n- **Viral Share Feature Success**:
   - Share & Grow section displays correctly in Settings page
   - Section appears between Data Management and Device Transfer sections
   - Section background color is light purple (#F3F4F6)
@@ -1449,10 +1680,9 @@ export const isAndroid = (): boolean => {
   - Clipboard fallback works on Web/PWA
   - QR code generates correctly and scans to Play Store
   - QR code is centered below subtext with proper spacing
-  - Share functionality works 100% offline
-  - No network calls or tracking\n  - Global messaging appeals to all users
+  - Share functionality works 100% offline\n  - No network calls or tracking\n  - Global messaging appeals to all users
   - Target: 20-30% organic download growth from word-of-mouth
-- **Debug Center Success** (NEW):
+- **Debug Center Success**:
   - Debug Center accessible via Settings page (hidden/developer-only)
   - All environment checks display correctly
   - Storage status updates in real-time
@@ -1470,8 +1700,7 @@ export const isAndroid = (): boolean => {
   - Toast notifications work for all actions
   - Error messages sanitized properly
 - Premium card background image visible after deployment
-- Smooth performance (consistent 60 fps)
-- Production-ready quality code
+- Smooth performance (consistent 60 fps)\n- Production-ready quality code
 - Competitive with top20Productivity apps on Google Play
 - Sleep tracking accuracy >90%
 - Smart alarm triggers within optimal wake window >95% of the time
@@ -1510,8 +1739,7 @@ This app is designed to outperform competitors through:
 17. **PWA Support**: Cross-platform access via web with native app experience
 18. **Service Worker**: Enhanced offline capabilities and faster load times
 19. **Secure Payment Processing**: Backend verification for Paystack payments
-20. **Flexible Payment Email**: Users can specify email for payment receipts
-21. **Multiple Payment Channels**: Card, Bank, USSD, QR, Mobile Money via Paystack
+20. **Flexible Payment Email**: Users can specify email for payment receipts (Paystack)\n21. **Multiple Payment Channels**: Card, Bank, USSD, QR, Mobile Money via Paystack
 22. **Event-Driven Architecture**: Real-time premium status updates across components
 23. **Seamless Device Transfer**: Easy premium restoration on new devices
 24. **Cross-Platform Premium**: Premium status syncs via cloud (Firebase)
@@ -1521,13 +1749,17 @@ This app is designed to outperform competitors through:
 28. **Debug Center**: Advanced troubleshooting tool for developers and power users
 29. **Comprehensive Diagnostics**: Export full diagnostic reports for support
 30. **Developer-Friendly**: Built-in tools for debugging and testing
+31. **100% Offline-First Google Play Billing**: No backend verification required, works offline after purchase
+32. **Instant Premium Unlock**: Premium features unlock immediately without server calls
+33. **Offline Restore Purchases**: Restore purchases works offline via localStorage fallback
 \n## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
 - Apple Watch companion app
 - Web dashboard for desktop access
 - Team/family plans for shared habits
-- Integration with fitness trackers (Fitbit, Garmin)\n- Siri/Google Assistant voice commands
+- Integration with fitness trackers (Fitbit, Garmin)
+- Siri/Google Assistant voice commands
 - Habit coaching AI chatbot
 - Gamification with XP and levels
 - Marketplace for community-created habit templates
@@ -1570,11 +1802,38 @@ This app is designed to outperform competitors through:
 27. Screenshot_20251223-132748.png: Premium upgrade screen showing'Opening Google Play purchase...' loading state
 28. Screenshot_20251223-132755.png: Premium upgrade screen showing 'Purchase failed: Payment permissions policy not granted' error
 29. Screenshot_20251224-064824.png: Error screen showing 'Something went wrong' with error message'SO(...).then is not a function'
+30. Screenshot_20251224-163238.png: Rise Debug Center showing Quick Actions, Environment Checks, and Storage Status
 \n---
 
 ## Implementation Checklist
 
-**Debug Center Implementation (NEW - URGENT):**
+**Offline-First Google Play Billing Implementation (NEW - URGENT):**
+1. ✅ Create /utils/billing-offline.ts utility file
+2. ✅ Implement OfflineBilling class with static methods
+3. ✅ Implement isPremiumUnlocked() method (checks localStorage)
+4. ✅ Implement purchase() method (Digital Goods API + Payment Request API)\n5. ✅ Implement restore() method (localStorage fallback + Digital Goods API query)
+6. ✅ Implement savePremium() method (stores in localStorage)
+7. ✅ Remove all backend verification code from googlePlayBilling.ts
+8. ✅ Update Stats.tsx to use OfflineBilling class
+9. ✅ Update Settings.tsx to use OfflineBilling.restore()
+10. ✅ Update platform detection to check window.getDigitalGoodsService
+11. ✅ Test purchase flow with Digital Goods API
+12. ✅ Test Payment Request API integration
+13. ✅ Test premium status stored in localStorage
+14. ✅ Test offline premium feature access
+15. ✅ Test restore purchases with localStorage fallback
+16. ✅ Test restore purchases with Google Play query (online)
+17. ✅ Verify no backend calls during purchase or restore
+18. ✅ Test loading states during payment processing
+19. ✅ Verify success/error toast messages
+20. ✅ Test premiumChanged event dispatch
+21. ✅ Update documentation with offline-first billing guide
+22. ✅ Remove backend verification endpoints (if any)
+23. ✅ Update README with offline-first payment configuration
+24. ✅ Commit message: 'Implement offline-first Google Play Billing with Digital Goods API (no backend verification)'
+25. ✅ Push to main branch for Netlify auto-deploy
+26. ✅ Confirm deployment works\n27. ✅ Regenerate .aab for Android after testing
+\n**Debug Center Implementation (Existing):**
 1. ✅ Create /components/DebugPage.tsx component
 2. ✅ Import required dependencies (React, useState, useEffect, Button, Card, toast)
 3. ✅ Import platform detection utilities (isTWAWithBilling, isAndroid, isDigitalGoodsAvailable)
@@ -1593,12 +1852,12 @@ This app is designed to outperform competitors through:
 17. ✅ Style components with shadcn/ui and Tailwind CSS
 18. ✅ Add color-coded status indicators (✓/✗)\n19. ✅ Add toast notifications for all actions
 20. ✅ Add confirmation dialogs for destructive actions
-21. ✅ Test environment checks display\n22. ✅ Test storage status updates
+21. ✅ Test environment checks display
+22. ✅ Test storage status updates
 23. ✅ Test error logging captures errors
 24. ✅ Test Clear App Data functionality
 25. ✅ Test Clear Cache Only functionality
-26. ✅ Test Payment API check
-27. ✅ Test Export Diagnostics download
+26. ✅ Test Payment API check\n27. ✅ Test Export Diagnostics download
 28. ✅ Test Full App Reset functionality
 29. ✅ Test Back to App navigation
 30. ✅ Test version display
@@ -1610,8 +1869,10 @@ This app is designed to outperform competitors through:
 36. ✅ Update documentation with Debug Center guide
 37. ✅ Commit message: 'Add Debug Center component for advanced troubleshooting and diagnostics'
 38. ✅ Push to main branch for Netlify auto-deploy
-39. ✅ Confirm deployment works\n40. ✅ Regenerate .aab for Android after testing
-\n**Viral Share Feature (Existing Implementation):**
+39. ✅ Confirm deployment works
+40. ✅ Regenerate .aab for Android after testing
+
+**Viral Share Feature (Existing Implementation):**
 1. ✅ Install qrcode.react package: `npm install qrcode.react`
 2. ✅ Install types: `npm install --save-dev @types/qrcode.react`
 3. ✅ Import QRCode and Share icon in Settings.tsx
@@ -1630,35 +1891,33 @@ This app is designed to outperform competitors through:
 16. ✅ Add subtext below button: 'Spread better habits — QR code for easy install' (text-sm text-center text-gray-600 mt-4)
 17. ✅ Position QR code below subtext (flex justify-center mt-4, size 128x128px)
 18. ✅ Add section padding (p-6) and margin (mb-6)
-19. ✅ Add rounded corners (rounded-xl)
-20. ✅ Test on Android TWA (native share sheet)
+19. ✅ Add rounded corners (rounded-xl)\n20. ✅ Test on Android TWA (native share sheet)
 21. ✅ Test on Web/PWA (clipboard fallback)
-22. ✅ Test QR code scanning
-23. ✅ Verify offline functionality (no network calls)
+22. ✅ Test QR code scanning\n23. ✅ Verify offline functionality (no network calls)
 24. ✅ Test on multiple devices and browsers
 25. ✅ Verify section placement in Settings page
 26. ✅ Verify visual design matches specifications
 27. ✅ Verify global appeal messaging
-\n**Device Transfer & Purchase Restoration (Existing Implementation):**
+\n**Device Transfer & Purchase Restoration (Updated for Offline-First):**
 1. ✅ Add 'Restore Purchases' button to Settings page
-2. ✅ Implement restoreAndroidPurchases() function for Android
-3. ✅ Implement restorePremiumByEmail() function for Web/PWA
-4. ✅ Create /pages/api/restore-premium.ts backend endpoint
-5. ✅ Query Paystack API for transactions by customer email
-6. ✅ Verify transaction amount matches premium unlock (800000 kobo)
-7. ✅ Store user email in premium data structure
-8. ✅ Update unlockPremium() to accept userEmail parameter
-9. ✅ Add email input field in Settings for restoration
-10. ✅ Add loading states during restoration process
-11. ✅ Show success message: '✅ Premium restored! All features unlocked.'
-12. ✅ Show error message if no purchase found
-13. ✅ Add support contact information with pre-filled email template
-14. ✅ Test Android restoration on new device
-15. ✅ Test Web/PWA restoration with email\n16. ✅ Test Firebase Firestore premium status sync
-17. ✅ Test offline restoration (localStorage persistence)
-18. ✅ Update documentation with restoration guide
-19. ✅ Add FAQ section for device transfer
-\n**Paystack Integration (Complete Implementation):**
+2. ✅ Update restoreAndroidPurchases() to use OfflineBilling.restore()
+3. ✅ Implement localStorage fallback for offline restore
+4. ✅ Implement restorePremiumByEmail() function for Web/PWA (unchanged)
+5. ✅ Create /pages/api/restore-premium.ts backend endpoint (unchanged)
+6. ✅ Query Paystack API for transactions by customer email (unchanged)
+7. ✅ Verify transaction amount matches premium unlock (800000 kobo) (unchanged)
+8. ✅ Store user email in premium data structure (unchanged)
+9. ✅ Update unlockPremium() to accept userEmail parameter (unchanged)
+10. ✅ Add email input field in Settings for restoration (unchanged)
+11. ✅ Add loading states during restoration process\n12. ✅ Show success message: '✅ Premium restored! All features unlocked.'
+13. ✅ Show error message if no purchase found
+14. ✅ Add support contact information with pre-filled email template
+15. ✅ Test Android restoration on new device (offline-first)
+16. ✅ Test Web/PWA restoration with email (unchanged)
+17. ✅ Test Firebase Firestore premium status sync
+18. ✅ Test offline restoration (localStorage persistence)
+19. ✅ Update documentation with offline-first restoration guide
+20. ✅ Add FAQ section for device transfer\n\n**Paystack Integration (Complete Implementation - Unchanged):**
 1. ✅ Install react-paystack package: `npm install react-paystack`
 2. ✅ Create /components/PaystackButton.tsx with complete TypeScript implementation
 3. ✅ Create /utils/paystack.ts with utility functions
@@ -1684,12 +1943,15 @@ This app is designed to outperform competitors through:
 26. ✅ Test offline premium access
 27. ✅ Test email input and storage
 28. ✅ Test loading states and toast notifications
-\n**Google Play Billing Configuration (Unchanged):**
+\n**Google Play Billing Configuration (Updated for Offline-First):**
 1. Create in-app product in Google Play Console
 2. Add test accounts for billing testing
-3. Test purchase flow with test account
-4. Verify purchase restoration works\n5. Confirm premium features unlock correctly
-6. Test offline premium access
+3. Test purchase flow with Digital Goods API
+4. Test Payment Request API integration
+5. Verify premium status stored in localStorage
+6. Test offline premium feature access\n7. Test restore purchases with localStorage fallback
+8. Test restore purchases with Google Play query (online)\n9. Verify no backend calls during purchase or restore
+10. Confirm premium features unlock correctly
 \n**Environment Variables Setup:**
 1. Copy .env.local.example to .env.local\n2. Add Paystack secret key to .env.local
 3. Verify NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY is set
@@ -1697,57 +1959,58 @@ This app is designed to outperform competitors through:
 5. Document environment setup in README
 
 **Testing Checklist:**
-1. Test Paystack payment flow on web browser
-2. Test payment verification API endpoint
-3. Verify premium unlock after successful payment
-4. Test email input validation
-5. Test email storage and retrieval
-6. Test loading states during payment
-7. Verify success/error toast messages
-8. Test platform detection (Android vs Web)
-9. Verify correct button display on each platform
-10. Test offline premium feature access
-11. Test payment with different email addresses
-12. Verify premium data structure in localStorage
-13. Test on multiple browsers (Chrome, Safari, Firefox)
-14. Test payment reference uniqueness
-15. Test all payment channels\n16. Test payment metadata transmission
-17. Test premiumStatusChanged event\n18. Test premium status persistence across page reloads
-19. Test device transfer scenarios
-20. Test restore purchases on Android
-21. Test email-based restoration on Web/PWA
-22. Test Firebase premium status sync
-23. Test offline restoration\n24. Test support contact integration
-25. Test viral share feature on Android TWA
-26. Test viral share feature on Web/PWA\n27. Test QR code generation and scanning
-28. Test share content (title, message, link)
-29. Test offline share functionality
-30. Test clipboard fallback\n31. Test on multiple devices and browsers
-32. Verify global appeal messaging
-33. Test Share & Grow section placement in Settings page
-34. Verify section appears between Data Management and Device Transfer sections
-35. Verify section background color (light purple #F3F4F6)
-36. Verify section title and subtitle display correctly
-37. Verify share button is full-width with purple background
-38. Verify Share icon displays correctly
-39. Verify QR code is centered below subtext with proper spacing
-40. Verify section padding and margin match design specs
-41. **Test Debug Center on Android TWA**
-42. **Test Debug Center on Web/PWA**
-43. **Test all environment checks display correctly**
-44. **Test storage status updates in real-time**
-45. **Test error logging captures errors**
-46. **Test Clear App Data functionality**
-47. **Test Clear Cache Only functionality**
-48. **Test Payment API check**
-49. **Test Export Diagnostics download**
-50. **Test Full App Reset functionality**
-51. **Test Back to App navigation**
-52. **Test version display**
-53. **Verify Debug Center does not impact app performance**
-54. **Test access control (development builds only)**
-55. **Test confirmation dialogs for destructive actions**\n56. **Test toast notifications for all actions**
-57. **Test error message sanitization**
+1. Test offline-first Google Play purchase flow
+2. Test Digital Goods API integration
+3. Test Payment Request API integration
+4. Verify premium status stored in localStorage
+5. Test offline premium feature access\n6. Test restore purchases with localStorage fallback
+7. Test restore purchases with Google Play query (online)\n8. Verify no backend calls during purchase or restore
+9. Test platform detection (window.getDigitalGoodsService)
+10. Verify correct button display on each platform
+11. Test loading states during payment\n12. Verify success/error toast messages
+13. Test premiumChanged event\n14. Test premium status persistence across page reloads
+15. Test Paystack payment flow on web browser (unchanged)
+16. Test payment verification API endpoint (unchanged)
+17. Verify premium unlock after successful payment (unchanged)
+18. Test email input validation (unchanged)
+19. Test email storage and retrieval (unchanged)
+20. Test on multiple browsers (Chrome, Safari, Firefox)
+21. Test payment reference uniqueness (Paystack)\n22. Test all payment channels (Paystack)\n23. Test payment metadata transmission (Paystack)
+24. Test premiumStatusChanged event (Paystack)
+25. Test device transfer scenarios\n26. Test restore purchases on Android (offline-first)
+27. Test email-based restoration on Web/PWA (unchanged)
+28. Test Firebase premium status sync\n29. Test offline restoration\n30. Test support contact integration
+31. Test viral share feature on Android TWA
+32. Test viral share feature on Web/PWA\n33. Test QR code generation and scanning
+34. Test share content (title, message, link)
+35. Test offline share functionality
+36. Test clipboard fallback\n37. Test on multiple devices and browsers
+38. Verify global appeal messaging
+39. Test Share & Grow section placement in Settings page
+40. Verify section appears between Data Management and Device Transfer sections
+41. Verify section background color (light purple #F3F4F6)
+42. Verify section title and subtitle display correctly
+43. Verify share button is full-width with purple background
+44. Verify Share icon displays correctly
+45. Verify QR code is centered below subtext with proper spacing
+46. Verify section padding and margin match design specs
+47. **Test Debug Center on Android TWA**
+48. **Test Debug Center on Web/PWA**
+49. **Test all environment checks display correctly**
+50. **Test storage status updates in real-time**
+51. **Test error logging captures errors**
+52. **Test Clear App Data functionality**
+53. **Test Clear Cache Only functionality**
+54. **Test Payment API check**
+55. **Test Export Diagnostics download**
+56. **Test Full App Reset functionality**
+57. **Test Back to App navigation**
+58. **Test version display**
+59. **Verify Debug Center does not impact app performance**
+60. **Test access control (development builds only)**
+61. **Test confirmation dialogs for destructive actions**
+62. **Test toast notifications for all actions**
+63. **Test error message sanitization**
 \n---
 
-**This updated requirements document now includes the Debug Center component as a new feature in the Rise Habit Tracker application. The Debug Center provides advanced troubleshooting and diagnostics capabilities for developers and power users, with comprehensive environment checks, storage monitoring, error logging, and quick action buttons for data management and testing. The component is fully integrated into the Settings page with hidden/developer-only access, ensuring it does not impact the user experience for regular users while providing powerful debugging tools for developers.**
+**This updated requirements document now implements a100% offline-first Google Play Billing system using Digital Goods API and Payment Request API, eliminating the need for backend verification. Premium status is stored in localStorage for offline access, and restore purchases checks localStorage first before querying Google Play (when online). This simplifies the architecture, improves offline functionality, and ensures instant premium unlock without server dependencies.**

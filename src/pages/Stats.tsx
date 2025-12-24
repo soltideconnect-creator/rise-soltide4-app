@@ -1,25 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { habitStorage } from '@/services/habitStorage';
 import type { StreakInfo } from '@/types/habit';
-import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck, X, Mail, Edit2, Bug } from 'lucide-react';
+import { Flame, Trophy, CheckCircle2, Calendar, CalendarCheck } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
-import { 
-  isPremiumUnlocked, 
-  purchasePremium, 
-  isTWAWithBilling,
-  isAndroid,
-  restorePurchases, 
-  debugUnlockPremium, 
-  isDebugUnlockAvailable 
-} from '@/utils/googlePlayBilling';
-import { PaystackPayment } from '@/components/PaystackPayment';
-import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
-import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
+import { OfflineBilling } from '@/utils/billing-offline';
 import { debugLog, debugError } from '@/utils/debug';
 
 export function Stats() {
@@ -31,10 +19,7 @@ export function Stats() {
     perfectWeeks: 0,
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
-  const [adsRemoved, setAdsRemoved] = useState(false);
-  const [userEmail, setUserEmailState] = useState('');
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [tempEmail, setTempEmail] = useState('');
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -50,131 +35,38 @@ export function Stats() {
 
     setChartData(data);
 
-    // Check premium status (works for both TWA and web)
-    const hasPremium = isPremiumUnlocked();
-    setAdsRemoved(hasPremium);
-
-    // Load user email from localStorage
-    const storedEmail = getUserEmail();
-    if (storedEmail && isValidEmail(storedEmail)) {
-      setUserEmailState(storedEmail);
-    }
+    // Check premium status (works offline)
+    setIsPremium(OfflineBilling.isPremiumUnlocked());
   }, []);
 
-  // Paystack payment success handler
-  const handlePaystackSuccess = (transaction: any) => {
-    debugLog('✅ Payment successful:', transaction);
-    
-    // Unlock premium with transaction details
-    unlockPremium(transaction.reference);
-    setAdsRemoved(true);
-    
-    toast.success('🎉 Premium Unlocked Forever!', {
-      description: `Receipt sent to ${userEmail}. All premium features are now available!`,
-      duration: 5000,
-    });
-    
-    debugLog('Transaction details:', {
-      reference: transaction.reference,
-      amount: formatAmount(800000),
-      email: userEmail,
-      timestamp: new Date().toISOString(),
-    });
-  };
+  // Listen for premium changes (from other tabs/devices)
+  useEffect(() => {
+    const handlePremiumChange = () => {
+      setIsPremium(OfflineBilling.isPremiumUnlocked());
+      debugLog('[Stats] Premium status changed:', OfflineBilling.isPremiumUnlocked());
+    };
+    window.addEventListener('premiumChanged', handlePremiumChange);
+    return () => window.removeEventListener('premiumChanged', handlePremiumChange);
+  }, []);
 
-  // Paystack payment close handler
-  const handlePaystackClose = () => {
-    debugLog('🔒 Payment popup closed');
-    toast.info('Payment cancelled. You can try again anytime.');
-  };
-
-  const handleRemoveAds = async () => {
-    try {
-      // Show loading toast
-      const loadingToast = toast.loading(
-        isTWAWithBilling() 
-          ? 'Opening Google Play purchase...' 
-          : 'Processing purchase...'
-      );
-      
-      // Trigger purchase (Google Play in TWA, error on web)
-      const success = await purchasePremium();
-      
-      // Dismiss loading toast
-      toast.dismiss(loadingToast);
-      
-      if (success) {
-        toast.success('Premium unlocked! Sleep Tracker is now available! 🎉', {
-          duration: 5000,
-        });
-        setAdsRemoved(true);
-      } else {
-        toast.error('Purchase cancelled or failed. Please try again.');
-      }
-    } catch (error) {
-      debugError('Purchase error:', error);
-      
-      // Handle billing not configured error - COMPLIANT with Google Play policies
-      if (error instanceof Error && error.message === 'BILLING_NOT_CONFIGURED') {
-        toast.error('Unable to connect to Google Play billing. Please try again later or contact support at soltidewellness@gmail.com', {
-          duration: 6000,
-        });
-      } else {
-        toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
-      }
+  // Purchase premium handler
+  const handlePurchase = async () => {
+    debugLog('[Stats] Starting purchase flow...');
+    const success = await OfflineBilling.purchase();
+    if (success) {
+      setIsPremium(true);
     }
   };
 
-  // Restore purchases handler (Android only)
-  const handleRestorePurchases = async () => {
-    try {
-      const loadingToast = toast.loading('Restoring purchases...');
-      
-      const restored = await restorePurchases();
-      
-      toast.dismiss(loadingToast);
-      
-      if (restored) {
-        toast.success('Premium restored successfully! 🎉', {
-          duration: 5000,
-        });
-        setAdsRemoved(true);
-      } else {
-        toast.info('No premium purchase found. Please purchase premium first.');
-      }
-    } catch (error) {
-      debugError('Restore error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to restore purchases.');
+  // Restore purchases handler
+  const handleRestore = async () => {
+    debugLog('[Stats] Starting restore flow...');
+    const restored = await OfflineBilling.restore();
+    if (restored) {
+      setIsPremium(true);
     }
   };
 
-  // Email handling functions
-  const handleSaveEmail = () => {
-    if (!tempEmail.trim()) {
-      toast.error('Please enter your email address');
-      return;
-    }
-
-    if (!isValidEmail(tempEmail)) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-
-    setUserEmail(tempEmail);
-    setUserEmailState(tempEmail);
-    setIsEditingEmail(false);
-    toast.success('Email saved! You can now proceed with payment.');
-  };
-
-  const handleEditEmail = () => {
-    setTempEmail(userEmail);
-    setIsEditingEmail(true);
-  };
-
-  const handleCancelEdit = () => {
-    setTempEmail('');
-    setIsEditingEmail(false);
-  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -269,7 +161,7 @@ export function Stats() {
         </Card>
 
         {/* Premium Upgrade Section - ONLY show when premium is NOT active */}
-        {!adsRemoved && (
+        {!isPremium && (
           <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 border-primary/20">
             {/* Decorative background elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -288,195 +180,29 @@ export function Stats() {
                   </p>
                 </div>
 
-                {/* Buttons - Conditional based on platform */}
+                {/* Buttons */}
                 <div className="space-y-3 max-w-sm mx-auto">
-                  {/* Google Play Button - Show on ALL Android devices (TWA or mobile browser) */}
-                  {isAndroid() && (
-                    <>
-                      {/* Only show actual Google Play button if billing is available */}
-                      {isTWAWithBilling() ? (
-                        <>
-                          <Button
-                            onClick={handleRemoveAds}
-                            className="w-full"
-                            size="lg"
-                            variant="default"
-                          >
-                            <X className="w-4 h-4 mr-2" />
-                            Get Premium - $4.99 (Google Play)
-                          </Button>
-                          
-                          {/* Restore Purchase Button */}
-                          <Button
-                            onClick={handleRestorePurchases}
-                            className="w-full"
-                            size="sm"
-                            variant="outline"
-                          >
-                            Restore Purchase
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          {/* Android mobile browser - Show message to download app */}
-                          <Card className="border-primary/20 bg-primary/5">
-                            <CardContent className="pt-6 space-y-4">
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 bg-primary/10 rounded-lg">
-                                  <X className="w-5 h-5 text-primary" />
-                                </div>
-                                <div className="flex-1 space-y-1">
-                                  <h4 className="font-semibold text-sm">Get Premium via Google Play</h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    To purchase premium, please download the Rise app from Google Play Store. This ensures secure payment through Google Play Billing.
-                                  </p>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                          
-                          <Button
-                            onClick={() => {
-                              window.open('https://play.google.com/store/apps/details?id=com.rise.habittracker', '_blank');
-                            }}
-                            className="w-full"
-                            size="lg"
-                            variant="default"
-                          >
-                            <X className="w-4 h-4 mr-2" />
-                            Download from Google Play
-                          </Button>
-                        </>
-                      )}
-                      
-                      {/* Tester Unlock Button - Only visible in test mode */}
-                      {isDebugUnlockAvailable() && (
-                        <Button
-                          onClick={() => {
-                            debugUnlockPremium();
-                            setAdsRemoved(true);
-                            toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
-                            // Reload to apply changes
-                            setTimeout(() => window.location.reload(), 1000);
-                          }}
-                          className="w-full"
-                          size="sm"
-                          variant="secondary"
-                        >
-                          <Bug className="w-4 h-4 mr-2" />
-                          Unlock for Testing
-                        </Button>
-                      )}
-                      
-                      {/* Support contact - Only show if debug mode is active */}
-                      {isDebugUnlockAvailable() && (
-                        <p className="text-xs text-center text-muted-foreground">
-                          Need help? Contact{' '}
-                          <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
-                            soltidewellness@gmail.com
-                          </a>
-                        </p>
-                      )}
-                    </>
-                  )}
-
-                  {/* Web - Paystack Payment (ONLY for non-Android users) */}
-                  {!isAndroid() && (
-                    <div className="space-y-4">
-                      {/* Email Input Section */}
-                      {!userEmail || isEditingEmail ? (
-                            <Card className="border-primary/20 bg-primary/5">
-                              <CardContent className="pt-6 space-y-4">
-                                <div className="flex items-start gap-3">
-                                  <div className="p-2 bg-primary/10 rounded-lg">
-                                    <Mail className="w-5 h-5 text-primary" />
-                                  </div>
-                                  <div className="flex-1 space-y-1">
-                                    <h4 className="font-semibold text-sm">Email Required for Receipt</h4>
-                                    <p className="text-xs text-muted-foreground">
-                                      Your payment receipt will be sent to this email address
-                                    </p>
-                                  </div>
-                                </div>
-                                
-                                <div className="space-y-3">
-                                  <Input
-                                    type="email"
-                                    placeholder="Enter your email address"
-                                    value={tempEmail}
-                                    onChange={(e) => setTempEmail(e.target.value)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        handleSaveEmail();
-                                      }
-                                    }}
-                                    className="w-full"
-                                    autoFocus
-                                  />
-                                  <div className="flex gap-2">
-                                    <Button
-                                      onClick={handleSaveEmail}
-                                      className="flex-1"
-                                      size="sm"
-                                    >
-                                      Save Email
-                                    </Button>
-                                    {isEditingEmail && (
-                                      <Button
-                                        onClick={handleCancelEdit}
-                                        variant="outline"
-                                        size="sm"
-                                      >
-                                        Cancel
-                                      </Button>
-                                    )}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <Mail className="w-4 h-4 text-muted-foreground" />
-                              <div>
-                                <p className="text-xs text-muted-foreground">Receipt will be sent to:</p>
-                                <p className="text-sm font-medium">{userEmail}</p>
-                              </div>
-                            </div>
-                            <Button
-                              onClick={handleEditEmail}
-                              variant="ghost"
-                              size="sm"
-                              className="h-8"
-                            >
-                              <Edit2 className="w-3 h-3 mr-1" />
-                              Change
-                            </Button>
-                          </div>
-
-                          <PaystackPayment
-                            email={userEmail}
-                            amount={Number(import.meta.env.VITE_PREMIUM_PRICE) || 800000}
-                            publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315"}
-                            text="⚡ Unlock Premium - ₦8,000"
-                            onSuccess={handlePaystackSuccess}
-                            onClose={handlePaystackClose}
-                            className="w-full"
-                          />
-                        </div>
-                      )}
-                      
-                      <p className="text-xs text-center text-muted-foreground">
-                        Secure payment via Paystack • Instant access • Lifetime premium
-                      </p>
-                    </div>
-                  )}
+                  <Button
+                    onClick={handlePurchase}
+                    className="w-full"
+                    size="lg"
+                    variant="default"
+                  >
+                    <Trophy className="w-4 h-4 mr-2" />
+                    Get Premium - $4.99
+                  </Button>
+                  
+                  <Button
+                    onClick={handleRestore}
+                    className="w-full"
+                    size="sm"
+                    variant="outline"
+                  >
+                    Restore Purchase
+                  </Button>
                   
                   <p className="text-xs text-muted-foreground">
-                    {isAndroid() 
-                      ? 'One-time purchase • Unlock Sleep Tracker'
-                      : 'Secure payment via Paystack • Instant premium access'}
+                    One-time purchase • Works offline after purchase
                   </p>
                 </div>
 
@@ -500,7 +226,8 @@ export function Stats() {
           </Card>
         )}
 
-        {adsRemoved && (
+        {/* Premium Active Card */}
+        {isPremium && (
           <Card className="bg-gradient-to-br from-success/5 to-primary/5 border-success/20">
             <CardContent className="pt-6">
               <div className="text-center space-y-2">
