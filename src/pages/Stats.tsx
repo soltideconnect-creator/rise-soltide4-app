@@ -20,11 +20,7 @@ import {
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
 import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
-
-// Debug mode flag (only logs in development)
-const DEBUG_MODE = import.meta.env.DEV || false;
-const debugLog = (...args: any[]) => DEBUG_MODE && console.log(...args);
-const debugError = (...args: any[]) => DEBUG_MODE && console.error(...args);
+import { debugLog, debugError } from '@/utils/debug';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({

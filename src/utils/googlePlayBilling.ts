@@ -11,6 +11,9 @@
  * @see https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing/
  */
 
+// Import debug utilities
+import { debugLog, debugError, DEBUG_MODE } from './debug';
+
 // Promise polyfill check (for older WebViews)
 if (typeof Promise !== 'function') {
   console.warn('Promise not available, loading polyfill');
@@ -25,22 +28,7 @@ export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 const PREMIUM_STORAGE_KEY = 'streak_ads_removed';
 const PREMIUM_STORAGE_KEY_ALT = 'rise_premium';
 
-// Debug mode flag (set to false for production)
-const DEBUG_MODE = import.meta.env.DEV || false;
-
-// Debug logger (only logs in development mode)
-const debugLog = (...args: any[]) => {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-};
-
-const debugError = (...args: any[]) => {
-  if (DEBUG_MODE) {
-    console.error(...args);
-  }
-};
-
+// Debug warning logger (only logs in development mode)
 const debugWarn = (...args: any[]) => {
   if (DEBUG_MODE) {
     console.warn(...args);
