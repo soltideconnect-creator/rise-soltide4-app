@@ -10,7 +10,7 @@ import { sleepStorage } from '@/services/sleepStorage';
 import { permissionService } from '@/services/permissionService';
 import type { SleepSession, AlarmSettings } from '@/types/sleep';
 import { toast } from 'sonner';
-import { isPremiumUnlocked } from '@/utils/googlePlayBilling';
+import { OfflineBilling } from '@/utils/billing-offline';
 import {
   LineChart,
   Line,
@@ -42,8 +42,8 @@ export default function Sleep({ onNavigateToStats }: SleepProps) {
   });
 
   useEffect(() => {
-    // Check premium status using billing API
-    const premium = isPremiumUnlocked();
+    // Check premium status using offline billing
+    const premium = OfflineBilling.isPremiumUnlocked();
     setIsPremium(premium);
 
     if (premium) {

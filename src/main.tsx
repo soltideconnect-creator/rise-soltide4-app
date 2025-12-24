@@ -5,7 +5,6 @@ import App from "./App.tsx";
 // import { TestApp } from "./TestApp.tsx"; // Uncomment to test basic React
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ErrorBoundary } from "./components/ErrorBoundary.tsx";
-import { initializeBilling } from "./utils/googlePlayBilling";
 
 // ============================================================================
 // PROMISE API VALIDATION - Critical for production builds
@@ -363,12 +362,5 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Track if running as PWA
   if (displayMode === 'standalone') {
     console.log('[PWA] Running as installed PWA');
-  }
-  
-  // Initialize Google Play Billing (checks for existing purchases)
-  try {
-    await initializeBilling();
-  } catch (error) {
-    console.error('[Billing] Initialization failed:', error);
   }
 });

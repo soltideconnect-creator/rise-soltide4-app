@@ -10,7 +10,7 @@ import type { Habit } from '@/types/habit';
 import { Confetti } from '@/components/Confetti';
 import { toast } from 'sonner';
 import { MOTIVATIONAL_QUOTES } from '@/types/habit';
-import { isPremiumUnlocked } from '@/utils/googlePlayBilling';
+import { OfflineBilling } from '@/utils/billing-offline';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,8 +46,8 @@ export function Home({ onAddHabit, onEditHabit }: HomeProps) {
 
   useEffect(() => {
     loadData();
-    // Check premium status using billing API
-    const hasPremium = isPremiumUnlocked();
+    // Check premium status using offline billing
+    const hasPremium = OfflineBilling.isPremiumUnlocked();
     setIsPremium(hasPremium);
   }, []);
 

@@ -14,8 +14,13 @@ import { notifications } from '@/services/notifications';
 import { themeService } from '@/services/themeService';
 import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
-import { isAndroid, restorePurchases } from '@/utils/googlePlayBilling';
+import { OfflineBilling } from '@/utils/billing-offline';
 import { errorRecovery } from '@/utils/errorRecovery';
+
+// Helper function to check if we're on Android
+const isAndroid = () => {
+  return /Android/i.test(navigator.userAgent);
+};
 
 // Helper function to check if we're in development environment
 const isDevelopmentEnvironment = () => {
@@ -93,7 +98,7 @@ function App() {
         if (isAndroid()) {
           console.log('Android detected - attempting automatic purchase restoration...');
           try {
-            const restored = await restorePurchases();
+            const restored = await OfflineBilling.restore();
             if (restored) {
               console.log('✅ Premium automatically restored from Google Play');
             } else {

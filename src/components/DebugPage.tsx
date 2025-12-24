@@ -3,7 +3,25 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { isTWAWithBilling, isAndroid, isDigitalGoodsAvailable } from '@/utils/googlePlayBilling';
+
+// Helper functions for platform detection
+const isAndroid = () => /Android/i.test(navigator.userAgent);
+const isTWAWithBilling = () => {
+  return isAndroid() && 
+         typeof (window as any).getDigitalGoodsService === 'function' &&
+         typeof (window as any).PaymentRequest === 'function';
+};
+const isDigitalGoodsAvailable = async () => {
+  if (typeof (window as any).getDigitalGoodsService !== 'function') {
+    return false;
+  }
+  try {
+    const service = await (window as any).getDigitalGoodsService('https://play.google.com/billing');
+    return service !== null;
+  } catch {
+    return false;
+  }
+};
 
 export function DebugPage() {
   const [environmentChecks, setEnvironmentChecks] = useState<Record<string, any>>({});
