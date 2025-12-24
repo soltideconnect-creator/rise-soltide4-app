@@ -19,16 +19,8 @@ import {
 } from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
-
-// Debug mode flag (only logs in development)
-const DEBUG_MODE = import.meta.env.DEV || false;
-const debugLog = (...args: any[]) => DEBUG_MODE && console.log(...args);
-const debugError = (...args: any[]) => DEBUG_MODE && console.error(...args);
-
-// Debug mode flag (only logs in development)
-const DEBUG_MODE = import.meta.env.DEV || false;
-const debugLog = (...args: any[]) => DEBUG_MODE && console.log(...args);
-const debugError = (...args: any[]) => DEBUG_MODE && console.error(...args);
+import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
+import { debugLog, debugError } from '@/utils/debug';
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({

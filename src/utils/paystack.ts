@@ -1,20 +1,5 @@
 // Paystack utility functions for Rise app
-
-// Debug mode flag (set to false for production)
-const DEBUG_MODE = import.meta.env.DEV || false;
-
-// Debug logger (only logs in development mode)
-const debugLog = (...args: any[]) => {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-};
-
-const debugError = (...args: any[]) => {
-  if (DEBUG_MODE) {
-    console.error(...args);
-  }
-};
+import { debugLog, debugError } from './debug';
 
 /**
  * Creates a unique payment reference
