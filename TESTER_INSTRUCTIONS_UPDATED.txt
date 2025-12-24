@@ -1,0 +1,226 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   🎉 RISE APP - CLOSED TESTING INSTRUCTIONS                 ║
+║   (UPDATED - Premium Unlock Issue FIXED!)                   ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ THE PREMIUM UNLOCK ISSUE IS NOW FIXED!
+
+You no longer need to deal with "Item not found" errors.
+The "Unlock for Testing" button is now visible and working!
+
+╔══════════════════════════════════════════════════════════════╗
+║   📱 HOW TO UNLOCK PREMIUM FEATURES                         ║
+╚══════════════════════════════════════════════════════════════╝
+
+Follow these simple steps:
+
+1. Open the Rise app on your Android device
+
+2. Tap the "Stats" tab (bottom navigation bar)
+
+3. Scroll down to the "Upgrade to Premium" section
+
+4. You will see a large button: "Unlock for Testing"
+
+5. Tap the "Unlock for Testing" button
+
+6. Wait for the success message: "Premium unlocked for testing!"
+
+7. The app will reload automatically
+
+8. Done! All premium features are now unlocked! 🎉
+
+╔══════════════════════════════════════════════════════════════╗
+║   ✨ WHAT YOU GET WITH PREMIUM                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+After unlocking, you'll have access to:
+
+✅ Sleep Tracker Tab
+   - Track your sleep patterns
+   - Smart alarm system
+   - Sleep quality analysis
+   - Sleep goal tracking
+
+✅ Advanced Analytics
+   - Detailed habit insights
+   - Progress trends
+   - Completion patterns
+
+✅ All Premium Features
+   - No ads
+   - Full feature access
+   - Everything unlocked
+
+╔══════════════════════════════════════════════════════════════╗
+║   🧪 WHAT TO TEST                                           ║
+╚══════════════════════════════════════════════════════════════╝
+
+Please test these key features:
+
+1. Habit Tracking
+   ✓ Create new habits
+   ✓ Complete daily habits
+   ✓ Track streaks
+   ✓ View progress
+
+2. Sleep Tracker (Premium)
+   ✓ Log sleep sessions
+   ✓ Set sleep goals
+   ✓ View sleep analytics
+   ✓ Test smart alarms
+
+3. Calendar View
+   ✓ View habit heatmap
+   ✓ Check completion history
+   ✓ Identify patterns
+
+4. Statistics
+   ✓ View current streak
+   ✓ Check longest streak
+   ✓ See total completions
+   ✓ Review 30-day chart
+
+5. Analytics (Premium)
+   ✓ Detailed insights
+   ✓ Trend analysis
+   ✓ Performance metrics
+
+╔══════════════════════════════════════════════════════════════╗
+║   🐛 REPORTING BUGS                                         ║
+╚══════════════════════════════════════════════════════════════╝
+
+If you find any issues, please report:
+
+📧 Email: soltidewellness@gmail.com
+
+Include:
+- What you were doing
+- What happened (actual behavior)
+- What you expected to happen
+- Screenshots (if possible)
+- Your device model and Android version
+
+╔══════════════════════════════════════════════════════════════╗
+║   💡 TIPS FOR TESTING                                       ║
+╚══════════════════════════════════════════════════════════════╝
+
+1. Test Daily
+   - Use the app every day for at least a week
+   - This helps test streak tracking and notifications
+
+2. Try Different Scenarios
+   - Create multiple habits
+   - Complete some, skip others
+   - Test at different times of day
+
+3. Test Edge Cases
+   - What happens at midnight?
+   - What if you complete all habits?
+   - What if you skip a day?
+
+4. Check Notifications
+   - Do reminders work?
+   - Are they on time?
+   - Can you customize them?
+
+5. Test Sleep Tracker
+   - Log different sleep durations
+   - Try the smart alarm
+   - Check sleep analytics
+
+╔══════════════════════════════════════════════════════════════╗
+║   ❓ FREQUENTLY ASKED QUESTIONS                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+Q: I don't see the "Unlock for Testing" button. What do I do?
+
+A: Make sure you:
+   1. Are using an Android device (not iPhone)
+   2. Are on the "Stats" tab
+   3. Have scrolled down to "Upgrade to Premium"
+   4. Have the latest version of the app
+   
+   If still not visible, contact soltidewellness@gmail.com
+
+Q: Do I need to pay for premium during testing?
+
+A: No! The "Unlock for Testing" button gives you free access
+   to all premium features during the closed testing phase.
+
+Q: Will my data be saved?
+
+A: Yes! All your habits, streaks, and sleep data are saved
+   locally on your device. They persist even if you close
+   the app or restart your phone.
+
+Q: Can I test on multiple devices?
+
+A: Yes, but each device will have separate data. The app
+   stores data locally, not in the cloud (for now).
+
+Q: What happens after testing ends?
+
+A: When the app launches publicly, you'll need to purchase
+   premium via Google Play ($4.99 one-time). Your test data
+   will remain on your device.
+
+Q: I found a bug. How urgent is it?
+
+A: Report all bugs! We'll prioritize:
+   - CRITICAL: App crashes, data loss
+   - HIGH: Features don't work
+   - MEDIUM: UI issues, minor bugs
+   - LOW: Suggestions, improvements
+
+╔══════════════════════════════════════════════════════════════╗
+║   🎯 TESTING CHECKLIST                                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+Use this checklist to ensure you test everything:
+
+[ ] Install app from Google Play (closed testing)
+[ ] Complete onboarding flow
+[ ] Create your first habit
+[ ] Complete a habit
+[ ] Check streak counter
+[ ] Go to Stats tab
+[ ] Unlock premium using "Unlock for Testing" button
+[ ] Verify Sleep Tracker tab appears
+[ ] Create a sleep log
+[ ] Set a sleep goal
+[ ] View sleep analytics
+[ ] Check calendar heatmap
+[ ] View 30-day activity chart
+[ ] Test habit reminders/notifications
+[ ] Create multiple habits
+[ ] Complete all habits in one day (test "perfect day")
+[ ] Skip a day (test streak reset)
+[ ] Test dark mode (if available)
+[ ] Test on different screen sizes
+[ ] Report any bugs found
+
+╔══════════════════════════════════════════════════════════════╗
+║   📞 CONTACT & SUPPORT                                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+For any questions, issues, or feedback:
+
+📧 Email: soltidewellness@gmail.com
+
+Response time: Usually within 24 hours
+
+We appreciate your help in testing Rise! Your feedback will
+help us create the best habit tracking experience possible.
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   Thank you for being a closed tester! 🙏                   ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+Happy Testing! 🎉
+
+- Rise Team
