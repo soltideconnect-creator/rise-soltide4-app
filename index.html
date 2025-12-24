@@ -70,20 +70,24 @@
     <style>
       /* Prevent FOUC (Flash of Unstyled Content) */
       #root:empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         min-height: 100vh;
         background: #0a0a0a;
       }
       
-      /* Loading indicator - shows immediately */
+      /* Loading indicator - shows immediately, positioned absolutely over root */
       #initial-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 1rem;
+        background: #0a0a0a;
+        z-index: 9999;
         animation: fadeIn 0.3s ease-in;
       }
       
@@ -132,11 +136,6 @@
           transform: scale(1.1);
           opacity: 0.8;
         }
-      }
-      
-      /* Hide loader once React mounts */
-      #root:not(:empty) + #initial-loader {
-        display: none;
       }
     </style>
   </head>
