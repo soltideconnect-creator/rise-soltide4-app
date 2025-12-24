@@ -33,7 +33,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ShareButton } from '@/components/ShareButton';
 
 interface SettingsProps {
   onNavigateToAbout: () => void;
@@ -424,11 +423,6 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
         </CardContent>
       </Card>
 
-      {/* Share Rise - Viral Growth Feature */}
-      <div className="mb-4">
-        <ShareButton />
-      </div>
-
       {/* Clear Data Dialog */}
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>
@@ -453,3 +447,4 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
     </div>
   );
 }
+

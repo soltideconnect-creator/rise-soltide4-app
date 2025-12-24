@@ -19,7 +19,11 @@ import {
 } from '@/utils/googlePlayBilling';
 import { PaystackPayment } from '@/components/PaystackPayment';
 import { unlockPremium, getUserEmail, setUserEmail, isValidEmail, formatAmount } from '@/utils/paystack';
-import { RestorePremiumWeb } from '@/components/RestorePremiumWeb';
+
+// Debug mode flag (only logs in development)
+const DEBUG_MODE = import.meta.env.DEV || false;
+const debugLog = (...args: any[]) => DEBUG_MODE && console.log(...args);
+const debugError = (...args: any[]) => DEBUG_MODE && console.error(...args);
 
 export function Stats() {
   const [stats, setStats] = useState<StreakInfo>({
@@ -50,11 +54,8 @@ export function Stats() {
     setChartData(data);
 
     // Check premium status (works for both TWA and web)
-    isPremiumUnlocked().then(hasPremium => {
-      setAdsRemoved(hasPremium);
-    }).catch(error => {
-      console.error('Error checking premium status:', error);
-    });
+    const hasPremium = isPremiumUnlocked();
+    setAdsRemoved(hasPremium);
 
     // Load user email from localStorage
     const storedEmail = getUserEmail();
@@ -65,7 +66,7 @@ export function Stats() {
 
   // Paystack payment success handler
   const handlePaystackSuccess = (transaction: any) => {
-    console.log('✅ Payment successful:', transaction);
+    debugLog('✅ Payment successful:', transaction);
     
     // Unlock premium with transaction details
     unlockPremium(transaction.reference);
@@ -76,7 +77,7 @@ export function Stats() {
       duration: 5000,
     });
     
-    console.log('Transaction details:', {
+    debugLog('Transaction details:', {
       reference: transaction.reference,
       amount: formatAmount(800000),
       email: userEmail,
@@ -86,7 +87,7 @@ export function Stats() {
 
   // Paystack payment close handler
   const handlePaystackClose = () => {
-    console.log('🔒 Payment popup closed');
+    debugLog('🔒 Payment popup closed');
     toast.info('Payment cancelled. You can try again anytime.');
   };
 
@@ -114,8 +115,16 @@ export function Stats() {
         toast.error('Purchase cancelled or failed. Please try again.');
       }
     } catch (error) {
-      console.error('Purchase error:', error);
-      toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      debugError('Purchase error:', error);
+      
+      // Handle billing not configured error - COMPLIANT with Google Play policies
+      if (error instanceof Error && error.message === 'BILLING_NOT_CONFIGURED') {
+        toast.error('Unable to connect to Google Play billing. Please try again later or contact support at soltidewellness@gmail.com', {
+          duration: 6000,
+        });
+      } else {
+        toast.error(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      }
     }
   };
 
@@ -137,7 +146,7 @@ export function Stats() {
         toast.info('No premium purchase found. Please purchase premium first.');
       }
     } catch (error) {
-      console.error('Restore error:', error);
+      debugError('Restore error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to restore purchases.');
     }
   };
@@ -287,8 +296,8 @@ export function Stats() {
                   {/* Google Play Button - Show on ALL Android devices (TWA or mobile browser) */}
                   {isAndroid() && (
                     <>
-                      {/* Show Google Play button if billing is available */}
-                      {isTWAWithBilling() && (
+                      {/* Only show actual Google Play button if billing is available */}
+                      {isTWAWithBilling() ? (
                         <>
                           <Button
                             onClick={handleRemoveAds}
@@ -310,32 +319,67 @@ export function Stats() {
                             Restore Purchase
                           </Button>
                         </>
+                      ) : (
+                        <>
+                          {/* Android mobile browser - Show message to download app */}
+                          <Card className="border-primary/20 bg-primary/5">
+                            <CardContent className="pt-6 space-y-4">
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                  <X className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="flex-1 space-y-1">
+                                  <h4 className="font-semibold text-sm">Get Premium via Google Play</h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    To purchase premium, please download the Rise app from Google Play Store. This ensures secure payment through Google Play Billing.
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          
+                          <Button
+                            onClick={() => {
+                              window.open('https://play.google.com/store/apps/details?id=com.rise.habittracker', '_blank');
+                            }}
+                            className="w-full"
+                            size="lg"
+                            variant="default"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Download from Google Play
+                          </Button>
+                        </>
                       )}
                       
-                      {/* Tester Unlock Button - ALWAYS visible on Android for closed testers */}
-                      <Button
-                        onClick={() => {
-                          debugUnlockPremium();
-                          setAdsRemoved(true);
-                          toast.success('🔓 Premium unlocked for testing! All features are now available.');
-                          // Reload to apply changes
-                          setTimeout(() => window.location.reload(), 1000);
-                        }}
-                        className="w-full"
-                        size="lg"
-                        variant="secondary"
-                      >
-                        <Bug className="w-4 h-4 mr-2" />
-                        Unlock for Testing
-                      </Button>
+                      {/* Tester Unlock Button - Only visible in test mode */}
+                      {isDebugUnlockAvailable() && (
+                        <Button
+                          onClick={() => {
+                            debugUnlockPremium();
+                            setAdsRemoved(true);
+                            toast.success('🔓 Debug unlock activated! Premium unlocked for testing.');
+                            // Reload to apply changes
+                            setTimeout(() => window.location.reload(), 1000);
+                          }}
+                          className="w-full"
+                          size="sm"
+                          variant="secondary"
+                        >
+                          <Bug className="w-4 h-4 mr-2" />
+                          Unlock for Testing
+                        </Button>
+                      )}
                       
-                      {/* Helper text for testers */}
-                      <p className="text-xs text-center text-muted-foreground">
-                        <strong>Closed Testers:</strong> Use "Unlock for Testing" button above to access all premium features. For issues, contact{' '}
-                        <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
-                          soltidewellness@gmail.com
-                        </a>
-                      </p>
+                      {/* Support contact - Only show if debug mode is active */}
+                      {isDebugUnlockAvailable() && (
+                        <p className="text-xs text-center text-muted-foreground">
+                          Need help? Contact{' '}
+                          <a href="mailto:soltidewellness@gmail.com" className="text-primary hover:underline">
+                            soltidewellness@gmail.com
+                          </a>
+                        </p>
+                      )}
                     </>
                   )}
 
