@@ -476,7 +476,7 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
             <span>About Rise</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
-          {onNavigateToDebug && (
+          {import.meta.env.DEV && onNavigateToDebug && (
             <Button
               variant="ghost"
               className="w-full justify-between text-muted-foreground"
