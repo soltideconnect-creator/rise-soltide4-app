@@ -27,6 +27,14 @@ export default defineConfig({
         manualChunks: undefined, // Single bundle for faster TWA cold start
       },
     },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        // Remove console.* statements in production
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   server: {
     headers: {

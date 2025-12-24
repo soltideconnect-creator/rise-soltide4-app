@@ -194,11 +194,11 @@ function App() {
           {currentView === 'settings' && (
             <Settings 
               onNavigateToAbout={handleNavigateToAbout}
-              onNavigateToDebug={() => setCurrentView('debug')}
+              onNavigateToDebug={import.meta.env.DEV ? () => setCurrentView('debug') : undefined}
             />
           )}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
-          {currentView === 'debug' && <DebugPage />}
+          {import.meta.env.DEV && currentView === 'debug' && <DebugPage />}
           {(currentView === 'add' || currentView === 'edit') && (
             <HabitForm
               habit={editingHabit}
