@@ -8,7 +8,6 @@ import Sleep from '@/pages/Sleep';
 import { Settings } from '@/pages/Settings';
 import { About } from '@/pages/About';
 import { HabitForm } from '@/pages/HabitForm';
-import { DebugPage } from '@/components/DebugPage';
 import { BottomNav } from '@/components/BottomNav';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
@@ -17,6 +16,22 @@ import type { Habit } from '@/types/habit';
 import { Toaster } from '@/components/ui/sonner';
 import { isAndroid, restorePurchases } from '@/utils/googlePlayBilling';
 import { errorRecovery } from '@/utils/errorRecovery';
+
+// Helper function to check if we're in development environment
+const isDevelopmentEnvironment = () => {
+  // Check if running on localhost or development domains
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
+  const isDevDomain = hostname.includes('dev.') || hostname.includes('staging.');
+  
+  // NEVER show debug center on production domains
+  const isProductionDomain = hostname.includes('medo.dev') || 
+                             hostname.includes('netlify.app') ||
+                             hostname.includes('vercel.app');
+  
+  // Only allow debug center on localhost or explicit dev domains
+  return (isLocalhost || isDevDomain) && !isProductionDomain;
+};
 
 /**
  * ============================================================================
@@ -194,11 +209,19 @@ function App() {
           {currentView === 'settings' && (
             <Settings 
               onNavigateToAbout={handleNavigateToAbout}
-              onNavigateToDebug={import.meta.env.DEV ? () => setCurrentView('debug') : undefined}
+              onNavigateToDebug={isDevelopmentEnvironment() ? () => setCurrentView('debug') : undefined}
             />
           )}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
-          {import.meta.env.DEV && currentView === 'debug' && <DebugPage />}
+          {isDevelopmentEnvironment() && currentView === 'debug' && (
+            <div className="container max-w-2xl mx-auto px-4 py-6">
+              <h1 className="text-2xl font-bold mb-4">Debug Center</h1>
+              <p className="text-muted-foreground">
+                Debug Center is only available on localhost. 
+                This page is hidden on production domains (medo.dev, netlify.app, vercel.app).
+              </p>
+            </div>
+          )}
           {(currentView === 'add' || currentView === 'edit') && (
             <HabitForm
               habit={editingHabit}

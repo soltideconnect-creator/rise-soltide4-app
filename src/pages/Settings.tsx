@@ -35,6 +35,17 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+// Helper function to check if we're in development environment
+const isDevelopmentEnvironment = () => {
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
+  const isDevDomain = hostname.includes('dev.') || hostname.includes('staging.');
+  const isProductionDomain = hostname.includes('medo.dev') || 
+                             hostname.includes('netlify.app') ||
+                             hostname.includes('vercel.app');
+  return (isLocalhost || isDevDomain) && !isProductionDomain;
+};
+
 interface SettingsProps {
   onNavigateToAbout: () => void;
   onNavigateToDebug?: () => void;
@@ -476,7 +487,7 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
             <span>About Rise</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
-          {import.meta.env.DEV && onNavigateToDebug && (
+          {isDevelopmentEnvironment() && onNavigateToDebug && (
             <Button
               variant="ghost"
               className="w-full justify-between text-muted-foreground"
