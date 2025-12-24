@@ -22,6 +22,7 @@ import {
   Play,
   Palette,
   Check,
+  Share2,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -201,6 +202,39 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
     localStorage.removeItem('streak_onboarding_completed');
     toast.success('Onboarding reset. Refreshing...');
     setTimeout(() => window.location.reload(), 1000);
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Rise – Habit Tracker & Smart Sleep',
+      text: 'Build unbreakable habits with Rise! Track your daily habits, maintain streaks, and wake up refreshed with smart sleep tracking. 🔥',
+      url: window.location.origin,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast.success('Thanks for sharing Rise!');
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(
+          `${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`
+        );
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        // Fallback: Copy to clipboard
+        try {
+          await navigator.clipboard.writeText(
+            `${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`
+          );
+          toast.success('Link copied to clipboard!');
+        } catch (clipboardError) {
+          toast.error('Unable to share. Please try again.');
+        }
+      }
+    }
   };
 
   return (
@@ -398,6 +432,27 @@ export function Settings({ onNavigateToAbout }: SettingsProps) {
           >
             <Info className="w-4 h-4 mr-2" />
             Reset Onboarding
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Share */}
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Share2 className="w-5 h-5" />
+            Share Rise
+          </CardTitle>
+          <CardDescription>Help others build better habits</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={handleShare}
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share with Friends
           </Button>
         </CardContent>
       </Card>
