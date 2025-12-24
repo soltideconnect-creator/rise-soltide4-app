@@ -11,6 +11,13 @@
  * @see https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing/
  */
 
+// Promise polyfill check (for older WebViews)
+if (typeof Promise !== 'function') {
+  console.warn('Promise not available, loading polyfill');
+  // Note: You might need to add a Promise polyfill library if this warning appears
+  // For modern Android WebViews (Chrome 55+), Promise is always available
+}
+
 // Product ID for premium unlock
 export const PREMIUM_PRODUCT_ID = 'premium_unlock';
 
@@ -161,6 +168,12 @@ export function isPremiumUnlocked(): boolean {
  */
 export async function purchasePremium(): Promise<boolean> {
   debugLog('🚀 Starting premium purchase flow...');
+  
+  // Validate Promise API availability
+  if (typeof Promise === 'undefined' || typeof Promise.prototype.then !== 'function') {
+    debugError('❌ Promise API not available');
+    throw new Error('Promise API not available. Please update your browser or WebView.');
+  }
   
   // Check if running on Android with Digital Goods API
   if (!isAndroid()) {
