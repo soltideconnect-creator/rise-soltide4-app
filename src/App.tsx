@@ -8,6 +8,7 @@ import Sleep from '@/pages/Sleep';
 import { Settings } from '@/pages/Settings';
 import { About } from '@/pages/About';
 import { HabitForm } from '@/pages/HabitForm';
+import { DebugPage } from '@/components/DebugPage';
 import { BottomNav } from '@/components/BottomNav';
 import { habitStorage } from '@/services/habitStorage';
 import { notifications } from '@/services/notifications';
@@ -50,7 +51,7 @@ import { errorRecovery } from '@/utils/errorRecovery';
  * ============================================================================
  */
 
-type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit';
+type View = 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings' | 'about' | 'add' | 'edit' | 'debug';
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -190,8 +191,14 @@ function App() {
           {currentView === 'stats' && <Stats />}
           {currentView === 'analytics' && <Analytics />}
           {currentView === 'sleep' && <Sleep onNavigateToStats={() => setCurrentView('stats')} />}
-          {currentView === 'settings' && <Settings onNavigateToAbout={handleNavigateToAbout} />}
+          {currentView === 'settings' && (
+            <Settings 
+              onNavigateToAbout={handleNavigateToAbout}
+              onNavigateToDebug={() => setCurrentView('debug')}
+            />
+          )}
           {currentView === 'about' && <About onBack={handleBackFromAbout} />}
+          {currentView === 'debug' && <DebugPage />}
           {(currentView === 'add' || currentView === 'edit') && (
             <HabitForm
               habit={editingHabit}
@@ -200,7 +207,7 @@ function App() {
             />
           )}
 
-          {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && (
+          {currentView !== 'add' && currentView !== 'edit' && currentView !== 'about' && currentView !== 'debug' && (
             <BottomNav
               activeTab={currentView as 'home' | 'calendar' | 'stats' | 'analytics' | 'sleep' | 'settings'}
               onTabChange={handleTabChange}

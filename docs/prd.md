@@ -1,11 +1,11 @@
-# Streak – Daily Habit Tracker Requirements Document (Updated: Share Button Location Clarification)
+# Streak – Daily Habit Tracker Requirements Document (Updated: Debug Component Integration)
 
 ## 1. Application Overview
 
 ### 1.1 Application Name
 Streak – Daily Habit Tracker
 \n### 1.2 Application Description
-A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality,27 premium features designed to outperform competitors, and a viral share feature for organic growth. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). Includes robust device transfer and purchase restoration system for seamless premium access across devices.
+A production-ready Android habit tracking application built with Flutter and Material3 design. The app helps users build and maintain daily habits through streak tracking, visual progress indicators, and motivational features. Now includes a comprehensive sleep tracker with smart alarm functionality,27 premium features designed to outperform competitors, and a viral share feature for organic growth. Fully offline with local data storage and optional cloud sync. Enhanced with Progressive Web App (PWA) capabilities and dual payment system (Google Play Billing for Android + Paystack for Web/PWA). Includes robust device transfer and purchase restoration system for seamless premium access across devices. **NEW: Integrated Debug Center for advanced troubleshooting and diagnostics.**
 
 ### 1.3 Technical Stack
 - Framework: Flutter (Android) + Next.js with TypeScript (Web/PWA)
@@ -22,8 +22,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - QR Code: qrcode.react (for viral share feature)
 
 ## 2. Core Features
-
-### 2.1 Onboarding Flow
+\n### 2.1 Onboarding Flow
 - 3 full-screen slides explaining streak concept and app features
 - Highlight premium features with gold accents
 - Request notification permission during onboarding
@@ -186,7 +185,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
 \n#### 2.7.3 Data Management
 - **Free Version**: Manual local backup/restore
 - **Premium Version**:
-  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase\n  - **Cross-device Sync**: Real-time sync across multiple Android devices
+  - **Automatic Cloud Backup**: Daily encrypted backup to Firebase
+  - **Cross-device Sync**: Real-time sync across multiple Android devices
   - **Export Options**:
     - Export all data to CSV format
     - Export all data to JSON format
@@ -202,8 +202,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Restore Premium Access' button in Settings\n  - User enters email used for Paystack payment
   - Backend API verifies payment history via Paystack API
   - If verified, unlocks premium and stores in localStorage
-  - Shows success message: '✅ Premium restored! All features unlocked.'
-  - Fallback: User can contact support with transaction reference
+  - Shows success message: '✅ Premium restored! All features unlocked.'\n  - Fallback: User can contact support with transaction reference
 - **Cloud Sync for Premium Users**:
   - Premium status synced via Firebase Firestore
   - On new device login, checks Firestore for premium status
@@ -212,12 +211,12 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - 'Contact Support' button with pre-filled email template
   - Includes device info, purchase platform, and transaction ID
   - Support email: support@risehabittracker.com
-\n#### 2.7.5 Viral Share Feature (UPDATED LOCATION)
-- **Location in Settings Page**: \n  - **NEW DEDICATED SECTION**: 'Share & Grow' section
-  - **Placement**: Between 'Data Management' section and 'About Rise' section\n  - **Visual Hierarchy**: Full-width card with light purple background (#F3F4F6) and rounded corners
+\n#### 2.7.5 Viral Share Feature
+- **Location in Settings Page**: \n  - **DEDICATED SECTION**: 'Share & Grow' section
+  - **Placement**: Between 'Data Management' section and 'Device Transfer & Purchase Restoration' section
+  - **Visual Hierarchy**: Full-width card with light purple background (#F3F4F6) and rounded corners
   - **Section Title**: 'Share & Grow' (bold, 18px, Poppins SemiBold)
-  - **Section Subtitle**: 'Help friends build better habits' (14px, gray-600)
-- **Button**: 'Share Rise with Friends' - prominent purple button
+  - **Section Subtitle**: 'Help friends build better habits' (14px, gray-600)\n- **Button**: 'Share Rise with Friends' - prominent purple button
 - **Functionality**:
   - 100% offline - no internet, no servers, no tracking required
   - On tap: Opens device native share sheet (SMS, email, Bluetooth, WhatsApp, etc.)
@@ -231,24 +230,62 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - **Fallback**: For older browsers without navigator.share, copies link to clipboard with alert message
 - **Design**:
   - Purple button with white text: 'Share Rise with Friends'
-  - Button style: Full-width, rounded-xl, py-4, px-8, bg-purple-500hover:bg-purple-600
+  - Button style: Full-width, rounded-xl, py-4, px-8, bg-purple-500 hover:bg-purple-600
   - Subtext: 'Spread better habits — QR code for easy install' (centered, text-sm, text-gray-600, mt-2)
   - QR code centered below subtext with4px margin-top
   - Card padding: p-6\n  - Card margin: mb-6(spacing from sections above and below)
 - **Global Appeal**: No region-specific messaging, universally accessible
 - **Goal**: Target 20-30% organic download growth from word-of-mouth
 
-**UPDATED SETTINGS PAGE LAYOUT ORDER:**
-1. **Alarm Sound Selection** (existing section)
-2. **Theme Customization** (existing section)
-3. **Data Management** (existing section with Export Data, Import Data, Clear All Data, Reset Onboarding buttons)
-4. **Share & Grow** (NEW SECTION - viral share button + QR code)
-5. **Device Transfer & Purchase Restoration** (existing section with Restore Purchases button)
-6. **About Rise** (existing section at bottom)
-\n#### 2.7.6 Other Settings
+#### 2.7.6 Other Settings
 - Language selection (English, Spanish, French, German, Portuguese, Chinese, Japanese)\n- Notification settings\n- Privacy settings (anonymous analytics opt-in/out)
 - Premium subscription management
-- About and support\n\n### 2.8 Notification System
+- About and support\n\n#### 2.7.7 Debug Center (NEW)
+- **Access**: Hidden menu accessible via Settings page (long-press on app version number or dedicated 'Debug' button for developers)
+- **Purpose**: Advanced troubleshooting and diagnostics for developers and power users
+- **Features**:\n  - **Environment Checks**: Display comprehensive system information
+    - React loaded status
+    - Promise and Async support
+    - LocalStorage availability
+    - Digital Goods API availability
+    - Payment Request API availability
+    - Android detection
+    - TWA with Billing detection
+    - User Agent string (first 100 characters)
+    - Screen size\n    - Online status
+    - Service Worker availability
+  - **Storage Status**: Display current storage information
+    - streak_ads_removed value
+    - rise_premium value
+    - Total localStorage keys
+    - Storage size in bytes
+  - **Error Logging**: Real-time error capture and display
+    - Window error events
+    - Unhandled promise rejections
+    - Error message list with timestamps
+  - **Quick Actions**:
+    - **Clear App Data**: Remove all localStorage and sessionStorage data (with confirmation)
+    - **Clear Cache Only**: Clear service worker cache and caches API\n    - **Test Payment API**: Test Digital Goods API availability
+    - **Export Diagnostics**: Export full diagnostic report as JSON file
+    - **Full App Reset**: Complete factory reset including IndexedDB and service worker unregistration
+  - **Back to App Button**: Return to main app interface
+  - **Version Display**: Show current app version from environment variables
+- **Design**:
+  - Clean card-based layout with shadcn/ui components
+  - Color-coded status indicators (✓ for success, ✗ for failure)
+  - Prominent action buttons with clear labels
+  - Warning confirmations for destructive actions
+  - Toast notifications for action feedback
+- **Security**: Only accessible in development builds or with special developer flag enabled
+\n**SETTINGS PAGE LAYOUT ORDER:**
+1. **Alarm Sound Selection**
+2. **Theme Customization**
+3. **Data Management**
+4. **Share & Grow** (viral share button + QR code)
+5. **Device Transfer & Purchase Restoration**
+6. **About Rise**
+7. **Debug Center** (hidden/developer-only access)
+\n### 2.8 Notification System
 
 #### 2.8.1 Free Version
 - Single daily reminder per habit at user-chosen time
@@ -275,15 +312,14 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Mini bar chart of last 7 days
 - **Customizable Widget Themes**: Match widget colors to app theme or choose custom colors
 - **Widget Layouts**: Choose from 3 layout styles per widget size
-
-### 2.10 Celebration Features
+\n### 2.10 Celebration Features
 
 #### 2.10.1 Free Version
 - Confetti explosion animation when streak reaches 7, 30, or 100 days
 - Haptic feedback for milestone achievements
 - 50built-in motivational quotes displayed randomly after completing a habit
-
-#### 2.10.2 Premium Version\n- **200+ Motivational Quotes**: Expanded library with category-specific quotes
+\n#### 2.10.2 Premium Version
+- **200+ Motivational Quotes**: Expanded library with category-specific quotes
 - **Custom Milestones**: Set personal streak goals (e.g., 14 days, 50 days, 365 days)
 - **Achievement Badges System**:
   - 30+ unlockable badges (Early Bird, Night Owl, Perfect Week, Century Club, etc.)
@@ -295,8 +331,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Customizable card designs
   - One-tap share to Instagram, Twitter, Facebook
   - Save as image to gallery
-
-### 2.11 Premium Exclusive Features
+\n### 2.11 Premium Exclusive Features
 
 #### 2.11.1 Focus Mode
 - **Distraction-Free Interface**:
@@ -381,7 +416,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Payment Gateway: Paystack via react-paystack package
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315
 - Default Email: customer@riseapp.com (user can modify)
-- Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium₦8,000 (Instant • No Google Cut)'
+- Reference: RISE_{timestamp}_{random}\n- Button Text: 'Unlock Premium ₦8,000 (Instant • No Google Cut)'
 - Visibility: Only shown when window.AndroidBilling is NOT present
 - Payment Channels: Card, Bank, USSD, QR, Mobile Money
 - On Success:\n  - Verify payment via backend API (/api/verify-payment)
@@ -394,7 +429,8 @@ A production-ready Android habit tracking application built with Flutter and Mat
       'features': ['sleep_tracker', 'no_ads', 'advanced_analytics'],
       'platform': 'web',
       'userEmail': user email\n    }
-    ```\n  - localStorage.setItem('streak_ads_removed', 'true')\n  - Dispatch'premiumStatusChanged' event
+    ```\n  - localStorage.setItem('streak_ads_removed', 'true')
+  - Dispatch'premiumStatusChanged' event
   - Unlock all premium features immediately
   - Show success toast: '🎉 Premium unlocked! Sleep Tracker and all premium features are now available!'
 
@@ -408,7 +444,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 7. ✅ Data export (CSV, JSON, PDF)
 8. ✅ Multiple reminders per habit
 9. ✅ Custom notification messages
-10. ✅ 20+ additional alarm sounds + custom upload
+10. ✅20+ additional alarm sounds + custom upload
 11. ✅ Custom theme colors and premium themes
 12. ✅ Automatic cloud backup and cross-device sync
 13. ✅ Sleep insights and recommendations
@@ -428,6 +464,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 27. ✅ Priority customer support
 28. ✅ Device transfer and purchase restoration
 29. ✅ Viral share feature with QR code
+30. ✅ Debug Center for advanced troubleshooting
 \n#### 2.12.5 Premium Unlock UI
 \n**Location**: Stats Tab and Premium/Settings Page
 
@@ -459,13 +496,16 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Sleep tracker accent: #4A90E2 (calming blue)
 - Premium badge color: #FFD700 (gold)
 - Paystack button gradient: #FFD700 to #FF9500 (gold to orange)
-- Viral share button: #8B5CF6 (purple) with hover state #7C3AED\n- Share section background: #F3F4F6 (light purple/gray)
+- Viral share button: #8B5CF6 (purple) with hover state #7C3AED
+- Share section background: #F3F4F6 (light purple/gray)
 - Success green: #34C759\n- Warning red: #FF3B30
+- Debug Center: Neutral grays with accent colors for status indicators
 - Clean, minimalist aesthetic with generous whitespace
 
 ### 3.2 Typography
 - Headings: Google Fonts 'Poppins' (SemiBold 600)\n- Body text: Google Fonts 'Inter' (Regular 400)
 - Stats numbers: 'Poppins' (Bold 700)
+- Debug Center: Monospace font for technical data
 \n### 3.3 Visual Style
 - Material3 (Material You) design language
 - Smooth60fps animations throughout
@@ -475,6 +515,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Elegant upgrade prompts with clear value proposition
 - Glassmorphism effects for premium UI elements
 - Micro-interactions and haptic feedback for all user actions
+- Debug Center: Technical, developer-friendly interface with clear data presentation
 
 ### 3.4 Iconography
 - Material Design Icons for system functions
@@ -484,6 +525,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Paystack button: Lightning bolt (Zap) icon from lucide-react
 - Share button: Share icon from lucide-react
 - lucide-react icons for web/PWA interface
+- Debug Center: System icons for diagnostics and actions
 
 ## 4. Technical Requirements
 
@@ -495,6 +537,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
 - Efficient background processing for sleep tracking (minimal battery drain)
 - Fast data synchronization for premium cloud backup (delta sync)
 - Widget updates within 1 second of habit completion
+- Debug Center loads instantly without impacting app performance
 
 ### 4.2 Data Storage
 \n#### 4.2.1 Local Storage (Hive)
@@ -537,6 +580,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Cache dynamic content (habit data, user preferences)
   - Background sync for data updates when connection is restored
   - Push notification support for habit reminders
+  - **Cache clearing support**: Listen for CLEAR_CACHE message from Debug Center
 - **Caching Strategy**:
   - Cache-first strategy for static assets
   - Network-first strategy for dynamic data with fallback to cache
@@ -559,7 +603,7 @@ A production-ready Android habit tracking application built with Flutter and Mat
   - Custom install banner with app benefits
   - Defer prompt until user engagement (after3 habit completions)
   - Track install acceptance rate
-\n#### 4.3.3 Offline Capabilities
+\n#### 4.3.3Offline Capabilities
 - **Offline-First Architecture**:
   - All core features work without internet connection
   - Queue actions when offline (habit completions, edits)\n  - Sync queued actions when connection restored
@@ -649,19 +693,20 @@ function restoreAndroidPurchases() {
 - Amount: 800000 kobo (₦8,000 NGN)
 - Live Public Key: pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315\n- Default Email: customer@riseapp.com (user can modify)
 - Reference Format: RISE_{timestamp}_{random}
-- Currency: NGN\n- Payment Channels: Card, Bank, USSD, QR, Mobile Money\n
-**File Structure:**
+- Currency: NGN\n- Payment Channels: Card, Bank, USSD, QR, Mobile Money\n\n**File Structure:**
 1. /components/PaystackButton.tsx - Reusable Paystack button component
 2. /utils/paystack.ts - Utility functions for payment handling
 3. /pages/api/verify-payment.ts - Backend API for payment verification
 4. /pages/api/restore-premium.ts - Backend API for premium restoration
 5. /components/Stats.tsx - Updated Stats component with Paystack integration
 6. /components/Settings.tsx - Settings page with restore purchases button and viral share feature
-7. .env.local - Environment variables configuration
+7. /components/DebugPage.tsx - NEW: Debug Center component for diagnostics
+8. .env.local - Environment variables configuration
 
 **Core Payment Logic:**
 
-```typescript\n// /components/PaystackButton.tsx\nimport React, { useState } from 'react';
+```typescript
+// /components/PaystackButton.tsx\nimport React, { useState } from 'react';
 import { usePaystackPayment } from 'react-paystack';
 import { Button, ButtonProps } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -748,8 +793,8 @@ export const verifyPayment = async (reference: string): Promise<boolean> => {
   try {
     const response = await fetch('/api/verify-payment', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',\n      },
+      headers: {\n        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ reference }),
     });
 \n    if (!response.ok) {
@@ -812,12 +857,13 @@ export const restorePremiumByEmail = async (email: string): Promise<{ success: b
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(\n  req: NextApiRequest,
-  res: NextApiResponse\n) {
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+    return res.status(405).json({ message: 'Method not allowed' });\n  }
 
-  const { reference } = req.body;\n\n  if (!reference) {\n    return res.status(400).json({ message: 'Reference is required' });
+  const { reference } = req.body;
+\n  if (!reference) {\n    return res.status(400).json({ message: 'Reference is required' });
   }
 
   try {\n    // In production, verify with Paystack
@@ -833,8 +879,7 @@ export default async function handler(\n  req: NextApiRequest,
         status: 'success',
         data: {
           amount: data.data.amount / 100,
-          currency: data.data.currency,\n          customer: data.data.customer,
-          paidAt: data.data.paid_at,
+          currency: data.data.currency,\n          customer: data.data.customer,\n          paidAt: data.data.paid_at,
         },
       });
     } else {
@@ -909,197 +954,14 @@ export default async function handler(
     }
   } catch (error) {
     console.error('Premium restoration error:', error);
-    return res.status(500).json({
-      success: false,
+    return res.status(500).json({\n      success: false,
       message: 'Internal server error',
-    });\n  }
+    });
+  }
 }
 ```
 
-```typescript
-// Updated /components/Settings.tsx (key sections with UPDATED viral share location)
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';\nimport { Label } from '@/components/ui/label';
-import { restorePremiumByEmail, unlockPremium, getPremiumStatus } from '@/utils/paystack';
-import { toast } from 'sonner';\nimport { Loader2, Share } from 'lucide-react';
-import QRCode from 'qrcode.react';
-
-export function Settings() {
-  const [isRestoring, setIsRestoring] = useState(false);
-  const [restoreEmail, setRestoreEmail] = useState('');
-  const isPremium = getPremiumStatus();
-
-  const isTWAWithBilling = () => {
-    return typeof window !== 'undefined' && !!(window as any).AndroidBilling;\n  };
-
-  const handleRestoreAndroid = async () => {
-    setIsRestoring(true);
-    try {
-      if ((window as any).AndroidBilling) {
-        const purchases = await (window as any).AndroidBilling.getPurchases();
-        const hasPremium = purchases.some(\n          (p: any) => p.productId === 'premium_unlock' && p.purchaseState === 1
-        );
-        if (hasPremium) {\n          unlockPremium('google_play_restored');
-          toast.success('✅ Premium restored! All features unlocked.');
-        } else {
-          toast.error('No premium purchase found. Please contact support if you believe this is an error.');\n        }
-      }\n    } catch (error) {
-      console.error('Restore failed:', error);
-      toast.error('Restore failed. Please try again or contact support.');
-    } finally {
-      setIsRestoring(false);
-    }\n  };
-
-  const handleRestoreWeb = async () => {
-    if (!restoreEmail ||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(restoreEmail)) {
-      toast.error('Please enter a valid email address.');
-      return;
-    }
-
-    setIsRestoring(true);
-    try {
-      const result = await restorePremiumByEmail(restoreEmail);
-      if (result.success) {
-        unlockPremium(result.data?.transactionId, restoreEmail);
-        toast.success('✅ Premium restored! All features unlocked.');
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error('Restore failed:', error);
-      toast.error('Restore failed. Please try again or contact support.');
-    } finally {
-      setIsRestoring(false);
-    }
-  };
-
-  // Viral Share Feature
-  const shareLink = 'https://play.google.com/store/apps/details?id=com.soltide.rise'; // Switch to opt-in link in test:'https://play.google.com/apps/testing/com.soltide.rise'
-  const shareMessage = 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: ' + shareLink;
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Rise: Habit Tracker & Smart Sleep',
-          text: shareMessage,
-          url: shareLink,
-        });
-      } else {
-        // Fallback for older browsers — copy to clipboard
-        navigator.clipboard.writeText(shareMessage);
-        alert('Link copied! Paste to share.');
-      }
-    } catch (err) {
-      console.error('Share error:', err);
-    }
-  };
-\n  return (
-    <div className='settings-container'>
-      {/* Alarm Sound Selection Section */}
-      <div className='alarm-sounds-section mb-6'>
-        {/* Alarm sound selection UI */}
-      </div>
-
-      {/* Theme Customization Section */}
-      <div className='theme-section mb-6'>
-        {/* Theme customization UI */}
-      </div>
-
-      {/* Data Management Section */}
-      <div className='data-management-section mb-6'>
-        <h3 className='text-lg font-semibold mb-4'>Data Management</h3>
-        <p className='text-sm text-gray-600 mb-4'>Backup and restore your habits</p>
-        <div className='space-y-3'>
-          <Button className='w-full'>Export Data</Button>
-          <Button className='w-full'>Import Data</Button>
-          <Button className='w-full' variant='destructive'>Clear All Data</Button>
-          <Button className='w-full' variant='outline'>Reset Onboarding</Button>
-        </div>
-      </div>
-
-      {/* UPDATED: Share & Grow Section (NEW LOCATION) */}
-      <div className='share-section bg-purple-50 rounded-xl p-6 mb-6'>
-        <h3 className='text-lg font-semibold mb-2'>Share & Grow</h3>
-        <p className='text-sm text-gray-600 mb-4'>Help friends build better habits</p>
-        <button\n          onClick={handleShare}
-          className='w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-xl text-lg flex items-center justify-center gap-2'
-        >
-          <Share className='h-5 w-5' />
-          Share Rise with Friends
-        </button>
-<p className='text-sm text-center text-gray-600 mt-4'>Spread better habits — QR code for easy install</p>
-        <div className='flex justify-center mt-4'>
-          <QRCode value={shareLink} size={128} />
-        </div>
-      </div>
-
-      {/* Device Transfer & Purchase Restoration Section */}
-      {!isPremium && (
-        <div className='restore-section mb-6'>
-          <h3 className='text-lg font-semibold mb-2'>Restore Premium Purchase</h3>
-          <p className='text-sm text-gray-600 mb-4'>
-            Changed your device? Restore your premium access here.
-          </p>
-\n          {isTWAWithBilling() ? (
-            <Button
-              onClick={handleRestoreAndroid}
-              disabled={isRestoring}
-              className='w-full'
-            >
-              {isRestoring ?(
-                <>\n                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Restoring...
-                </>\n              ) : (
-                'Restore Purchases (Google Play)'
-              )}
-            </Button>
-          ) : (\n            <div className='space-y-4'>
-              <div>\n                <Label htmlFor='restore-email'>Email used for payment</Label>
-                <Input\n                  id='restore-email'
-                  type='email'\n                  placeholder='your@email.com'
-                  value={restoreEmail}
-                  onChange={(e) => setRestoreEmail(e.target.value)}
-                  disabled={isRestoring}
-                />
-              </div>
-              <Button
-                onClick={handleRestoreWeb}
-                disabled={isRestoring}
-                className='w-full'
-              >\n                {isRestoring ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Restoring...
-                  </>
-                ) : (
-                  'Restore Premium Access'
-                )}
-              </Button>
-            </div>
-          )}
-\n          <p className='text-xs text-gray-500 mt-4'>
-            Can't restore? Contact support at support@risehabittracker.com with your transaction reference.
-          </p>
-        </div>
-      )}
-
-      {isPremium && (
-        <div className='premium-active mb-6'>
-          <p className='text-green-600 font-semibold'>✅ Premium Active - All features unlocked!</p>
-        </div>
-      )}
-
-      {/* About Rise Section */}
-      <div className='about-section'>
-        <h3 className='text-lg font-semibold mb-2'>About Rise</h3>
-        {/* About content */}
-      </div>\n    </div>
-  );
-}
-```
-\n####4.4.3 Platform Detection and Button Display
+#### 4.4.3 Platform Detection and Button Display
 
 ```typescript
 const isTWAWithBilling = () => {
@@ -1108,19 +970,18 @@ const isTWAWithBilling = () => {
 
 // In Premium/Stats Page JSX:\n{!isTWAWithBilling() ? (
   // Web/PWA - Show Paystack\n  <div className='space-y-4'>
-    {!userEmail.includes('@riseapp.com') && (\n      <Button onClick={handleEmailInput} variant='outline' className='w-full'>
+    {!userEmail.includes('@riseapp.com') && (
+      <Button onClick={handleEmailInput} variant='outline' className='w-full'>
         ✏️ Enter Email for Receipt
       </Button>
     )}
-    <PaystackButton
-      email={userEmail}
+    <PaystackButton\n      email={userEmail}
       amount={800000}
       publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ||'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
-      text='Unlock Premium ₦8,000'
-      onSuccess={handlePaystackSuccess}
+      text='Unlock Premium ₦8,000'\n      onSuccess={handlePaystackSuccess}
       onClose={handlePaystackClose}
-disabled={isProcessing}
-      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600text-white font-semibold py-6 text-lg'
+      disabled={isProcessing}
+      className='w-full bg-gradient-to-r from-yellow-400 to-orange-500hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-6 text-lg'
     />
 <p className='text-sm text-center text-gray-600'>
       Secure payment via Paystack • Instant access • Lifetime premium
@@ -1129,16 +990,13 @@ disabled={isProcessing}
 ) : (\n  // Android TWA - Show Google Play\n  <button onClick={handleGooglePlayPurchase}>
     Unlock Premium $4.99
   </button>
-)}
-```
+)}\n```
 
 #### 4.4.4 Premium Feature Gating
 - Check getPremiumStatus() function to unlock features
 - Ad removal, sleep tracker, analytics, and all27 premium features gated behind this check
 - Premium status persists offline via localStorage
-- On app restart, verify with AndroidBilling.getPurchases() (Android) or getPremiumStatus() (Web)
-- Event-driven updates via'premiumStatusChanged' event
-
+- On app restart, verify with AndroidBilling.getPurchases() (Android) or getPremiumStatus() (Web)\n- Event-driven updates via'premiumStatusChanged' event\n
 #### 4.4.5 Restore Purchases
 - **Android**: 'Restore Purchases' button calls AndroidBilling.getPurchases()
 - **Web/PWA**: 'Restore Premium Access' button queries Paystack API by email
@@ -1152,12 +1010,13 @@ disabled={isProcessing}
 - CSS: background-image: url('/images/premium-bg.png')\n- Fallback gradient: linear-gradient(135deg, #5E5CE6 0%, #FF9500 100%)
 - Image should display sunrise/dawn theme with warm colors
 
-### 4.5 Viral Share Feature Implementation (UPDATED LOCATION)
+### 4.5 Viral Share Feature Implementation
 
 #### 4.5.1 Package Installation
 - Install qrcode.react: `npm install qrcode.react`
 - Install types: `npm install --save-dev @types/qrcode.react`
-\n#### 4.5.2 ShareButton Component
+
+#### 4.5.2 ShareButton Component
 - **Location**: Integrated directly into Settings page (not a separate component)
 - **Import**: `import QRCode from 'qrcode.react';` and `import { Share } from 'lucide-react';`
 - **Functionality**:
@@ -1168,26 +1027,26 @@ disabled={isProcessing}
   - Share content includes app title, message, and link
   - Link switches between production and test (opt-in) based on environment
 
-#### 4.5.3 Integration Points (UPDATED)\n- **Settings Page**: \n  - **NEW DEDICATED SECTION**: 'Share & Grow' section
+#### 4.5.3 Integration Points
+- **Settings Page**: \n  - **DEDICATED SECTION**: 'Share & Grow' section
   - **Placement**: Between 'Data Management' section and 'Device Transfer & Purchase Restoration' section (or'About Rise' if premium is active)
   - **Visual Design**: Full-width card with light purple background (#F3F4F6 or bg-purple-50), rounded-xl corners, p-6 padding, mb-6 margin-bottom
   - **Section Title**: 'Share & Grow' (text-lg font-semibold mb-2)
   - **Section Subtitle**: 'Help friends build better habits' (text-sm text-gray-600 mb-4)
 - **Premium Screen**: Optional placement for viral growth (can be added later)
-- **Button Style**: Full-width purple button (bg-purple-500 hover:bg-purple-600) with white text, rounded-xl, py-4 px-8, text-lg, flex items-center justify-center gap-2
+- **Button Style**: Full-width purple button (bg-purple-500 hover:bg-purple-600) with white text, rounded-xl, py-4px-8, text-lg, flex items-center justify-center gap-2
 - **Button Icon**: Share icon from lucide-react (h-5 w-5)
 - **QR Code**: 128x128px, centered below subtext with mt-4 margin-top, wrapped in flex justify-center container
 
 #### 4.5.4 Share Content
-- **Title**: 'Rise: Habit Tracker & Smart Sleep'
-- **Message**: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
+- **Title**: 'Rise: Habit Tracker & Smart Sleep'\n- **Message**: 'Try Rise: Offline habit tracker with smart sleep features. One-time $4.99 premium unlock. Install free: [link]'
 - **Link (Production)**: https://play.google.com/store/apps/details?id=com.soltide.rise
 - **Link (Testing)**: https://play.google.com/apps/testing/com.soltide.rise
 - **Global Appeal**: No region-specific messaging
-
-#### 4.5.5 Error Handling
+\n#### 4.5.5 Error Handling
 - Try-catch block for share API\n- Fallback to clipboard copy if navigator.share not available
-- Alert message: 'Link copied! Paste to share.'\n- Console error logging for debugging
+- Alert message: 'Link copied! Paste to share.'
+- Console error logging for debugging
 
 #### 4.5.6 Testing Requirements
 - Test on Android TWA (share sheet should pop with message + link)
@@ -1196,16 +1055,147 @@ disabled={isProcessing}
 - Verify offline functionality (no network calls)
 - Test on multiple devices and browsers
 
-### 4.6 Permissions\n\n#### 4.6.1 Required Permissions
+### 4.6 Debug Center Implementation (NEW)
+
+#### 4.6.1 Component Structure
+- **File Location**: /components/DebugPage.tsx
+- **Access Method**: Hidden menu in Settings (long-press on app version number or dedicated 'Debug' button for developers)
+- **Component Type**: Full-page React component using shadcn/ui components
+\n#### 4.6.2 Core Features
+\n**Environment Checks:**
+- React loaded status
+- Promise support
+- Async function support
+- LocalStorage availability
+- Digital Goods API availability (window.getDigitalGoodsService)
+- Payment Request API availability (window.PaymentRequest)
+- Android detection (isAndroid() utility)
+- TWA with Billing detection (isTWAWithBilling() utility)
+- User Agent string (first 100 characters)
+- Screen size (window.innerWidth x window.innerHeight)
+- Online status (navigator.onLine)
+- Service Worker availability
+
+**Storage Status:**
+- streak_ads_removed value from localStorage
+- rise_premium value from localStorage
+- Total localStorage keys count
+- Storage size in bytes (JSON.stringify(localStorage).length)
+
+**Error Logging:**
+- Window error event listener
+- Unhandled promise rejection listener
+- Error message array with timestamps
+- Real-time error capture and display
+
+**Quick Actions:**
+1. **Clear App Data**: \n   - Clears all localStorage and sessionStorage
+   - Confirmation dialog before execution
+   - Toast notification on success
+   - Auto-reload after 1 second
+
+2. **Clear Cache Only**: 
+   - Sends CLEAR_CACHE message to service worker
+   - Clears caches API (caches.keys() and caches.delete())
+   - Toast notification on success
+   - Auto-reload after 1 second
+
+3. **Test Payment API**: 
+   - Tests Digital Goods API availability
+   - Calls isDigitalGoodsAvailable() utility
+   - Shows success/failure toast with result
+
+4. **Export Diagnostics**: 
+   - Exports full diagnostic report as JSON file
+   - Includes timestamp, environment checks, storage info, errors, and platform data
+   - Downloads as rise-diagnostic-{timestamp}.json
+   - Toast notification on success
+
+5. **Full App Reset**: 
+   - Clears localStorage and sessionStorage
+   - Deletes IndexedDB databases (rise-db, habit-db, sleep-db)
+   - Unregisters all service workers
+   - Confirmation dialog before execution
+   - Toast notification on success
+   - Redirects to home page after 1.5 seconds
+
+#### 4.6.3 UI Components
+
+**Layout:**
+- Full-page container with padding
+- Card-based sections for different data categories
+- Responsive grid layout for action buttons
+- Back to App button at bottom
+- Version display from environment variables
+
+**Cards:**
+1. **Quick Actions Card**: Grid of action buttons with icons and labels
+2. **Environment Checks Card**: Table of system checks with status indicators (✓/✗)
+3. **Storage Status Card**: Table of storage information
+4. **Recent Errors Card**: List of captured errors (only shown if errors exist)
+5. **Footer Card**: Back button and version info
+
+**Styling:**
+- Uses shadcn/ui Card, CardHeader, CardTitle, CardContent components
+- Button component with variants (default, destructive, outline)
+- Color-coded status indicators (green for success, red for failure)
+- Monospace font for technical data
+- Responsive spacing and padding
+
+#### 4.6.4 Utility Functions
+
+**Platform Detection:**
+```typescript
+export const isAndroid = (): boolean => {
+  return typeof window !== 'undefined' && /Android/i.test(navigator.userAgent);
+};
+\nexport const isTWAWithBilling = (): boolean => {
+  return typeof window !== 'undefined' && !!(window as any).AndroidBilling;
+};
+\nexport const isDigitalGoodsAvailable = async (): Promise<boolean> => {
+  try {
+    if (typeof window.getDigitalGoodsService === 'function') {
+      const service = await window.getDigitalGoodsService('https://play.google.com/billing');
+      return !!service;
+    }
+    return false;
+  } catch{
+    return false;
+  }
+};
+```\n
+**File Location**: /utils/googlePlayBilling.ts (or create new /utils/platform.ts)
+
+#### 4.6.5 Security Considerations
+- Debug Center only accessible in development builds or with special developer flag
+- Production builds should hide or disable Debug Center access
+- Sensitive data (API keys, tokens) should not be displayed\n- User confirmation required for destructive actions
+- Error messages sanitized to avoid exposing sensitive information
+
+#### 4.6.6 Testing Requirements
+- Test all environment checks display correctly
+- Test storage status updates in real-time
+- Test error logging captures window errors and promise rejections
+- Test Clear App Data removes all localStorage/sessionStorage
+- Test Clear Cache Only clears service worker cache
+- Test Payment API check returns correct status
+- Test Export Diagnostics downloads valid JSON file
+- Test Full App Reset clears all data and redirects\n- Test Back to App button navigates correctly
+- Test version display shows correct app version
+- Test on Android TWA and Web/PWA platforms
+- Verify Debug Center does not impact app performance
+
+### 4.7 Permissions\n
+#### 4.7.1 Required Permissions
 - Notification permission for reminders and smart alarm
 - Microphone access for sleep sound monitoring
 - Accelerometer access for movement detection
-\n#### 4.6.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
+\n#### 4.7.2 Optional Permissions (Premium)\n- Location permission for location-based reminders (GPS)
 - Camera permission for photo attachments
 - Storage permission for data export and photo saving
 - Contacts permission for social features (optional)
 
-### 4.7 Compatibility
+### 4.8 Compatibility
 - Android platform (minimum Android 8.0 / API 26)
 - Target Android 14 (API 34)
 - Material3 design system compliance
@@ -1214,14 +1204,14 @@ disabled={isProcessing}
   - Modern browsers: Chrome 90+, Edge 90+, Safari 14+, Firefox 88+
   - Mobile browsers: Chrome Mobile, Safari iOS14+\n  - Desktop platforms: Windows, macOS, Linux, Chrome OS
 
-### 4.8 Audio Assets
+### 4.9 Audio Assets
 - **Free Version**: 8 alarm sound files (MP3 format, 128kbps, 30-60 seconds each)
 - **Premium Version**: 20+ additional alarm sounds\n- **Sleep Sounds**: 20+ ambient sound files (OGG format, loopable, 3-5 minutes each)
 - Total audio assets size: ~50MB (optimized compression)
 - All sounds stored in app's assets folder for offline access
 - Service Worker caches alarm sounds for offline playback
 
-### 4.9 Security and Privacy
+### 4.10 Security and Privacy
 - All user data stored locally by default
 - Premium cloud backup uses AES-256 encryption
 - No personal data shared with third parties
@@ -1237,8 +1227,11 @@ disabled={isProcessing}
   - Paystack secret key stored in environment variables only
   - Payment reference format includes timestamp and random string for uniqueness
   - Email stored securely for purchase restoration
-
-### 4.10 Third-Party Integrations
+- **Debug Center Security**:
+  - Only accessible in development builds or with developer flag
+  - No sensitive data (API keys, tokens) displayed
+  - User confirmation required for destructive actions
+  - Error messages sanitized\n\n### 4.11 Third-Party Integrations
 - Google Play Billing Library v6+ for Android in-app purchases
 - Paystack (react-paystack) for Web/PWA payments
 - Firebase Firestore for cloud sync (premium)\n- Firebase Analytics for usage tracking (anonymous)
@@ -1246,7 +1239,7 @@ disabled={isProcessing}
 - Google Maps API for location-based reminders (premium)
 - qrcode.react for QR code generation (viral share feature)
 
-### 4.11 Testing Requirements
+### 4.12 Testing Requirements
 - Unit tests for all business logic (80%+ coverage)
 - Widget tests for UI components\n- Integration tests for critical user flows
 - Performance testing for 60fps animations
@@ -1259,8 +1252,7 @@ disabled={isProcessing}
   - Verify purchase restoration works across devices
   - Test offline premium feature access
   - Validate purchase state persistence
-  - Test platform detection (Android vs Web)
-  - Verify correct button display on each platform
+  - Test platform detection (Android vs Web)\n  - Verify correct button display on each platform
   - Test email input validation and storage
   - Test loading states during payment processing
   - Verify success/error toast messages
@@ -1296,6 +1288,23 @@ disabled={isProcessing}
   - Install prompt testing
   - Push notification testing
   - Lighthouse PWA audit (score 90+)
+- **Debug Center Testing** (NEW):
+  - Test all environment checks display correctly
+  - Test storage status updates in real-time
+  - Test error logging captures window errors and promise rejections
+  - Test Clear App Data removes all localStorage/sessionStorage
+  - Test Clear Cache Only clears service worker cache
+  - Test Payment API check returns correct status
+  - Test Export Diagnostics downloads valid JSON file
+  - Test Full App Reset clears all data and redirects
+  - Test Back to App button navigates correctly
+  - Test version display shows correct app version
+  - Test on Android TWA and Web/PWA platforms
+  - Verify Debug Center does not impact app performance
+  - Test access control (development builds only)
+  - Test confirmation dialogs for destructive actions
+  - Test toast notifications for all actions
+  - Test error message sanitization
 \n## 5. Deliverables
 
 ### 5.1 Code Deliverables
@@ -1307,17 +1316,23 @@ disabled={isProcessing}
 - **Device transfer and purchase restoration system**:\n  - Restore Purchases button in Settings\n  - Android restoration via Google Play Billing
   - Web/PWA restoration via Paystack API query by email
   - Firebase Firestore premium status sync
-  - Support contact integration\n- **Viral Share Feature (UPDATED LOCATION)**:
+  - Support contact integration\n- **Viral Share Feature**:
   - Share & Grow section in Settings page (between Data Management and Device Transfer sections)
   - Share button with QR code\n  - Native share sheet integration
   - Clipboard fallback for older browsers
   - Offline-first implementation
   - Global appeal messaging
+- **Debug Center Component** (NEW):
+  - /components/DebugPage.tsx with full implementation
+  - Environment checks display\n  - Storage status monitoring
+  - Error logging system
+  - Quick action buttons (Clear Data, Clear Cache, Test Payment, Export Diagnostics, Full Reset)
+  - Platform detection utilities
+  - Access control for development builds
 - Premium card background image fix(/images/premium-bg.png)
 - Wear OS companion app APK (premium)\n- **PWA Build**:
-  - Service Worker implementation (sw.js)
-  - Web App Manifest (manifest.json)
-  - PWA-optimized build for web deployment
+  - Service Worker implementation (sw.js) with cache clearing support
+  - Web App Manifest (manifest.json)\n  - PWA-optimized build for web deployment
   - Offline fallback page
 - **Paystack Integration Files**:
   - /components/PaystackButton.tsx (complete TypeScript implementation)
@@ -1325,7 +1340,7 @@ disabled={isProcessing}
   - /pages/api/verify-payment.ts (backend verification endpoint)
   - /pages/api/restore-premium.ts (backend restoration endpoint)
   - Updated /components/Stats.tsx (with email input and Paystack button)
-  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature in new location)
+  - Updated /components/Settings.tsx (with restore purchases functionality and viral share feature)
 - .env.local.example template
 - Comprehensive code documentation
 - README with setup instructions and dual payment configuration guide
@@ -1344,6 +1359,7 @@ disabled={isProcessing}
   8. PWA support for cross-platform access
   9. Seamless device transfer - restore premium on new devices
   10. Viral share feature - spread better habits with friends
+  11. Debug Center for advanced troubleshooting (developer feature)
 - **Keywords**: habit tracker, streak, daily habits, productivity, sleep tracker, routine builder, goal tracker, PWA\n- **Screenshots**: 8 high-quality screenshots showcasing:\n  1. Home screen with habits (Screenshot_20251125-170711.png)
   2. Calendar heatmap (Screenshot_20251125-170720.png)
   3. Stats dashboard (Screenshot_20251125-170733.png)
@@ -1353,7 +1369,8 @@ disabled={isProcessing}
 - **Feature Graphic**: 1024x500px banner\n- **App Icon**: 512x512px adaptive icon (Rise - Habit tracker and smart sleep Icon.png)
 - **Promotional Video**: 30-second video showcasing key features (optional)
 - **In-App Products Configuration**:
-  - Product ID: premium_unlock\n  - Product Type: One-time purchase (non-consumable)
+  - Product ID: premium_unlock
+  - Product Type: One-time purchase (non-consumable)
   - Price: $4.99 USD
   - Title: Premium Unlock
   - Description: Unlock all premium features forever
@@ -1368,8 +1385,7 @@ disabled={isProcessing}
   - Paystack account setup guide and API key configuration
   - Environment variables setup guide (.env.local)\n  - Testing guide for both payment systems
   - Payment verification API documentation
-  - **Device transfer and restoration guide**:
-    - How to restore purchases on Android
+  - **Device transfer and restoration guide**:\n    - How to restore purchases on Android
     - How to restore premium on Web/PWA
     - Troubleshooting common restoration issues
     - Support contact information
@@ -1378,7 +1394,7 @@ disabled={isProcessing}
   - Email input and validation guide
   - Payment reference format documentation
   - Payment channels configuration guide
-- **Viral Share Documentation (UPDATED)**:
+- **Viral Share Documentation**:
   - Implementation guide for Share & Grow section in Settings
   - QR code generation documentation
   - Native share API usage guide
@@ -1389,6 +1405,17 @@ disabled={isProcessing}
     - Section order and placement
     - Visual design specifications
     - Spacing and padding guidelines
+- **Debug Center Documentation** (NEW):
+  - Access instructions for developers
+  - Feature overview and usage guide
+  - Environment checks explanation
+  - Storage status monitoring guide
+  - Error logging system documentation
+  - Quick actions usage guide
+  - Export diagnostics format specification
+  - Security considerations and access control
+  - Testing guide for Debug Center
+  - Troubleshooting common issues
 - **PWA Documentation**:
   - Service Worker implementation guide
   - Offline functionality documentation
@@ -1412,7 +1439,7 @@ disabled={isProcessing}
   - Success/error messages show appropriately
   - Payment reference generation is unique\n  - All payment channels (card, bank, USSD, QR, mobile money) work\n  - Payment metadata transmitted correctly
   - premiumStatusChanged event dispatches properly
-- **Viral Share Feature Success (UPDATED)**:
+- **Viral Share Feature Success**:
   - Share & Grow section displays correctly in Settings page
   - Section appears between Data Management and Device Transfer sections
   - Section background color is light purple (#F3F4F6)
@@ -1423,9 +1450,25 @@ disabled={isProcessing}
   - QR code generates correctly and scans to Play Store
   - QR code is centered below subtext with proper spacing
   - Share functionality works 100% offline
-  - No network calls or tracking
-  - Global messaging appeals to all users
+  - No network calls or tracking\n  - Global messaging appeals to all users
   - Target: 20-30% organic download growth from word-of-mouth
+- **Debug Center Success** (NEW):
+  - Debug Center accessible via Settings page (hidden/developer-only)
+  - All environment checks display correctly
+  - Storage status updates in real-time
+  - Error logging captures window errors and promise rejections
+  - Clear App Data removes all localStorage/sessionStorage
+  - Clear Cache Only clears service worker cache
+  - Payment API check returns correct status
+  - Export Diagnostics downloads valid JSON file
+  - Full App Reset clears all data and redirects
+  - Back to App button navigates correctly
+  - Version display shows correct app version
+  - Debug Center does not impact app performance
+  - Access control works (development builds only)
+  - Confirmation dialogs appear for destructive actions
+  - Toast notifications work for all actions
+  - Error messages sanitized properly
 - Premium card background image visible after deployment
 - Smooth performance (consistent 60 fps)
 - Production-ready quality code
@@ -1439,6 +1482,7 @@ disabled={isProcessing}
 - Premium conversion rate target: 5-8% of active users
 - **Device transfer success rate >95%**
 - **Viral share adoption rate >15% of active users**
+- **Debug Center usage by developers >80% for troubleshooting**
 - **Netlify Deployment**: Existing build settings and online deployment remain unaffected
 - **PWA Success Metrics**:
   - Lighthouse PWA score >90\n  - Service Worker successfully caches all critical assets
@@ -1447,7 +1491,8 @@ disabled={isProcessing}
   - PWA load time <2 seconds on3G connection
 \n## 7. Competitive Advantages
 
-This app is designed to outperform competitors through:\n\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
+This app is designed to outperform competitors through:
+\n1. **Comprehensive Feature Set**: 27 premium features vs. competitors' 10-15\n2. **Sleep Tracker Integration**: Unique combination of habit tracking + sleep monitoring
 3. **Smart Alarm Technology**: Light-phase wake-up for better mornings
 4. **AI-Powered Insights**: Predictive analytics and personalized recommendations
 5. **Social Accountability**: Built-in community and challenge features
@@ -1473,15 +1518,16 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 25. **Viral Share Feature**: Built-in word-of-mouth growth mechanism with QR code
 26. **Offline Sharing**: Share functionality works without internet connection
 27. **Global Appeal**: Universal messaging for worldwide user base
-
-## 8. Post-Launch Roadmap (Future Enhancements)
+28. **Debug Center**: Advanced troubleshooting tool for developers and power users
+29. **Comprehensive Diagnostics**: Export full diagnostic reports for support
+30. **Developer-Friendly**: Built-in tools for debugging and testing
+\n## 8. Post-Launch Roadmap (Future Enhancements)
 
 - iOS version with iCloud sync
 - Apple Watch companion app
 - Web dashboard for desktop access
 - Team/family plans for shared habits
-- Integration with fitness trackers (Fitbit, Garmin)
-- Siri/Google Assistant voice commands
+- Integration with fitness trackers (Fitbit, Garmin)\n- Siri/Google Assistant voice commands
 - Habit coaching AI chatbot
 - Gamification with XP and levels
 - Marketplace for community-created habit templates
@@ -1491,6 +1537,8 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 - Referral program with rewards for viral sharing
 - Social media integration for achievement sharing
 - Advanced analytics dashboard for web users
+- Public Debug Center for user-facing diagnostics
+- Remote diagnostics for customer support
 \n---
 
 ## Reference Images
@@ -1517,16 +1565,58 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 22. Screenshot_20251220-155107.png: (Reference image)
 23. Screenshot_20251221-064419.png: (Reference image)
 24. Screenshot_20251221-094801.png: Settings page showing Data Management section (used to clarify share button location)
+25. Screenshot_20251223-095139.png: Billing Test Page showing environment information (Android detected, TWA Billing not available)
+26. Screenshot_20251223-112503.png: Premium upgrade screen with Google Play purchase button and restore purchase option
+27. Screenshot_20251223-132748.png: Premium upgrade screen showing'Opening Google Play purchase...' loading state
+28. Screenshot_20251223-132755.png: Premium upgrade screen showing 'Purchase failed: Payment permissions policy not granted' error
+29. Screenshot_20251224-064824.png: Error screen showing 'Something went wrong' with error message'SO(...).then is not a function'
 \n---
 
 ## Implementation Checklist
 
-**Viral Share Feature (UPDATED LOCATION - URGENT IMPLEMENTATION):**
+**Debug Center Implementation (NEW - URGENT):**
+1. ✅ Create /components/DebugPage.tsx component
+2. ✅ Import required dependencies (React, useState, useEffect, Button, Card, toast)
+3. ✅ Import platform detection utilities (isTWAWithBilling, isAndroid, isDigitalGoodsAvailable)
+4. ✅ Implement environment checks state and logic
+5. ✅ Implement storage status state and logic
+6. ✅ Implement error logging state and event listeners
+7. ✅ Implement handleClearData function with confirmation\n8. ✅ Implement handleClearCache function with service worker message
+9. ✅ Implement handleTestPurchase function with Digital Goods API check
+10. ✅ Implement handleExportDiagnostics function with JSON download
+11. ✅ Implement handleResetApp function with full reset logic
+12. ✅ Create Quick Actions card with action buttons
+13. ✅ Create Environment Checks card with status table
+14. ✅ Create Storage Status card with storage info table
+15. ✅ Create Recent Errors card (conditional rendering)
+16. ✅ Create Footer card with Back button and version display
+17. ✅ Style components with shadcn/ui and Tailwind CSS
+18. ✅ Add color-coded status indicators (✓/✗)\n19. ✅ Add toast notifications for all actions
+20. ✅ Add confirmation dialogs for destructive actions
+21. ✅ Test environment checks display\n22. ✅ Test storage status updates
+23. ✅ Test error logging captures errors
+24. ✅ Test Clear App Data functionality
+25. ✅ Test Clear Cache Only functionality
+26. ✅ Test Payment API check
+27. ✅ Test Export Diagnostics download
+28. ✅ Test Full App Reset functionality
+29. ✅ Test Back to App navigation
+30. ✅ Test version display
+31. ✅ Test on Android TWA
+32. ✅ Test on Web/PWA
+33. ✅ Verify no performance impact
+34. ✅ Add access control for development builds
+35. ✅ Update Settings page with Debug Center access (long-press on version or dedicated button)
+36. ✅ Update documentation with Debug Center guide
+37. ✅ Commit message: 'Add Debug Center component for advanced troubleshooting and diagnostics'
+38. ✅ Push to main branch for Netlify auto-deploy
+39. ✅ Confirm deployment works\n40. ✅ Regenerate .aab for Android after testing
+\n**Viral Share Feature (Existing Implementation):**
 1. ✅ Install qrcode.react package: `npm install qrcode.react`
 2. ✅ Install types: `npm install --save-dev @types/qrcode.react`
 3. ✅ Import QRCode and Share icon in Settings.tsx
 4. ✅ Create'Share & Grow' section in Settings page
-5. ✅ Place section between 'Data Management' and 'Device Transfer & Purchase Restoration' (or 'About Rise' if premium)
+5. ✅ Place section between 'Data Management' and 'Device Transfer & Purchase Restoration' (or'About Rise' if premium)
 6. ✅ Add section background color (bg-purple-50 or #F3F4F6)
 7. ✅ Add section title: 'Share & Grow' (text-lg font-semibold mb-2)
 8. ✅ Add section subtitle: 'Help friends build better habits' (text-sm text-gray-600 mb-4)
@@ -1540,15 +1630,15 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 16. ✅ Add subtext below button: 'Spread better habits — QR code for easy install' (text-sm text-center text-gray-600 mt-4)
 17. ✅ Position QR code below subtext (flex justify-center mt-4, size 128x128px)
 18. ✅ Add section padding (p-6) and margin (mb-6)
-19. ✅ Add rounded corners (rounded-xl)\n20. ✅ Test on Android TWA (native share sheet)
+19. ✅ Add rounded corners (rounded-xl)
+20. ✅ Test on Android TWA (native share sheet)
 21. ✅ Test on Web/PWA (clipboard fallback)
-22. ✅ Test QR code scanning\n23. ✅ Verify offline functionality (no network calls)
+22. ✅ Test QR code scanning
+23. ✅ Verify offline functionality (no network calls)
 24. ✅ Test on multiple devices and browsers
 25. ✅ Verify section placement in Settings page
 26. ✅ Verify visual design matches specifications
 27. ✅ Verify global appeal messaging
-28. ✅ Commit message: 'Update viral share button location to dedicated Share & Grow section in Settings'\n29. ✅ Push to main branch for Netlify auto-deploy
-30. ✅ Confirm deployment works\n31. ✅ Regenerate .aab for Android after testing
 \n**Device Transfer & Purchase Restoration (Existing Implementation):**
 1. ✅ Add 'Restore Purchases' button to Settings page
 2. ✅ Implement restoreAndroidPurchases() function for Android
@@ -1568,8 +1658,6 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 17. ✅ Test offline restoration (localStorage persistence)
 18. ✅ Update documentation with restoration guide
 19. ✅ Add FAQ section for device transfer
-20. ✅ Commit message: 'Implement device transfer and purchase restoration system'
-21. ✅ Push to main branch for Netlify auto-deploy
 \n**Paystack Integration (Complete Implementation):**
 1. ✅ Install react-paystack package: `npm install react-paystack`
 2. ✅ Create /components/PaystackButton.tsx with complete TypeScript implementation
@@ -1627,23 +1715,39 @@ This app is designed to outperform competitors through:\n\n1. **Comprehensive Fe
 17. Test premiumStatusChanged event\n18. Test premium status persistence across page reloads
 19. Test device transfer scenarios
 20. Test restore purchases on Android
-21. Test email-based restoration on Web/PWA\n22. Test Firebase premium status sync
+21. Test email-based restoration on Web/PWA
+22. Test Firebase premium status sync
 23. Test offline restoration\n24. Test support contact integration
-25. **Test viral share feature on Android TWA**
-26. **Test viral share feature on Web/PWA**
-27. **Test QR code generation and scanning**
-28. **Test share content (title, message, link)**
-29. **Test offline share functionality**
-30. **Test clipboard fallback**
-31. **Test on multiple devices and browsers**
-32. **Verify global appeal messaging**
-33. **Test Share & Grow section placement in Settings page**
-34. **Verify section appears between Data Management and Device Transfer sections**
-35. **Verify section background color (light purple #F3F4F6)**\n36. **Verify section title and subtitle display correctly**
-37. **Verify share button is full-width with purple background**
-38. **Verify Share icon displays correctly**
-39. **Verify QR code is centered below subtext with proper spacing**
-40. **Verify section padding and margin match design specs**
+25. Test viral share feature on Android TWA
+26. Test viral share feature on Web/PWA\n27. Test QR code generation and scanning
+28. Test share content (title, message, link)
+29. Test offline share functionality
+30. Test clipboard fallback\n31. Test on multiple devices and browsers
+32. Verify global appeal messaging
+33. Test Share & Grow section placement in Settings page
+34. Verify section appears between Data Management and Device Transfer sections
+35. Verify section background color (light purple #F3F4F6)
+36. Verify section title and subtitle display correctly
+37. Verify share button is full-width with purple background
+38. Verify Share icon displays correctly
+39. Verify QR code is centered below subtext with proper spacing
+40. Verify section padding and margin match design specs
+41. **Test Debug Center on Android TWA**
+42. **Test Debug Center on Web/PWA**
+43. **Test all environment checks display correctly**
+44. **Test storage status updates in real-time**
+45. **Test error logging captures errors**
+46. **Test Clear App Data functionality**
+47. **Test Clear Cache Only functionality**
+48. **Test Payment API check**
+49. **Test Export Diagnostics download**
+50. **Test Full App Reset functionality**
+51. **Test Back to App navigation**
+52. **Test version display**
+53. **Verify Debug Center does not impact app performance**
+54. **Test access control (development builds only)**
+55. **Test confirmation dialogs for destructive actions**\n56. **Test toast notifications for all actions**
+57. **Test error message sanitization**
 \n---
 
-**This updated requirements document now clarifies the exact location of the viral share button in the Settings page. The share button is now placed in a dedicated 'Share & Grow' section between the 'Data Management' section and the 'Device Transfer & Purchase Restoration' section (or 'About Rise' section if premium is active). The section has a light purple background (#F3F4F6), rounded corners, and includes a section title, subtitle, full-width purple share button with Share icon, subtext, and centered QR code below. This placement ensures high visibility and accessibility for users to easily share the app with friends.**
+**This updated requirements document now includes the Debug Center component as a new feature in the Rise Habit Tracker application. The Debug Center provides advanced troubleshooting and diagnostics capabilities for developers and power users, with comprehensive environment checks, storage monitoring, error logging, and quick action buttons for data management and testing. The component is fully integrated into the Settings page with hidden/developer-only access, ensuring it does not impact the user experience for regular users while providing powerful debugging tools for developers.**
