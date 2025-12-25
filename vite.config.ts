@@ -13,9 +13,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      // Force all React imports to use the same instance
-      react: path.resolve(__dirname, './node_modules/react'),
-      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     },
     // Force single React instance to prevent "Cannot read properties of null" errors
     dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
