@@ -221,6 +221,28 @@ export function Stats() {
                     <span>Lifetime Access</span>
                   </div>
                 </div>
+
+                {/* Environment Info - Show if not in TWA */}
+                {!OfflineBilling.isInTWA() && (
+                  <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-left">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">⚠️</div>
+                      <div className="flex-1 space-y-2">
+                        <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+                          Browser Preview Mode
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          You're viewing this in a web browser. Google Play billing only works in the official app from Google Play Store.
+                        </p>
+                        {OfflineBilling.isDevelopment() && (
+                          <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                            💡 Development Mode: Click "Get Premium" to unlock for testing
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
