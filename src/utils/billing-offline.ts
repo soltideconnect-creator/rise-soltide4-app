@@ -317,6 +317,21 @@ export class OfflineBilling {
   }
 
   /**
+   * Save premium status from external payment (e.g., Paystack)
+   * @param transactionReference Transaction reference from payment provider
+   */
+  static saveExternalPremium(transactionReference: string): void {
+    this.savePremium({
+      valid: true,
+      purchaseToken: transactionReference,
+      purchasedAt: new Date().toISOString(),
+      platform: 'google-play', // Use same format for compatibility
+      features: ['sleep_tracker', 'advanced_analytics', 'lifetime_access'],
+    });
+    debugLog('[OfflineBilling] External premium saved:', transactionReference);
+  }
+
+  /**
    * Clear premium status (for testing/debugging)
    */
   static clearPremium(): void {

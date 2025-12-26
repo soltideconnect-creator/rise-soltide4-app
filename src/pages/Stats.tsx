@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { subDays, format } from 'date-fns';
 import { toast } from 'sonner';
 import { OfflineBilling } from '@/utils/billing-offline';
+import { PaystackPayment } from '@/components/PaystackPayment';
 import { debugLog, debugError } from '@/utils/debug';
 
 export function Stats() {
@@ -20,6 +21,7 @@ export function Stats() {
   });
   const [chartData, setChartData] = useState<Array<{ date: string; completions: number }>>([]);
   const [isPremium, setIsPremium] = useState(false);
+  const [isAndroidTWA, setIsAndroidTWA] = useState(false);
 
   useEffect(() => {
     setStats(habitStorage.getOverallStats());
@@ -37,6 +39,13 @@ export function Stats() {
 
     // Check premium status (works offline)
     setIsPremium(OfflineBilling.isPremiumUnlocked());
+
+    // Detect platform (Android TWA vs Web)
+    setIsAndroidTWA(OfflineBilling.isInTWA());
+    debugLog('[Stats] Platform detected:', {
+      isAndroidTWA: OfflineBilling.isInTWA(),
+      isDevelopment: OfflineBilling.isDevelopment(),
+    });
   }, []);
 
   // Listen for premium changes (from other tabs/devices)
@@ -49,21 +58,41 @@ export function Stats() {
     return () => window.removeEventListener('premiumChanged', handlePremiumChange);
   }, []);
 
-  // Purchase premium handler
-  const handlePurchase = async () => {
-    debugLog('[Stats] Starting purchase flow...');
+  // Google Play purchase handler (Android TWA only)
+  const handleGooglePlayPurchase = async () => {
+    debugLog('[Stats] Starting Google Play purchase flow...');
     const success = await OfflineBilling.purchase();
     if (success) {
       setIsPremium(true);
+      toast.success('Premium unlocked! 🎉');
     }
   };
 
-  // Restore purchases handler
+  // Paystack purchase handler (Web only)
+  const handlePaystackSuccess = (transaction: any) => {
+    debugLog('[Stats] Paystack payment successful:', transaction);
+    
+    // Save premium status locally (offline-first)
+    OfflineBilling.saveExternalPremium(transaction.reference);
+    setIsPremium(true);
+    
+    toast.success('Premium unlocked! 🎉', {
+      description: 'Sleep Tracker is now available. Thank you for your support!',
+    });
+  };
+
+  const handlePaystackClose = () => {
+    debugLog('[Stats] Paystack payment closed');
+    toast.info('Payment cancelled');
+  };
+
+  // Restore purchases handler (Google Play only)
   const handleRestore = async () => {
     debugLog('[Stats] Starting restore flow...');
     const restored = await OfflineBilling.restore();
     if (restored) {
       setIsPremium(true);
+      toast.success('Purchase restored! 🎉');
     }
   };
 
@@ -180,30 +209,53 @@ export function Stats() {
                   </p>
                 </div>
 
-                {/* Buttons */}
+                {/* Platform-Specific Payment Buttons */}
                 <div className="space-y-3 max-w-sm mx-auto">
-                  <Button
-                    onClick={handlePurchase}
-                    className="w-full"
-                    size="lg"
-                    variant="default"
-                  >
-                    <Trophy className="w-4 h-4 mr-2" />
-                    Get Premium - $4.99
-                  </Button>
-                  
-                  <Button
-                    onClick={handleRestore}
-                    className="w-full"
-                    size="sm"
-                    variant="outline"
-                  >
-                    Restore Purchase
-                  </Button>
-                  
-                  <p className="text-xs text-muted-foreground">
-                    One-time purchase • Works offline after purchase
-                  </p>
+                  {/* Google Play Button (Android TWA Only) */}
+                  {isAndroidTWA && (
+                    <>
+                      <Button
+                        onClick={handleGooglePlayPurchase}
+                        className="w-full"
+                        size="lg"
+                        variant="default"
+                      >
+                        <Trophy className="w-4 h-4 mr-2" />
+                        Get Premium - $4.99
+                      </Button>
+                      
+                      <Button
+                        onClick={handleRestore}
+                        className="w-full"
+                        size="sm"
+                        variant="outline"
+                      >
+                        Restore Purchase
+                      </Button>
+                      
+                      <p className="text-xs text-muted-foreground">
+                        One-time purchase via Google Play • Works offline after purchase
+                      </p>
+                    </>
+                  )}
+
+                  {/* Paystack Button (Web Only) */}
+                  {!isAndroidTWA && (
+                    <>
+                      <PaystackPayment
+                        email={import.meta.env.VITE_PAYSTACK_EMAIL || 'user@example.com'}
+                        amount={499900} // ₦4,999.00 in kobo (approximately $4.99)
+                        publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || ''}
+                        text="Get Premium - ₦4,999"
+                        onSuccess={handlePaystackSuccess}
+                        onClose={handlePaystackClose}
+                      />
+                      
+                      <p className="text-xs text-muted-foreground">
+                        One-time purchase via Paystack • Works offline after purchase
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 {/* Features list */}
@@ -223,22 +275,39 @@ export function Stats() {
                 </div>
 
                 {/* Environment Info - Show if not in TWA */}
-                {!OfflineBilling.isInTWA() && (
+                {!isAndroidTWA && (
                   <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-left">
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">⚠️</div>
                       <div className="flex-1 space-y-2">
                         <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
-                          Browser Preview Mode
+                          Web Payment Mode
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          You're viewing this in a web browser. Google Play billing only works in the official app from Google Play Store.
+                          You're viewing this in a web browser. Payment will be processed via Paystack (card, bank transfer, or mobile money).
                         </p>
                         {OfflineBilling.isDevelopment() && (
                           <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                            💡 Development Mode: Click "Get Premium" to unlock for testing
+                            💡 Development Mode: Test payment available
                           </p>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TWA Info - Show if in TWA */}
+                {isAndroidTWA && (
+                  <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-left">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">✅</div>
+                      <div className="flex-1 space-y-2">
+                        <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+                          Google Play Mode
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          You're using the official app from Google Play Store. Payment will be processed securely through Google Play.
+                        </p>
                       </div>
                     </div>
                   </div>
