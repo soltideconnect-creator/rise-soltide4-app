@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔒 Pre-commit: Verifying lockfile integrity..."
+
+# Check if package.json or pnpm-lock.yaml are being committed
+if git diff --cached --name-only | grep -q "package.json\|pnpm-lock.yaml"; then
+  echo "📦 Package files detected in commit. Running integrity checks..."
+  
+  # Verify lockfile matches package.json
+  if ! pnpm install --frozen-lockfile > /dev/null 2>&1; then
+    echo "❌ ERROR: pnpm-lock.yaml is out of sync with package.json!"
+    echo "Run: pnpm install"
+    echo "Then stage the updated pnpm-lock.yaml"
+    exit 1
+  fi
+  
+  echo "✅ Lockfile integrity verified"
+fi
+
+# Run linting
+echo "🔍 Running linter..."
+npm run lint
+
+echo "✅ Pre-commit checks passed!"
