@@ -631,3 +631,5 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
     </div>
   );
 }
+
+
