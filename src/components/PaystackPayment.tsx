@@ -100,28 +100,44 @@ export function PaystackPayment({
   // Handle payment button click
   const handlePayment = () => {
     // Validate environment configuration
-    if (!publicKey || publicKey === 'undefined') {
+    if (!publicKey || publicKey === 'undefined' || publicKey === '') {
       console.error('❌ Missing Paystack public key');
+      console.error('Current publicKey value:', publicKey);
+      console.error('Environment variables:', {
+        VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        allEnvVars: import.meta.env
+      });
       setScriptError('Payment configuration error. Please contact support.');
-      toast.error('Payment configuration error. VITE_PAYSTACK_PUBLIC_KEY is missing.');
+      toast.error('Payment configuration error. Missing Paystack public key.', {
+        description: 'Please ensure VITE_PAYSTACK_PUBLIC_KEY is set in Netlify environment variables.'
+      });
       return;
     }
 
     if (!isScriptLoaded) {
       console.error('❌ Paystack script not loaded');
       setScriptError('Payment system not ready. Please wait a moment and try again.');
+      toast.error('Payment system not ready', {
+        description: 'Please wait a moment and try again.'
+      });
       return;
     }
 
     if (!window.PaystackPop) {
       console.error('❌ PaystackPop not available');
       setScriptError('Payment system not available. Please refresh the page.');
+      toast.error('Payment system not available', {
+        description: 'Please refresh the page and try again.'
+      });
       return;
     }
 
     if (!email || !email.includes('@')) {
       console.error('❌ Invalid email:', email);
       setScriptError('Invalid email address. Please update your email.');
+      toast.error('Invalid email address', {
+        description: 'Please provide a valid email address.'
+      });
       return;
     }
 
