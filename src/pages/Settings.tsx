@@ -23,6 +23,8 @@ import {
   Palette,
   Check,
   Share2,
+  Lock,
+  Sparkles,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -34,6 +36,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { OfflineBilling } from '@/utils/billing-offline';
+import { debugLog } from '@/utils/debug';
 
 // Helper function to check if we're in development environment
 const isDevelopmentEnvironment = () => {
@@ -63,9 +67,10 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
   const [selectedThemeId, setSelectedThemeId] = useState('default');
 
   useEffect(() => {
-    // Check premium status
-    const premium = localStorage.getItem('streak_ads_removed') === 'true';
+    // Check premium status using OfflineBilling
+    const premium = OfflineBilling.isPremiumUnlocked();
     setIsPremium(premium);
+    debugLog('[Settings] Premium status:', premium);
 
     if (premium) {
       // Load saved alarm sound
@@ -77,6 +82,45 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
       setSelectedThemeId(savedTheme.id);
     }
   }, []);
+
+  // Listen for premium changes (from Stats page purchases)
+  useEffect(() => {
+    const handlePremiumChange = () => {
+      const premium = OfflineBilling.isPremiumUnlocked();
+      setIsPremium(premium);
+      debugLog('[Settings] Premium status changed:', premium);
+      
+      if (premium) {
+        toast.success('Premium features unlocked!');
+      }
+    };
+
+    window.addEventListener('premiumChanged', handlePremiumChange);
+    return () => window.removeEventListener('premiumChanged', handlePremiumChange);
+  }, []);
+
+  // Restore purchases handler (Android TWA only)
+  const handleRestorePurchases = async () => {
+    debugLog('[Settings] Starting restore purchases...');
+    try {
+      const restored = await OfflineBilling.restore();
+      if (restored) {
+        setIsPremium(true);
+        toast.success('✨ Purchase restored! Premium features activated.');
+      } else {
+        toast.info('No previous purchase found. Purchase premium from Stats page.');
+      }
+    } catch (error: any) {
+      debugLog('[Settings] Restore failed:', error);
+      toast.error(error.message || 'Failed to restore purchases');
+    }
+  };
+
+  // Navigate to Stats page for purchase
+  const handleUpgradeNow = () => {
+    debugLog('[Settings] Navigating to Stats for purchase...');
+    window.location.hash = '#/stats';
+  };
 
   const handleThemeToggle = () => {
     const newMode = themeService.toggleDarkMode();
@@ -252,6 +296,69 @@ export function Settings({ onNavigateToAbout, onNavigateToDebug }: SettingsProps
   return (
     <div className="container max-w-2xl mx-auto px-4 py-6 pb-24">
       <h1 className="text-3xl font-bold mb-6">Settings</h1>
+
+      {/* Premium Status Card */}
+      {isPremium ? (
+        <Card className="mb-4 bg-gradient-to-br from-success/5 to-primary/5 border-success/20">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-5 h-5 text-success" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    Premium Active
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Sleep Tracker and all premium features unlocked
+                  </p>
+                </div>
+              </div>
+              {OfflineBilling.isInTWA() && (
+                <Button
+                  onClick={handleRestorePurchases}
+                  variant="ghost"
+                  size="sm"
+                  className="flex-shrink-0"
+                >
+                  <Check className="w-4 h-4 mr-1" />
+                  Verify
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="mb-4 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Lock className="w-5 h-5 text-primary" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    Premium Locked
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Unlock Sleep Tracker and premium features
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={handleUpgradeNow}
+                variant="default"
+                size="sm"
+                className="flex-shrink-0"
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                Upgrade
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Appearance */}
       <Card className="mb-4">
