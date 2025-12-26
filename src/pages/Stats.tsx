@@ -244,9 +244,9 @@ export function Stats() {
                     <>
                       <PaystackPayment
                         email={import.meta.env.VITE_PAYSTACK_EMAIL || 'customer@riseapp.com'}
-                        amount={499900} // ₦4,999.00 in kobo (approximately $4.99)
+                        amount={800000} // ₦8,000.00 in kobo
                         publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_live_000ac40050b8af5c5ee87edb8976d88d6eb6e315'}
-                        text="Get Premium for ₦4,999 instead of ₦8,000"
+                        text="Get Premium - ₦8,000"
                         onSuccess={handlePaystackSuccess}
                         onClose={handlePaystackClose}
                       />
