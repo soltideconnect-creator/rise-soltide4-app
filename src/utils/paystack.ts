@@ -18,7 +18,7 @@ export const unlockPremium = (transactionId?: string): void => {
     transactionId: transactionId || createPaymentReference(),
     features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],
     platform: 'web',
-    amount: 8000,
+    amount: 49999,
     currency: 'NGN',
   };
 
