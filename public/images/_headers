@@ -1,0 +1,57 @@
+# Netlify Headers Configuration
+# Ensures proper caching, content types, and microphone permissions
+
+# CRITICAL: Global headers for microphone access
+/*
+  # Permissions Policy for Microphone Access (REQUIRED for sleep tracking)
+  Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+  
+  # Feature Policy (legacy support for older browsers)
+  Feature-Policy: microphone 'self'; camera 'none'; geolocation 'none'; payment 'none'
+  
+  # Security Headers
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  
+  # Cache Control for HTML
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Open Graph Images - Force fresh content for social media crawlers
+/og-image.png
+  Cache-Control: public, max-age=0, must-revalidate, s-maxage=0
+  Content-Type: image/png
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+
+/og-image.jpg
+  Cache-Control: public, max-age=0, must-revalidate, s-maxage=0
+  Content-Type: image/jpeg
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: all
+
+# App Icon
+/rise-icon.png
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/png
+
+# Manifest
+/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/manifest+json
+
+# Service Worker
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/javascript
+
+# Asset Links for Android TWA
+/.well-known/assetlinks.json
+  Content-Type: application/json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+# Static Assets (longer cache)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
