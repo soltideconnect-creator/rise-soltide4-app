@@ -18,7 +18,7 @@ export const unlockPremium = (transactionId?: string): void => {
     transactionId: transactionId || createPaymentReference(),
     features: ['sleep_tracker', 'no_ads', 'advanced_analytics'],
     platform: 'web',
-    amount: 8000,
+    amount: 800000, // Amount in kobo (₦8,000 = 800,000 kobo)
     currency: 'NGN',
   };
 

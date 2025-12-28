@@ -49,6 +49,7 @@ export function PaystackPayment({
   useEffect(() => {
     // Check if script is already loaded
     if (window.PaystackPop) {
+      console.log('✅ Paystack already available');
       setIsScriptLoaded(true);
       return;
     }
@@ -56,12 +57,31 @@ export function PaystackPayment({
     // Check if script tag already exists
     const existingScript = document.querySelector('script[src*="paystack"]');
     if (existingScript) {
-      existingScript.addEventListener('load', () => {
-        setIsScriptLoaded(true);
-      });
-      return;
+      console.log('⏳ Paystack script tag exists, waiting for load...');
+      
+      // If script exists but PaystackPop isn't available yet, wait for it
+      const checkInterval = setInterval(() => {
+        if (window.PaystackPop) {
+          console.log('✅ Paystack loaded from existing script');
+          setIsScriptLoaded(true);
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        if (!window.PaystackPop) {
+          console.error('❌ Paystack script timeout');
+          setScriptError('Payment system loading timeout. Please refresh the page.');
+        }
+      }, 10000);
+      
+      return () => clearInterval(checkInterval);
     }
 
+    console.log('📥 Loading Paystack script...');
+    
     // Load Paystack script
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
@@ -81,12 +101,13 @@ export function PaystackPayment({
 
     document.body.appendChild(script);
 
+    // Cleanup on unmount
     return () => {
-      // Cleanup: remove script on unmount
-      const scriptToRemove = document.querySelector('script[src*="paystack"]');
-      if (scriptToRemove && scriptToRemove.parentNode) {
-        scriptToRemove.parentNode.removeChild(scriptToRemove);
-      }
+      // Don't remove script on unmount to avoid reloading
+      // const scriptToRemove = document.querySelector('script[src*="paystack"]');
+      // if (scriptToRemove && scriptToRemove.parentNode) {
+      //   scriptToRemove.parentNode.removeChild(scriptToRemove);
+      // }
     };
   }, []);
 
@@ -99,32 +120,61 @@ export function PaystackPayment({
 
   // Handle payment button click
   const handlePayment = () => {
+    console.log('🔵 Payment button clicked');
+    console.log('🔍 Current state:', {
+      isScriptLoaded,
+      isLoading,
+      hasPaystackPop: !!window.PaystackPop,
+      publicKey: publicKey ? publicKey.substring(0, 15) + '...' : 'MISSING',
+      email,
+      amount
+    });
+    
     // Validate environment configuration
-    if (!publicKey || publicKey === 'undefined') {
+    if (!publicKey || publicKey === 'undefined' || publicKey === '') {
       console.error('❌ Missing Paystack public key');
+      console.error('Current publicKey value:', publicKey);
+      console.error('Environment variables:', {
+        VITE_PAYSTACK_PUBLIC_KEY: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
+        allEnvVars: import.meta.env
+      });
       setScriptError('Payment configuration error. Please contact support.');
-      toast.error('Payment configuration error. VITE_PAYSTACK_PUBLIC_KEY is missing.');
+      toast.error('Payment configuration error. Missing Paystack public key.', {
+        description: 'Please ensure VITE_PAYSTACK_PUBLIC_KEY is set in Netlify environment variables.'
+      });
       return;
     }
 
     if (!isScriptLoaded) {
-      console.error('❌ Paystack script not loaded');
+      console.error('❌ Paystack script not loaded yet');
+      console.error('Script loading state:', { isScriptLoaded, hasWindow: typeof window !== 'undefined', hasPaystackPop: !!window.PaystackPop });
       setScriptError('Payment system not ready. Please wait a moment and try again.');
+      toast.error('Payment system not ready', {
+        description: 'Please wait a moment and try again.'
+      });
       return;
     }
 
     if (!window.PaystackPop) {
-      console.error('❌ PaystackPop not available');
+      console.error('❌ PaystackPop not available on window object');
+      console.error('Window object keys:', Object.keys(window).filter(k => k.toLowerCase().includes('pay')));
       setScriptError('Payment system not available. Please refresh the page.');
+      toast.error('Payment system not available', {
+        description: 'Please refresh the page and try again.'
+      });
       return;
     }
 
     if (!email || !email.includes('@')) {
       console.error('❌ Invalid email:', email);
       setScriptError('Invalid email address. Please update your email.');
+      toast.error('Invalid email address', {
+        description: 'Please provide a valid email address.'
+      });
       return;
     }
 
+    console.log('✅ All validations passed, starting payment...');
     setIsLoading(true);
     setScriptError(null);
 
